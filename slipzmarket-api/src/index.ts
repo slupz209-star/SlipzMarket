@@ -42,7 +42,7 @@ SocketService.init(httpServer);
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://slipz-market-1.onrender.com',
+  'https://slipzmarket.onrender.com',
   'https://slipz-market-2.onrender.com'
 ];
 
