@@ -1,7 +1,7 @@
 // src/services/mailer.service.ts
 import nodemailer from 'nodemailer';
-import { TemplateService } from './template.service';
-import { SettingsService } from './settings.service';
+import { TemplateService } from './template.service.js';
+import { SettingsService } from './settings.service.js';
 
 const getTransporter = async () => {
   // Use the new Retriever
@@ -9,6 +9,7 @@ const getTransporter = async () => {
 
   const vars = (settings?.customVariables as any) || {};
 
+  // Add 'as any' at the end of the configuration object
   return nodemailer.createTransport({
     host: vars.SMTP_HOST || process.env.SMTP_HOST,
     port: Number(vars.SMTP_PORT || process.env.SMTP_PORT || 465),
@@ -17,7 +18,8 @@ const getTransporter = async () => {
       user: vars.SMTP_USER || process.env.SMTP_USER,
       pass: vars.SMTP_PASS || process.env.SMTP_PASS,
     },
-  });
+    family: 4, 
+  } as any); 
 };
 
 export const MailerService = {
@@ -27,7 +29,10 @@ export const MailerService = {
     
     return await transporter.sendMail({
       from: `"SlipZMarket" <${process.env.SMTP_USER}>`,
-      to, subject, html, attachments,
+      to, 
+      subject, 
+      html, 
+      attachments,
     });
   }
 };
