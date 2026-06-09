@@ -1,11 +1,6 @@
 import prisma from '../db.js';
 import { MailerService } from './mailer.service.js';
-import * as NotificationModule from './notification.service.js';
-
-const NotificationService = (NotificationModule as any).NotificationService
-  || (NotificationModule as any).default?.NotificationService
-  || (NotificationModule as any).default
-  || (NotificationModule as any);
+import { NotificationService } from './notification.service.js'; // 👈 Cleaned up import
 
 export const CheckoutService = {
   async completeOrder(
@@ -58,24 +53,37 @@ export const CheckoutService = {
           });
         }
 
-        // 5. ATOMIC INVOICE CREATION
-        const invoice = await tx.invoice.create({
-          data: {
-            id: `INV-${stripeIntentId}`,
-            description: 'SlipZMarket Data Credits Purchase',
-            amount: stripeAmountPaid,
-            status: 'COMPLETED',
-            workspaceId: workspaceId,
-            userId: userId,
-            items: {
-              create: cartItems.map(item => ({
-                packageId: item.packageId,
-                quantity: item.quantity,
-                priceAtPurchase: item.package.price
-              }))
-            }
-          }
-        });
+// 5. ATOMIC INVOICE CREATION WITH BILLING PERSISTENCE
+const invoice = await tx.invoice.create({
+  data: {
+    id: `INV-${stripeIntentId}`,
+    description: 'SlipZMarket Data Credits Purchase',
+    amount: stripeAmountPaid,
+    status: 'COMPLETED',
+    workspaceId: workspaceId,
+    userId: userId,
+    // Add billing details if provided to make your invoices legally compliant
+    billingDetails: billingDetails ? JSON.stringify(billingDetails) : null,
+    
+    // Nested items creation
+    items: {
+      create: cartItems.map(item => ({
+        packageId: item.packageId,
+        quantity: item.quantity,
+        // Ensure price is cast to Decimal/Number as per your Prisma model
+        priceAtPurchase: Number(item.package.price), 
+      }))
+    }
+  },
+  // Include items in the response so you can pass them to the PDF Generator immediately
+  include: {
+    items: {
+      include: {
+        package: true
+      }
+    }
+  }
+});
 
         // 6. UPDATE CREDITS (The Wallet Minting)
         // This is now purely a financial transaction. No lead allocation happens here.
@@ -94,21 +102,41 @@ export const CheckoutService = {
         };
       });
 
-      // 8. SUCCESS NOTIFICATIONS
+      // ==========================================
+      // 🟢 POST-TRANSACTION SUCCESS ACTIONS
+      // ==========================================
       if (result.invoice) {
-        NotificationService?.sendToUser?.(userId, {
+        // 1. Send In-App Notification
+        NotificationService.sendToUser(userId, {
           title: 'Credits Purchased! 🎉',
           message: `Successfully added ${totalLeadsBought} credits to your wallet.`,
           type: 'SUCCESS',
           link: '/dashboard/wallet'
         });
+
+        // 2. Dispatch Email Receipt (Non-blocking)
+        if (result.receiptData.email) {
+          MailerService.send({
+            to: result.receiptData.email,
+            templateName: 'INVOICE_CONFIRMATION', // Ensure this matches your EmailTemplate DB table
+            context: {
+              name: result.receiptData.name,
+              invoiceId: result.invoice.id,
+              amount: stripeAmountPaid.toFixed(2),
+              credits: totalLeadsBought
+            }
+          }).catch(err => console.error('Silent failure: Could not send receipt email:', err));
+        }
       }
 
       return result;
 
     } catch (error: any) {
+      // ==========================================
+      // 🔴 TRANSACTION FAILURE ACTION
+      // ==========================================
       if (!error.message.includes('Cart is empty')) {
-        NotificationService?.sendToUser?.(userId, { 
+        NotificationService.sendToUser(userId, { 
           title: 'Checkout Failed ❌', 
           message: error.message.replace('ORDER_ABORTED: ', ''), 
           type: 'ERROR' 

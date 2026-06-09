@@ -1,5 +1,5 @@
 import prisma from '../db.js';
-import { NotificationService } from './notification.service.js'; // 👈 Added Import
+import { NotificationService } from './notification.service.js';
 
 export const DepositService = {
   async finalizeDeposit(
@@ -9,15 +9,17 @@ export const DepositService = {
     amountAdded: number
   ) {
     
+    // 👉 NEW: Fetch global settings to get the correct dynamic currency symbol
+    const settings = await prisma.globalSettings.findUnique({ where: { id: 'singleton' } });
+    const currencySymbol = settings?.currency?.includes('£') ? '£' : '$';
+
     // 1. FAST IDEMPOTENCY CHECK (Outside transaction to save DB locks)
-    // We use a DEP- prefix to distinguish deposits from data purchases (INV-)
     const existingInvoice = await prisma.invoice.findUnique({ 
       where: { id: `DEP-${stripeIntentId}` }
     });
     
     if (existingInvoice) {
       console.log(`[DEPOSIT] Deposit DEP-${stripeIntentId} already exists. Skipping.`);
-      // Fetch the workspace to return the current balance safely
       const workspace = await prisma.workspace.findUnique({ where: { id: workspaceId } });
       return { invoice: existingInvoice, isDuplicate: true, newBalance: workspace?.balance };
     }
@@ -36,8 +38,6 @@ export const DepositService = {
               status: 'COMPLETED',
               workspace: { connect: { id: workspaceId } },
               user: { connect: { id: userId } },
-              // Assuming your schema allows invoices without line items for simple deposits.
-              // If it strictly requires items, you can create a dummy "Deposit" package/item.
             }
           });
         } catch (error: any) {
@@ -85,7 +85,8 @@ export const DepositService = {
       if (!result.isDuplicate && result.invoice) {
         NotificationService.sendToUser(userId, {
           title: 'Funds Deposited 💰',
-          message: `Successfully added £${amountAdded.toFixed(2)} to your workspace balance.`,
+          // 👉 NEW: Dynamically insert the correct currency symbol here
+          message: `Successfully added ${currencySymbol}${amountAdded.toFixed(2)} to your workspace balance.`,
           type: 'SUCCESS',
           link: '/dashboard/billing'
         });

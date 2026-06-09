@@ -1,15 +1,13 @@
 import { Router } from 'express';
-import Stripe from 'stripe';
 import { DepositService } from '../services/deposit.service';
-// Assume requireAuth attaches req.user (containing id and workspaceId)
 import { requireAuth } from './middleware/auth.middleware'; 
+import { getStripeInstance } from '../services/stripe.service'; // 👈 Import your dynamic factory
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2026-05-27.dahlia', // Use your current version
-});
 
-// 1. CREATE STRIPE INTENT (Fixes the 404 error)
+// ==========================================
+// 1. CREATE STRIPE INTENT (Dynamic Keys)
+// ==========================================
 router.post('/create-intent', requireAuth, async (req: any, res) => {
   try {
     const { amount } = req.body; 
@@ -18,15 +16,18 @@ router.post('/create-intent', requireAuth, async (req: any, res) => {
       return res.status(400).json({ error: 'Minimum deposit is £10' });
     }
 
+    // 👉 1. Fetch dynamic Stripe instance and settings from your DB
+    const { stripe, settings } = await getStripeInstance();
+
     // Stripe expects amounts in pence (multiply by 100)
     const amountInPence = Math.round(Number(amount) * 100);
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInPence,
-      currency: 'gbp',
+      currency: settings.currency === 'GBP (£)' ? 'gbp' : 'usd', // Dynamic currency support
       payment_method_types: ['card'],
       metadata: {
-        userId: req.user.id,
+        userId: req.user.userId || req.user.id, // Fallback to handle both auth setups
         workspaceId: req.user.workspaceId,
         type: 'WORKSPACE_DEPOSIT'
       },
@@ -35,24 +36,43 @@ router.post('/create-intent', requireAuth, async (req: any, res) => {
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error: any) {
     console.error("Stripe Intent Error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message || 'Stripe initialization failed' });
   }
 });
 
-// 2. FINALIZE DEPOSIT (Called after Stripe CardElement succeeds)
+// ==========================================
+// 2. FINALIZE DEPOSIT (Strict Verification)
+// ==========================================
 router.post('/finalize-deposit', requireAuth, async (req: any, res) => {
   try {
     const { amount, paymentIntentId } = req.body;
     
-    // Note: In a production environment, you should verify the paymentIntentId 
-    // actually succeeded by retrieving it from Stripe here, or rely purely on webhooks.
-    // For this flow, we will trust the intent ID and pass it to your robust service.
+    // 👉 1. Fetch dynamic Stripe instance
+    const { stripe } = await getStripeInstance();
 
+    // 👉 2. THE SECURITY WALL: Ask Stripe if this payment is real
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    // Check if payment succeeded
+    if (paymentIntent.status !== 'succeeded') {
+      return res.status(400).json({ error: 'Payment has not been confirmed by Stripe.' });
+    }
+
+    // Check ownership
+    const authUserId = req.user.userId || req.user.id;
+    if (paymentIntent.metadata.userId !== authUserId) {
+      return res.status(403).json({ error: 'Unauthorized: Payment intent ownership mismatch.' });
+    }
+
+    // 👉 3. Prevent frontend manipulation of the amount 
+    const verifiedAmount = Number(paymentIntent.amount) / 100;
+
+    // 👉 4. Fulfill the deposit safely
     const result = await DepositService.finalizeDeposit(
-      req.user.id,
+      authUserId,
       req.user.workspaceId,
-      paymentIntentId,
-      Number(amount)
+      paymentIntent.id,
+      verifiedAmount 
     );
 
     res.json({ 
@@ -60,6 +80,7 @@ router.post('/finalize-deposit', requireAuth, async (req: any, res) => {
       newBalance: result.newBalance,
       isDuplicate: result.isDuplicate
     });
+    
   } catch (error: any) {
     console.error("Deposit Finalization Error:", error);
     res.status(500).json({ error: 'Failed to finalize deposit' });

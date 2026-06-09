@@ -179,6 +179,7 @@ model Invoice {
   status      String // e.g., COMPLETED, PROCESSING
   date        DateTime @default(now())
 
+billingDetails String?  @db.Text
   items InvoiceItem[]
   unlockedLeads UnlockedLead[]
 

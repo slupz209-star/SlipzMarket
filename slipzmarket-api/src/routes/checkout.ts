@@ -1,16 +1,21 @@
 import { Router, Response } from 'express';
 import { CoreService } from '../services/core.services';
 import { CheckoutService } from '../services/checkout.service';
-import { stripe } from '../services/stripe.service';
+import { getStripeInstance } from '../services/stripe.service'; // 👈 Replaced static import with dynamic factory
 import { PDFGenerator } from '../services/pdf.service';
-import prisma from '../db';
+import prisma from '../db.js';
 import { requireAuth } from './middleware/auth.middleware';
 
 const router = Router();
 
+// ==========================================
 // 1. INTENT CREATION
+// ==========================================
 router.post('/create-payment-intent', requireAuth, CoreService.catchAsync(async (req: any, res: Response) => {
-  const userId = req.user.userId;
+  const userId = req.user.userId || req.user.id; // Fallback to handle both auth setups
+
+  // 👉 Fetch dynamic Stripe instance and settings simultaneously
+  const { stripe, settings } = await getStripeInstance();
 
   const cartItems = await prisma.cartItem.findMany({
     where: { userId },
@@ -23,7 +28,7 @@ router.post('/create-payment-intent', requireAuth, CoreService.catchAsync(async 
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount * 100),
-    currency: 'gbp',
+    currency: settings.currency === 'GBP (£)' ? 'gbp' : 'usd', // 👈 Dynamic currency support
     payment_method_types: ['card'],
     metadata: { 
       userId,
@@ -36,10 +41,15 @@ router.post('/create-payment-intent', requireAuth, CoreService.catchAsync(async 
   });
 }));
 
-// 2. STRIPE FINALIZATION: Updated to pass totalLeadsBought
+// ==========================================
+// 2. STRIPE FINALIZATION
+// ==========================================
 router.post('/finalize', requireAuth, CoreService.catchAsync(async (req: any, res: Response) => {
   const { intentId, billingDetails } = req.body; 
-  const userId = req.user.userId;
+  const userId = req.user.userId || req.user.id;
+
+  // 👉 Fetch dynamic Stripe instance
+  const { stripe } = await getStripeInstance();
 
   const paymentIntent = await stripe.paymentIntents.retrieve(intentId);
   
@@ -59,7 +69,7 @@ router.post('/finalize', requireAuth, CoreService.catchAsync(async (req: any, re
     userId, 
     req.user.workspaceId, 
     paymentIntent.id, 
-    Number(paymentIntent.amount) / 100,
+    Number(paymentIntent.amount) / 100, // Safe amount verification
     billingDetails,
     totalLeadsBought // 👈 Syncing credits
   );
@@ -67,10 +77,12 @@ router.post('/finalize', requireAuth, CoreService.catchAsync(async (req: any, re
   return CoreService.success(res, 201, 'Order finalized', { invoice });
 }));
 
-// 3. BALANCE CHECKOUT: Process payment directly from Workspace Balance
+// ==========================================
+// 3. BALANCE CHECKOUT (No Stripe Required)
+// ==========================================
 router.post('/process-balance', requireAuth, CoreService.catchAsync(async (req: any, res: Response) => {
   const billingDetails = req.body.billingDetails || {};
-  const userId = req.user.userId;
+  const userId = req.user.userId || req.user.id;
   const workspaceId = req.user.workspaceId;
 
   // A. Calculate Cart Total & Leads
@@ -127,6 +139,9 @@ router.post('/process-balance', requireAuth, CoreService.catchAsync(async (req: 
   }
 }));
 
+// ==========================================
+// 4. INVOICE DOWNLOAD
+// ==========================================
 router.get('/admin/invoices/download/:id', requireAuth, CoreService.catchAsync(async (req: any, res: Response) => {
   const invoiceId = req.params.id;
   
