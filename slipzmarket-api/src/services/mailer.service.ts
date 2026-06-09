@@ -9,8 +9,9 @@ const getTransporter = async () => {
   const vars = (settings?.customVariables as any) || {};
 
   const host = vars.SMTP_HOST || process.env.SMTP_HOST;
-  const port = Number(vars.SMTP_PORT || process.env.SMTP_PORT || 587);
-  const isSecure = port === 465;
+  // 👇 Force 465 to skip the slow STARTTLS phase
+  const port = 465; 
+  const isSecure = true; 
   const user = vars.SMTP_USER || process.env.SMTP_USER;
 
   console.log(`📝 [Mailer] 2/5: Transporter Config Extracted -> Host: ${host} | Port: ${port} | Secure: ${isSecure} | User: ${user}`);
@@ -24,13 +25,17 @@ const getTransporter = async () => {
       pass: vars.SMTP_PASS || process.env.SMTP_PASS,
     },
     family: 4, 
-    // 👇 THE NATIVE NODEMAILER TRACER 👇
-    // This will print the raw SMTP handshake to your Render console
+    // 👇 SPEED & STABILITY UPGRADES 👇
+    pool: true,              // Reuse the connection for faster subsequent emails
+    maxConnections: 1,       // Prevents Gmail from blocking you for too many concurrent connections
+    maxMessages: 10,
+    connectionTimeout: 20000,// Tell Nodemailer not to panic if the connection takes a few seconds
+    socketTimeout: 20000,
+    
     logger: true,
     debug: true,
   } as any);
 };
-
 export const MailerService = {
   async send({ to, templateName, context, attachments = [] }: any) {
     console.log(`🚀 [Mailer] START: Initiating send to: ${to} for template: ${templateName}`);

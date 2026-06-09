@@ -240,4 +240,113 @@ router.post('/google', CoreService.catchAsync(async (req, res) => {
   });
 }));
 
+
+// ==========================================
+// RESET PASSWORD (Consumes resetToken from React)
+// ==========================================
+router.post('/reset-password', CoreService.catchAsync(async (req, res) => {
+  const { resetToken, code, newPassword } = req.body;
+
+  if (!resetToken || !code || !newPassword) {
+    return CoreService.error(res, 400, 'Missing required fields.');
+  }
+
+  let decoded: any;
+  try {
+    decoded = jwt.verify(resetToken, process.env.JWT_SECRET!);
+    if (decoded.intent !== 'PASSWORD_RESET') throw new Error('Invalid intent');
+  } catch (err) {
+    return CoreService.error(res, 400, 'Session expired or invalid. Please request a new code.');
+  }
+
+  const user = await prisma.user.findUnique({ where: { email: decoded.email } });
+  if (!user) {
+    return CoreService.error(res, 400, 'Invalid request.');
+  }
+
+  // 1. Look up the code in your VerificationCode table
+  const verificationRecord = await prisma.verificationCode.findFirst({
+    where: { 
+      userId: user.id,
+      code: code
+    }
+  });
+
+  if (!verificationRecord) {
+    return CoreService.error(res, 400, 'Invalid verification code.');
+  }
+
+  // 2. Check expiration
+  if (new Date() > verificationRecord.expiresAt) {
+    await prisma.verificationCode.delete({ where: { id: verificationRecord.id } });
+    return CoreService.error(res, 400, 'Verification code has expired. Please request a new one.');
+  }
+
+  // 3. Hash the new password
+  const passwordHash = await CoreService.hashPassword(newPassword);
+
+// 4. Update the User's password directly
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash }
+  });
+
+  // 5. Delete the VerificationCode directly
+  await prisma.verificationCode.delete({
+    where: { id: verificationRecord.id }
+  });
+
+  return CoreService.success(res, 200, 'Password has been successfully reset. You can now log in.');
+}));
+
+// ==========================================
+// FORGOT PASSWORD (Returns resetToken for React)
+// ==========================================
+router.post('/forgot-password', CoreService.catchAsync(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return CoreService.error(res, 400, 'Email is required.');
+  }
+
+  const normalizedEmail = CoreService.normalizeEmail(email);
+  const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+
+  // Anti-Enumeration Guard: Fake a success response if user doesn't exist
+  if (!user) {
+    const dummyToken = jwt.sign({ email: normalizedEmail, intent: 'PASSWORD_RESET' }, process.env.JWT_SECRET!, { expiresIn: '15m' });
+    return CoreService.success(res, 200, 'If an account exists with that email, a verification code has been sent.', {
+      resetToken: dummyToken
+    });
+  }
+
+  const otpCode = CoreService.generateOTP();
+
+  // 1. Clear out any old verification codes for this user
+  await prisma.verificationCode.deleteMany({
+    where: { userId: user.id }
+  });
+
+  // 2. Save the new code to your database (expires in 15 mins)
+  await prisma.verificationCode.create({
+    data: {
+      userId: user.id,
+      code: otpCode,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000) 
+    }
+  });
+
+  // 3. Create the resetToken that your React frontend is expecting
+  const resetToken = jwt.sign(
+    { email: user.email, intent: 'PASSWORD_RESET' }, 
+    process.env.JWT_SECRET!, 
+    { expiresIn: '15m' }
+  );
+
+  // 4. Send the email
+  await sendVerificationEmail(user.email, otpCode);
+
+  // Send the token back to the frontend!
+  return CoreService.success(res, 200, 'Password reset code sent. Please check your email.', { resetToken });
+}));
 export default router;
