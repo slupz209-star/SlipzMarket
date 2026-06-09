@@ -4,22 +4,23 @@ import { TemplateService } from './template.service.js';
 import { SettingsService } from './settings.service.js';
 
 const getTransporter = async () => {
-  // Use the new Retriever
   const settings = await SettingsService.get();
-
   const vars = (settings?.customVariables as any) || {};
 
-  // Add 'as any' at the end of the configuration object
+  // Default to 587 instead of 465
+  const port = Number(vars.SMTP_PORT || process.env.SMTP_PORT || 587);
+
   return nodemailer.createTransport({
     host: vars.SMTP_HOST || process.env.SMTP_HOST,
-    port: Number(vars.SMTP_PORT || process.env.SMTP_PORT || 465),
-    secure: true,
+    port: port,
+    // CRITICAL: secure MUST be true for 465, and MUST be false for 587 or 25
+    secure: port === 465, 
     auth: {
       user: vars.SMTP_USER || process.env.SMTP_USER,
       pass: vars.SMTP_PASS || process.env.SMTP_PASS,
     },
-    family: 4, 
-  } as any); 
+    family: 4, // Keep the IPv4 fix we added earlier
+  } as any);
 };
 
 export const MailerService = {
