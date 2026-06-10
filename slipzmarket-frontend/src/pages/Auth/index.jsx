@@ -563,8 +563,7 @@ const AuthComponent = () => {
 
   const handleInitialSubmit = async (e) => {
     e.preventDefault(); 
-    console.log("🚀 FORM SUBMIT TRIGGERED!"); 
-    console.log("Tab:", activeTab, "Data:", formData);
+    
 
     if (!formData.email || !formData.password) {
       return setError('Email and password are required.');

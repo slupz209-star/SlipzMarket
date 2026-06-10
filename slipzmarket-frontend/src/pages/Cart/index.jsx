@@ -11,8 +11,14 @@ import {
   getLocalCart, setLocalCart, removeFromLocalCart, clearLocalCart, hasPendingSync, clearPendingSync, markPendingSync 
 } from '../../utils/sessionCart';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_yourKeyHere');
+// Add a check to prevent falling back to a test key in production
+const publicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
+if (!publicKey && import.meta.env.MODE === 'production') {
+  console.error("CRITICAL: VITE_STRIPE_PUBLIC_KEY is not set in production!");
+}
+
+const stripePromise = loadStripe(publicKey || 'pk_test_placeholder_for_dev_only');
 // --- STRIPE CHECKOUT COMPONENT ---
 const CheckoutFormWrapper = ({ total, cartItems, billingDetails, isProcessing, setIsProcessing, showNotification, getAuthConfig, onSuccess }) => {
   const stripe = useStripe();
