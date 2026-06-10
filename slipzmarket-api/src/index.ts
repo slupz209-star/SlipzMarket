@@ -60,11 +60,11 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
+app.use('/api/webhooks', webhookRoutes); 
 // Increase JSON limit slightly to prevent payload-too-large crashes
 app.use(express.json({ limit: '10mb' }));
 
 // 4. API Routes (Must be declared BEFORE the static frontend files)
-app.use('/api/webhooks', webhookRoutes); 
 app.use('/api/auth', authRoutes);
 app.use('/api/packages', packagesRoutes);
 app.use('/api/cart', cartRoutes);
