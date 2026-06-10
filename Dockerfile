@@ -6,7 +6,11 @@ WORKDIR /app/frontend
 
 # Set a default value so the build doesn't fail if the arg is missing
 ARG VITE_API_URL=https://slipz-market-2.onrender.com/api
+ARG VITE_STRIPE_PUBLISHABLE_KEY
+
 ENV VITE_API_URL=$VITE_API_URL
+
+ENV VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY
 
 COPY slipzmarket-frontend/package*.json ./
 RUN npm ci
