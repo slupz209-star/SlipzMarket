@@ -14,10 +14,12 @@ import {
 // Add a check to prevent falling back to a test key in production
 const publicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
-if (!publicKey && import.meta.env.MODE === 'production') {
-  console.error("CRITICAL: VITE_STRIPE_PUBLIC_KEY is not set in production!");
+// 1. If it's production and the key is missing, stop EVERYTHING.
+if (import.meta.env.MODE === 'production' && !publicKey) {
+  throw new Error("FATAL: VITE_STRIPE_PUBLIC_KEY is not defined. Production build aborted.");
 }
 
+// 2. Only use the placeholder if we are clearly in development
 const stripePromise = loadStripe(publicKey || 'pk_test_placeholder_for_dev_only');
 // --- STRIPE CHECKOUT COMPONENT ---
 const CheckoutFormWrapper = ({ total, cartItems, billingDetails, isProcessing, setIsProcessing, showNotification, getAuthConfig, onSuccess }) => {
