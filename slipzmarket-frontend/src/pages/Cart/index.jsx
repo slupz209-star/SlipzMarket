@@ -11,16 +11,8 @@ import {
   getLocalCart, setLocalCart, removeFromLocalCart, clearLocalCart, hasPendingSync, clearPendingSync, markPendingSync 
 } from '../../utils/sessionCart';
 
-// Add a check to prevent falling back to a test key in production
-const publicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51SkAhUJM01er9jY0Yl79J9GYq1UeUj4QMc3I7BmfD5PLM4YhERRB201LrycBxhlCtxhItey3K1zyi8D6o0ZbXTzE00iSrcHpTL');
 
-// 1. If it's production and the key is missing, stop EVERYTHING.
-if (import.meta.env.MODE === 'production' && !publicKey) {
-  throw new Error("FATAL: VITE_STRIPE_PUBLIC_KEY is not defined. Production build aborted.");
-}
-
-// 2. Only use the placeholder if we are clearly in development
-const stripePromise = loadStripe(publicKey || 'pk_test_placeholder_for_dev_only');
 // --- STRIPE CHECKOUT COMPONENT ---
 const CheckoutFormWrapper = ({ total, cartItems, billingDetails, isProcessing, setIsProcessing, showNotification, getAuthConfig, onSuccess }) => {
   const stripe = useStripe();
