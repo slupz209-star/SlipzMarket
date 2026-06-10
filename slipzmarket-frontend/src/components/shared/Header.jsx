@@ -28,7 +28,7 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 
 // Initialize Stripe outside of the component to avoid recreating the object on every render
 // Make sure you have VITE_STRIPE_PUBLISHABLE_KEY in your .env file
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51SkAhUJM01er9jY0Yl79J9GYq1UeUj4QMc3I7BmfD5PLM4YhERRB201LrycBxhlCtxhItey3K1zyi8D6o0ZbXTzE00iSrcHpTL');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test');
 
 const LANGUAGE_OPTIONS = [
   { code: 'en', label: 'English (UK)' },
