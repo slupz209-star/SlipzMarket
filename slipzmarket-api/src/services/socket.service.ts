@@ -2,111 +2,92 @@ import { Server as SocketIOServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import jwt from 'jsonwebtoken';
 
-let io: SocketIOServer;
+// Use a private variable to track the instance
+let ioInstance: SocketIOServer | null = null;
 
 export const SocketService = {
+  // Use a getter to access the instance safely
+  get io() {
+    if (!ioInstance) {
+      throw new Error('Socket.io is not initialized! Ensure SocketService.init(server) is called.');
+    }
+    return ioInstance;
+  },
+
   init(server: HttpServer) {
-    io = new SocketIOServer(server, {
+    ioInstance = new SocketIOServer(server, {
+      path: '/socket.io/', // Explicitly set path for Nginx proxy compatibility
       cors: {
-        // Ensure these match your actual frontend URLs (including Render domains if deployed)
         origin: [
-          'http://localhost:3000', 
+          'http://localhost:3000',
           'http://localhost:5173',
           'https://slipz-market-1.onrender.com',
-          'https://slipz-market-2.onrender.com'
+          'https://slipz-market-2.onrender.com',
+          'https://slipzmarket.com'
         ],
         methods: ['GET', 'POST'],
         credentials: true
-      }
+      },
+      transports: ['websocket', 'polling'] // Ensures reliability behind proxies
     });
 
-    // MIDDLEWARE: Validate connection using the token passed from frontend
-    io.use((socket, next) => {
+    // MIDDLEWARE: Validate connection
+    ioInstance.use((socket, next) => {
       const token = socket.handshake.auth.token;
       if (!token) return next(new Error("Unauthorized: No token provided"));
       
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-        (socket as any).user = decoded; // Attach user info to socket
+        (socket as any).user = decoded;
         next();
       } catch (err) {
         next(new Error("Unauthorized: Invalid token"));
       }
     });
 
-    io.on('connection', (socket) => {
-      const userId = (socket as any).user.userId;
-      const userRole = (socket as any).user.role;
-      
-      console.log(`🔌 New client connected: ${socket.id} (User: ${userId})`);
+    ioInstance.on('connection', (socket) => {
+      const user = (socket as any).user;
+      console.log(`🔌 New client connected: ${socket.id} (User: ${user.userId})`);
 
-      // ==========================================
-      // 🟢 1. GLOBAL USER ROOM (Crucial for Notifications)
-      // Every user auto-joins a room based on their ID.
-      // This allows NotificationService to target them anywhere in the app.
-      // ==========================================
-      socket.join(`user_${userId}`);
-      console.log(`📡 User ${userId} joined their global notification room: user_${userId}`);
+      // 1. Join Global Room
+      socket.join(`user_${user.userId}`);
 
-      // ==========================================
-      // 2. ADMIN SUPPORT ROOM
-      // ==========================================
+      // 2. Admin Room
       socket.on('join_admin_room', () => {
-        if (userRole === 'ADMIN') {
-          socket.join('admin_room'); 
-          console.log(`🛡️ Admin ${userId} joined support room`);
+        if (user.role === 'ADMIN') {
+          socket.join('admin_room');
+          console.log(`🛡️ Admin ${user.userId} joined support room`);
         }
       });
 
-      // ==========================================
-      // 3. PRIVATE CHAT SESSION ROOM
-      // ==========================================
+      // 3. Private Session
       socket.on('join_user_session', (sessionId: string) => {
         socket.join(`session_${sessionId}`);
-        console.log(`👤 User joined private chat room: session_${sessionId}`);
       });
 
       socket.on('disconnect', () => {
-        console.log(`🔌 Client disconnected: ${socket.id} (User: ${userId})`);
+        console.log(`🔌 Client disconnected: ${socket.id}`);
       });
     });
 
-    return io;
+    return ioInstance;
   },
 
-  // ==========================================
-  // 🟢 NEW: Emit directly to a specific user (Used by NotificationService)
-  // ==========================================
+  // Helpers now use the safe getter
   emitToUser(userId: string, eventName: string, payload: any) {
-    if (io) {
-      io.to(`user_${userId}`).emit(eventName, payload);
-    } else {
-      console.error('Socket.io is not initialized! Cannot emit to user.');
-    }
+    this.io.to(`user_${userId}`).emit(eventName, payload);
   },
 
-  // Sends an event to all connected admin dashboards (Used by Chat/Support)
   notifyAdmins(eventName: string, payload: any) {
-    if (io) {
-      io.to('admin_room').emit(eventName, payload); 
-    } else {
-      console.error('Socket.io is not initialized! Cannot notify admins.');
-    }
+    this.io.to('admin_room').emit(eventName, payload);
   },
 
-  // Returns true if any socket is currently joined to the named room
-  roomHasMembers(roomName: string) {
-    if (!io) return false;
-    const room = io.sockets.adapter.rooms.get(roomName);
-    return !!room && room.size > 0;
-  },
-
-  // Notify a specific user in their private chat session room
   notifyUser(sessionId: string, eventName: string, payload: any) {
-    if (io) {
-      io.to(`session_${sessionId}`).emit(eventName, payload);
-    } else {
-      console.error('Socket.io is not initialized! Cannot notify chat session.');
-    }
+    this.io.to(`session_${sessionId}`).emit(eventName, payload);
+  },
+
+  roomHasMembers(roomName: string): boolean {
+    const room = this.io.sockets.adapter.rooms.get(roomName);
+    return !!room && room.size > 0;
   }
 };
