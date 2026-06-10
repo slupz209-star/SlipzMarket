@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import express from 'express';
-import { stripe } from '../services/stripe.service';
+import { getStripeInstance } from '../services/stripe.service';
 import { CheckoutService } from '../services/checkout.service';
 import { PDFGenerator } from '../services/pdf.service';
 import { MailerService } from '../services/mailer.service';
@@ -19,9 +19,20 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req: Re
     return res.status(400).send('Missing Stripe signature');
   }
 
-  let event;
+let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+    // 1. Get dynamic Stripe instance from the database
+    const { stripe } = await getStripeInstance();
+    
+    // 2. Use the environment variable for the secret
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    if (!webhookSecret) {
+      throw new Error('STRIPE_WEBHOOK_SECRET is not defined in environment variables.');
+    }
+
+    // 3. Construct event
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (err: any) {
     console.error(`❌ Webhook signature verification failed: ${err.message}`);
     return res.status(400).send(`Webhook Error: ${err.message}`);
