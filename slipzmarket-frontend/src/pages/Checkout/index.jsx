@@ -1,257 +1,257 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  ShieldCheck, Lock, CreditCard, ArrowLeft, 
-  CheckCircle2, Download, Mail, Phone,
-  Building2, User, MailOpen, MapPin, Activity
+ ShieldCheck, Lock, CreditCard, ArrowLeft, 
+ CheckCircle2, Download, Mail, Phone,
+ Building2, User, MailOpen, MapPin, Activity
 } from 'lucide-react';
 
 // --- MOCK CHECKOUT DATA ---
 const SUMMARY_ITEMS = [
-  { id: 'EML-1000', brand: '1,000 Enterprise SaaS Founders', category: 'Email Leads', price: 225.00, qty: 1 },
-  { id: 'PHN-400', brand: '400 NA Fintech Executives', category: 'Direct Dial Phone', price: 200.00, qty: 1 }
+ { id: 'EML-1000', brand: '1,000 Enterprise SaaS Founders', category: 'Email Leads', price: 225.00, qty: 1 },
+ { id: 'PHN-400', brand: '400 NA Fintech Executives', category: 'Direct Dial Phone', price: 200.00, qty: 1 }
 ];
 
 const Checkout = () => {
-  const { t } = useTranslation();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+ const { t } = useTranslation();
+ const [isProcessing, setIsProcessing] = useState(false);
+ const [isSuccess, setIsSuccess] = useState(false);
 
-  // --- CALCULATIONS ---
-  const subtotal = SUMMARY_ITEMS.reduce((acc, item) => acc + (item.price * item.qty), 0);
-  const processingFee = 4.50; // Secure delivery & compliance fee
-  const total = subtotal + processingFee;
+ // --- CALCULATIONS ---
+ const subtotal = SUMMARY_ITEMS.reduce((acc, item) => acc + (item.price * item.qty), 0);
+ const processingFee = 4.50; // Secure delivery & compliance fee
+ const total = subtotal + processingFee;
 
-  // --- HANDLERS ---
-  const handleCheckout = (e) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    
-    // Simulate secure API call and payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsSuccess(true);
-    }, 2500);
-  };
+ // --- HANDLERS ---
+ const handleCheckout = (e) => {
+ e.preventDefault();
+ setIsProcessing(true);
+ 
+ // Simulate secure API call and payment processing
+ setTimeout(() => {
+ setIsProcessing(false);
+ setIsSuccess(true);
+ }, 2500);
+ };
 
-  // --- SUCCESS STATE (POST-PURCHASE VIEW) ---
-  if (isSuccess) {
-    return (
-      <div className="animate-fade-in flex flex-col items-center justify-center h-full min-h-[80vh] font-sans pb-16 bg-[#f5efe6]" style={{ zoom: '1.22' }}>
-        <div className="overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg p-7 md:p-12 shadow-xl shadow-[#3b2a23]/10 max-w-full md:max-w-2xl w-full text-center flex flex-col items-center relative overflow-hidden">
-          
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-emerald-600" />
-          
-          <div className="w-16 md:w-18 h-18 bg-emerald-50 rounded-full flex items-center justify-center mb-6 border border-emerald-100 shadow-sm">
-            <CheckCircle2 size={21} className="text-emerald-600" />
-          </div>
-          
-          <h1 className="truncate text-xs md:text-xs font-bold tracking-tight break-words text-[#3b2a23] mb-2">Payment Successful</h1>
-          <p className="truncate text-[#8b6f5a] font-medium mb-8 sm:text-xs md:text-xs lg:text-xs">Invoice <span className="truncate font-sans font-bold break-words text-[#3b2a23]">#INV-2026-090</span> has been processed. A receipt has been sent to your billing email.</p>
-          
-          <div className="truncate w-full bg-[#faf6f0] border border-[#d6c9b8] rounded-lg p-6 mb-8 text-left shadow-inner">
-            <h3 className="truncate sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest mb-4 flex flex-col sm:flex-row items-center gap-2">
-              <Activity size={16} className="truncate text-[#8b6f5a]" /> Datasets Ready for Export
-            </h3>
-            <div className="truncate space-y-3">
-              {SUMMARY_ITEMS.map(item => (
-                <div className="truncate flex flex-col sm:flex-row sm:items-center justify-between overflow-x-auto bg-white border border-[#d6c9b8] p-4 rounded-lg shadow-sm gap-2">
-                  <div className="truncate flex flex-col sm:flex-row items-center gap-2">
-                    <div className="truncate w-6 h-6 bg-[#faf6f0] border border-[#d6c9b8] rounded-lg flex items-center justify-center shrink-0">
-                      {item.category === 'Email & Password' ? <Lock size={16} className="truncate text-[#8b6f5a]" /> : item.category === 'Email Leads' ? <Mail size={16} className="truncate text-[#8b6f5a]" /> : <Phone size={16} className="truncate text-[#8b6f5a]" />}
-                    </div>
-                    <div>
-                      <p className="truncate sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23]">{item.brand}</p>
-                      <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] font-sans uppercase mt-0.5">CSV / Excel Format</p>
-                    </div>
-                  </div>
-                  <button className="sm:text-xs md:text-sm lg:text-sm font-bold text-white bg-[#8b6f5a] hover:bg-[#6c5544] px-2 py-2 rounded-md shadow-sm transition-colors flex items-center justify-center gap-2 w-full sm:w-auto">
-                    <Download size={16} /> Download
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <button onClick={() => window.location.reload()} className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#8b6f5a] hover:break-words text-[#3b2a23] transition-colors flex flex-col sm:flex-row items-center gap-2">
-            <ArrowLeft size={16} /> Back to Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
+ // --- SUCCESS STATE (POST-PURCHASE VIEW) ---
+ if (isSuccess) {
+ return (
+ <div className="animate-fade-in flex flex-col items-center justify-center h-full min-h-[80vh] font-sans pb-16 bg-[#f5efe6]" style={{ zoom: '1.22' }}>
+ <div className="overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg p-7 md:p-12 shadow-xl shadow-[#3b2a23]/10 max-w-full md:max-w-2xl w-full text-center flex flex-col items-center relative overflow-hidden">
+ 
+ <div className="absolute top-0 left-0 right-0 h-1.5 bg-emerald-600" />
+ 
+ <div className="w-16 md:w-18 h-18 bg-emerald-50 rounded-full flex items-center justify-center mb-6 border border-emerald-100 shadow-sm">
+ <CheckCircle2 size={21} className="text-emerald-600" />
+ </div>
+ 
+ <h1 className="text-xs md:text-xs font-bold tracking-tight break-words text-[#3b2a23] mb-2">Payment Successful</h1>
+ <p className="text-[#8b6f5a] font-medium mb-8 sm:text-xs md:text-xs lg:text-xs">Invoice <span className="font-sans font-bold break-words text-[#3b2a23]">#INV-2026-090</span> has been processed. A receipt has been sent to your billing email.</p>
+ 
+ <div className="w-full bg-[#faf6f0] border border-[#d6c9b8] rounded-lg p-6 mb-8 text-left shadow-inner">
+ <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest mb-4 flex flex-col sm:flex-row items-center gap-2">
+ <Activity size={16} className="text-[#8b6f5a]" /> Datasets Ready for Export
+ </h3>
+ <div className="space-y-3">
+ {SUMMARY_ITEMS.map(item => (
+ <div className="flex flex-col sm:flex-row sm:items-center justify-between overflow-x-auto bg-white border border-[#d6c9b8] p-4 rounded-lg shadow-sm gap-2">
+ <div className="flex flex-col sm:flex-row items-center gap-2">
+ <div className="w-6 h-6 bg-[#faf6f0] border border-[#d6c9b8] rounded-lg flex items-center justify-center shrink-0">
+ {item.category === 'Email & Password' ? <Lock size={16} className="text-[#8b6f5a]" /> : item.category === 'Email Leads' ? <Mail size={16} className="text-[#8b6f5a]" /> : <Phone size={16} className="text-[#8b6f5a]" />}
+ </div>
+ <div>
+ <p className="sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23]">{item.brand}</p>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] font-sans uppercase mt-0.5">CSV / Excel Format</p>
+ </div>
+ </div>
+ <button className="sm:text-xs md:text-sm lg:text-sm font-bold text-white bg-[#8b6f5a] hover:bg-[#6c5544] px-2 py-2 rounded-md shadow-sm transition-colors flex items-center justify-center gap-2 w-full sm:w-auto">
+ <Download size={16} /> Download
+ </button>
+ </div>
+ ))}
+ </div>
+ </div>
+ 
+ <button onClick={() => window.location.reload()} className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#8b6f5a] hover:break-words text-[#3b2a23] transition-colors flex flex-col sm:flex-row items-center gap-2">
+ <ArrowLeft size={16} /> Back to Dashboard
+ </button>
+ </div>
+ </div>
+ );
+ }
 
-  // --- CHECKOUT FORM VIEW ---
-  return (
-    <div className="animate-fade-in flex flex-col h-full min-h-screen bg-[#f5efe6] font-sans pb-16 selection:bg-[#8b6f5a] selection:text-white" style={{ zoom: '1.22' }}>
-      
-      {/* --- HEADER --- */}
-      <div className="px-0 py-7 w-full">
-        <button className="flex flex-col sm:flex-row items-center gap-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] hover:break-words text-[#3b2a23] transition-colors w-fit mb-6">
-          <ArrowLeft size={16} /> Back to Cart
-        </button>
-        
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-2">
-          <div>
-            <h1 className="truncate text-xs md:text-xs font-bold tracking-tight break-words text-[#3b2a23]" style={{ fontSize: '78%' }}>
-              {t('checkoutTitle')}
-            </h1>
-            <p className="truncate sm:text-xs md:text-xs lg:text-xs font-medium text-[#8b6f5a] mt-1">{t('checkoutSubtitle')}</p>
-          </div>
-        </div>
-      </div>
+ // --- CHECKOUT FORM VIEW ---
+ return (
+ <div className="animate-fade-in flex flex-col h-full min-h-screen bg-[#f5efe6] font-sans pb-16 selection:bg-[#8b6f5a] selection:text-white" style={{ zoom: '1.22' }}>
+ 
+ {/* --- HEADER --- */}
+ <div className="px-0 py-7 w-full">
+ <button className="flex flex-col sm:flex-row items-center gap-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] hover:break-words text-[#3b2a23] transition-colors w-fit mb-6">
+ <ArrowLeft size={16} /> Back to Cart
+ </button>
+ 
+ <div className="flex flex-col md:flex-row md:items-end justify-between gap-2">
+ <div>
+ <h1 className="text-xs md:text-xs font-bold tracking-tight break-words text-[#3b2a23]" style={{ fontSize: '78%' }}>
+ {t('checkoutTitle')}
+ </h1>
+ <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#8b6f5a] mt-1">{t('checkoutSubtitle')}</p>
+ </div>
+ </div>
+ </div>
 
-      {/* --- CHECKOUT LAYOUT --- */}
-      <div className="truncate grid md:grid-cols-1 grid-cols-1 lg:grid-cols-12 gap-3 md:gap-3 md:gap-6 px-0 w-full items-start">
-        
-        {/* LEFT COLUMN: Checkout Forms */}
-        <div className="truncate lg:col-span-7 flex flex-col gap-2">
-          <form id="checkout-form" onSubmit={handleCheckout} className="truncate flex flex-col gap-2">
-            
-            {/* 1. Billing Info Panel */}
-            <div className="truncate overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg shadow-sm overflow-hidden">
-              <div className="truncate flex flex-col sm:flex-row items-center gap-2 px-3 py-2 bg-[#faf6f0] border-b border-[#d6c9b8]">
-                <div className="truncate w-6 h-6 bg-[#3b2a23] text-white rounded-full flex items-center justify-center sm:text-xs md:text-xs lg:text-xs font-bold">1</div>
-                <h2 className="truncate sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23]">Billing Information</h2>
-              </div>
-              
-              <div className="truncate p-6 grid md:grid-cols-1 grid-cols-1 md:grid-cols-2 gap-3 md:gap-3 md:gap-6">
-                <div className="truncate flex flex-col gap-1.5">
-                  <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><User size={16}/> First Name</label>
-                  <input type="text" required placeholder="Alex" className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                </div>
-                <div className="truncate flex flex-col gap-1.5">
-                  <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><User size={16}/> Last Name</label>
-                  <input type="text" required placeholder="Doe" className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                </div>
-                <div className="truncate flex flex-col gap-1.5 md:col-span-2">
-                  <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><Building2 size={16}/> Company Name</label>
-                  <input type="text" required placeholder="Acme Corp Ltd." className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                </div>
-                <div className="truncate flex flex-col gap-1.5 md:col-span-2">
-                  <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><MailOpen size={16}/> Billing Email</label>
-                  <input type="email" required placeholder="billing@acmecorp.com" className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                </div>
-                <div className="truncate flex flex-col gap-1.5 md:col-span-2">
-                  <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><MapPin size={16}/> Billing Region</label>
-                  <select className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all">
-                    <option>United Kingdom</option>
-                    <option>United States</option>
-                    <option>European Union</option>
-                    <option>Canada</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+ {/* --- CHECKOUT LAYOUT --- */}
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-6 px-0 w-full items-start">
+ 
+ {/* LEFT COLUMN: Checkout Forms */}
+ <div className="lg:col-span-7 flex flex-col gap-2">
+ <form id="checkout-form" onSubmit={handleCheckout} className="flex flex-col gap-2">
+ 
+ {/* 1. Billing Info Panel */}
+ <div className="overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg shadow-sm overflow-hidden">
+ <div className="flex flex-col sm:flex-row items-center gap-2 px-3 py-2 bg-[#faf6f0] border-b border-[#d6c9b8]">
+ <div className="w-6 h-6 bg-[#3b2a23] text-white rounded-full flex items-center justify-center sm:text-xs md:text-xs lg:text-xs font-bold">1</div>
+ <h2 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23]">Billing Information</h2>
+ </div>
+ 
+ <div className="p-6 grid grid-cols-1 md:grid-cols-2 md:grid-cols-2 gap-3 md:gap-6">
+ <div className="flex flex-col gap-1.5">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><User size={16}/> First Name</label>
+ <input type="text" required placeholder="Alex" className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ </div>
+ <div className="flex flex-col gap-1.5">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><User size={16}/> Last Name</label>
+ <input type="text" required placeholder="Doe" className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ </div>
+ <div className="flex flex-col gap-1.5 md:col-span-2">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><Building2 size={16}/> Company Name</label>
+ <input type="text" required placeholder="Acme Corp Ltd." className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ </div>
+ <div className="flex flex-col gap-1.5 md:col-span-2">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><MailOpen size={16}/> Billing Email</label>
+ <input type="email" required placeholder="billing@acmecorp.com" className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ </div>
+ <div className="flex flex-col gap-1.5 md:col-span-2">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><MapPin size={16}/> Billing Region</label>
+ <select className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all">
+ <option>United Kingdom</option>
+ <option>United States</option>
+ <option>European Union</option>
+ <option>Canada</option>
+ </select>
+ </div>
+ </div>
+ </div>
 
-            {/* 2. Payment Info Panel */}
-            <div className="truncate overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg shadow-sm overflow-hidden mb-8">
-              <div className="truncate flex items-center justify-between px-3 py-2 bg-[#faf6f0] border-b border-[#d6c9b8]">
-                <div className="truncate flex flex-col sm:flex-row items-center gap-2">
-                  <div className="truncate w-6 h-6 bg-[#3b2a23] text-white rounded-full flex items-center justify-center sm:text-xs md:text-xs lg:text-xs font-bold">2</div>
-                  <h2 className="truncate sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23]">Payment Details</h2>
-                </div>
-                <Lock size={16} className="truncate text-[#8b6f5a]" />
-              </div>
-              
-              <div className="truncate p-6 flex flex-col gap-3 md:gap-3 md:gap-6">
-                <div className="truncate flex flex-col gap-1.5">
-                  <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><CreditCard size={16}/> Card Number</label>
-                  <div className="truncate relative">
-                    <input type="text" required placeholder="0000 0000 0000 0000" maxLength="19" className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg pl-4 pr-12 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Card" className="truncate absolute right-3 top-1/2 -translate-y-1/2 h-4 opacity-70" />
-                  </div>
-                </div>
+ {/* 2. Payment Info Panel */}
+ <div className="overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg shadow-sm overflow-hidden mb-8">
+ <div className="flex items-center justify-between px-3 py-2 bg-[#faf6f0] border-b border-[#d6c9b8]">
+ <div className="flex flex-col sm:flex-row items-center gap-2">
+ <div className="w-6 h-6 bg-[#3b2a23] text-white rounded-full flex items-center justify-center sm:text-xs md:text-xs lg:text-xs font-bold">2</div>
+ <h2 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23]">Payment Details</h2>
+ </div>
+ <Lock size={16} className="text-[#8b6f5a]" />
+ </div>
+ 
+ <div className="p-6 flex flex-col gap-3 md:gap-6">
+ <div className="flex flex-col gap-1.5">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider flex flex-col sm:flex-row items-center gap-1.5"><CreditCard size={16}/> Card Number</label>
+ <div className="relative">
+ <input type="text" required placeholder="0000 0000 0000 0000" maxLength="19" className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-4 pr-12 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Card" className="absolute right-3 top-1/2 -translate-y-1/2 h-4 opacity-70" />
+ </div>
+ </div>
 
-                <div className="truncate grid md:grid-cols-2 grid-cols-1 gap-3 md:gap-3 md:gap-6">
-                  <div className="truncate flex flex-col gap-1.5">
-                    <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider">Expiry (MM/YY)</label>
-                    <input type="text" required placeholder="12/28" maxLength="5" className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                  </div>
-                  <div className="truncate flex flex-col gap-1.5">
-                    <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider">CVC</label>
-                    <input type="text" required placeholder="123" maxLength="4" className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                  </div>
-                </div>
+ <div className="grid md:grid-cols-2 grid-cols-1 gap-3 md:gap-6">
+ <div className="flex flex-col gap-1.5">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider">Expiry (MM/YY)</label>
+ <input type="text" required placeholder="12/28" maxLength="5" className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ </div>
+ <div className="flex flex-col gap-1.5">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider">CVC</label>
+ <input type="text" required placeholder="123" maxLength="4" className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ </div>
+ </div>
 
-                <div className="truncate flex flex-col gap-1.5">
-                  <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider">Name on Card</label>
-                  <input type="text" required placeholder="ALEX DOE" className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold uppercase break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
-                </div>
-              </div>
-            </div>
-            
-          </form>
-        </div>
+ <div className="flex flex-col gap-1.5">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-wider">Name on Card</label>
+ <input type="text" required placeholder="ALEX DOE" className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold uppercase  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] transition-all" />
+ </div>
+ </div>
+ </div>
+ 
+ </form>
+ </div>
 
-        {/* RIGHT COLUMN: Order Summary (Sticky) */}
-        <div className="truncate lg:col-span-5 sticky top-7">
-          <div className="truncate overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg p-6 shadow-xl shadow-[#3b2a23]/5 flex flex-col relative overflow-hidden">
-            
-            <h3 className="truncate text-xs md:text-xs font-bold break-words text-[#3b2a23] mb-5 border-b border-[#d6c9b8] pb-4">{t('orderSummary')}</h3>
+ {/* RIGHT COLUMN: Order Summary (Sticky) */}
+ <div className="lg:col-span-5 sticky top-7">
+ <div className="overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg p-6 shadow-xl shadow-[#3b2a23]/5 flex flex-col relative overflow-hidden">
+ 
+ <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] mb-5 border-b border-[#d6c9b8] pb-4">{t('orderSummary')}</h3>
 
-            {/* Read-only Cart Items */}
-            <div className="truncate flex flex-col gap-2 mb-6 pb-6 border-b border-[#d6c9b8]/50 border-dashed">
-              {SUMMARY_ITEMS.map((item) => (
-                <div key={item.id} className="truncate flex justify-between items-start gap-2">
-                  <div className="truncate flex flex-col">
-                    <p className="truncate sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] leading-tight">{item.brand}</p>
-                    <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#8b6f5a] mt-0.5">Quantity: {item.qty}</p>
-                  </div>
-                  <p className="sm:text-xs md:text-xs lg:text-xs font-bold font-sans break-words text-[#3b2a23]">�{(item.price * item.qty).toFixed(2)}</p>
-                </div>
-              ))}
-            </div>
+ {/* Read-only Cart Items */}
+ <div className="flex flex-col gap-2 mb-6 pb-6 border-b border-[#d6c9b8]/50 border-dashed">
+ {SUMMARY_ITEMS.map((item) => (
+ <div key={item.id} className="flex justify-between items-start gap-2">
+ <div className="flex flex-col">
+ <p className="sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] leading-tight">{item.brand}</p>
+ <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#8b6f5a] mt-0.5">Quantity: {item.qty}</p>
+ </div>
+ <p className="sm:text-xs md:text-xs lg:text-xs font-bold font-sans break-words text-[#3b2a23]">�{(item.price * item.qty).toFixed(2)}</p>
+ </div>
+ ))}
+ </div>
 
-            {/* Ledger Breakdown */}
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between items-center sm:text-xs md:text-xs lg:text-xs">
-                <span className="text-[#8b6f5a] font-bold">Subtotal</span>
-                <span className="break-words text-[#3b2a23] font-bold font-sans">�{subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center sm:text-xs md:text-xs lg:text-xs">
-                <span className="text-[#8b6f5a] font-bold">Data Processing Fee</span>
-                <span className="break-words text-[#3b2a23] font-bold font-sans">�{processingFee.toFixed(2)}</span>
-              </div>
-            </div>
+ {/* Ledger Breakdown */}
+ <div className="space-y-3 mb-6">
+ <div className="flex justify-between items-center sm:text-xs md:text-xs lg:text-xs">
+ <span className="text-[#8b6f5a] font-bold">Subtotal</span>
+ <span className="break-words text-[#3b2a23] font-bold font-sans">�{subtotal.toFixed(2)}</span>
+ </div>
+ <div className="flex justify-between items-center sm:text-xs md:text-xs lg:text-xs">
+ <span className="text-[#8b6f5a] font-bold">Data Processing Fee</span>
+ <span className="break-words text-[#3b2a23] font-bold font-sans">�{processingFee.toFixed(2)}</span>
+ </div>
+ </div>
 
-            {/* Total Calculation */}
-            <div className="bg-[#faf6f0] border border-[#d6c9b8] rounded-lg p-6 mb-6 shadow-inner">
-              <div className="flex justify-between items-center">
-                <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#8b6f5a] uppercase tracking-widest">Total Due</span>
-                <p className="text-xs font-black font-sans break-words text-[#3b2a23] tracking-tighter">�{total.toFixed(2)}</p>
-              </div>
-            </div>
+ {/* Total Calculation */}
+ <div className="bg-[#faf6f0] border border-[#d6c9b8] rounded-lg p-6 mb-6 shadow-inner">
+ <div className="flex justify-between items-center">
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#8b6f5a] uppercase tracking-widest">Total Due</span>
+ <p className="text-xs font-black font-sans break-words text-[#3b2a23] tracking-tighter">�{total.toFixed(2)}</p>
+ </div>
+ </div>
 
-            {/* Submit Action Button */}
-            <button 
-              type="submit"
-              form="checkout-form"
-              disabled={isProcessing}
-              className="w-full bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold uppercase tracking-widest transition-all shadow-xs flex justify-center items-center gap-2 group disabled:opacity-70"
-            >
-              {isProcessing ? (
-                <span className="flex flex-col sm:flex-row items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Authorizing...
-                </span>
-              ) : (
-                <span className="flex flex-col sm:flex-row items-center gap-2">
-                  <Lock size={16} /> Pay Securely �{total.toFixed(2)}
-                </span>
-              )}
-            </button>
+ {/* Submit Action Button */}
+ <button 
+ type="submit"
+ form="checkout-form"
+ disabled={isProcessing}
+ className="w-full bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold uppercase tracking-widest transition-all shadow-xs flex justify-center items-center gap-2 group disabled:opacity-70"
+ >
+ {isProcessing ? (
+ <span className="flex flex-col sm:flex-row items-center gap-2">
+ <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Authorizing...
+ </span>
+ ) : (
+ <span className="flex flex-col sm:flex-row items-center gap-2">
+ <Lock size={16} /> Pay Securely �{total.toFixed(2)}
+ </span>
+ )}
+ </button>
 
-            {/* Trust Indicators */}
-            <div className="flex justify-center items-center gap-3 md:gap-3 md:gap-6 text-xs font-bold uppercase tracking-widest text-[#8b6f5a] mt-6">
-              <span className="flex flex-col sm:flex-row items-center gap-1.5"><Lock size={16} /> 256-Bit SSL Encryption</span>
-              <span className="flex flex-col sm:flex-row items-center gap-1.5"><ShieldCheck size={16} className="text-emerald-600" /> PCI Compliant</span>
-            </div>
-            
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+ {/* Trust Indicators */}
+ <div className="flex justify-center items-center gap-3 md:gap-6 text-xs font-bold uppercase tracking-widest text-[#8b6f5a] mt-6">
+ <span className="flex flex-col sm:flex-row items-center gap-1.5"><Lock size={16} /> 256-Bit SSL Encryption</span>
+ <span className="flex flex-col sm:flex-row items-center gap-1.5"><ShieldCheck size={16} className="text-emerald-600" /> PCI Compliant</span>
+ </div>
+ 
+ </div>
+ </div>
+ </div>
+ </div>
+ );
 };
 
 export default Checkout;

@@ -167,7 +167,7 @@ const finalizeSave = async () => {
 
   // --- RENDERERS ---
   const renderGeneralSettings = () => (
-    <div className="animate-in fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-in fade-in flex flex-col gap-3 md:gap-6">
         <div className="flex flex-col gap-2 border-b border-theme pb-4">
           <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-primary flex flex-col sm:flex-row items-center gap-2">
             <Globe size={16} className="text-accent" /> General Branding
@@ -175,7 +175,7 @@ const finalizeSave = async () => {
           <p className="sm:text-xs md:text-xs lg:text-xs text-muted font-medium">Update the core identity, visual aesthetics, and global states.</p>
       </div>
 
-      <div className="grid md:grid-cols-1 grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-2 gap-2">
         <div className="flex flex-col gap-2">
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-muted uppercase tracking-widest">Platform Name</label>
           <input 
@@ -208,7 +208,7 @@ const finalizeSave = async () => {
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest flex flex-col sm:flex-row items-center gap-1.5"><ImageIcon size={16}/> Logo URL (Remote)</label>
           <input 
             type="url" value={config.logoUrl} onChange={(e) => handleChange('logoUrl', e.target.value)} placeholder="https://..."
-            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all"
+            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all"
           />
         </div>
 
@@ -241,7 +241,7 @@ const finalizeSave = async () => {
   );
 
   const renderAdvancedSettings = () => (
-    <div className="animate-in fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-in fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-2 border-b border-[#d6c9b8] pb-4">
         <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <Code size={16} className="text-[#800000]" /> Dynamic Variables
@@ -260,12 +260,12 @@ const finalizeSave = async () => {
               <input 
                 type="text" placeholder="Variable Key (e.g., maxCartItems)" value={variable.key}
                 onChange={(e) => updateVariable(index, 'key', e.target.value)}
-                className="w-full sm:w-1/3 bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold break-words text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1"
+                className="w-full sm:w-1/3 bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans font-bold  text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1"
               />
               <input 
                 type="text" placeholder="Value" value={variable.value}
                 onChange={(e) => updateVariable(index, 'value', e.target.value)}
-                className="w-full sm:flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1"
+                className="w-full sm:flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1"
               />
               <button 
                 type="button" onClick={() => removeVariable(index)}
@@ -292,7 +292,7 @@ const renderPaymentSettings = () => {
 
 
   return (
-    <div className="animate-in fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-in fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-2 border-b border-[#d6c9b8] pb-4">
         <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <CreditCard size={16} className="text-[#800000]" /> Billing & Gateway
@@ -301,10 +301,10 @@ const renderPaymentSettings = () => {
       </div>
 
       {/* Gateway & Currency Selection (Always Enabled) */}
-      <div className="grid md:grid-cols-1 grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-2 gap-2">
         <div className="flex flex-col gap-2">
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Active Gateway</label>
-          <select value={config.gateway} onChange={(e) => handleChange('gateway', e.target.value)} className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000]">
+          <select value={config.gateway} onChange={(e) => handleChange('gateway', e.target.value)} className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000]">
             <option>Stripe</option>
             <option>PayPal Braintree</option>
             <option>Adyen</option>
@@ -314,7 +314,7 @@ const renderPaymentSettings = () => {
       </div>
 
       {/* Sensitive Credentials (Locked by Default) */}
-      <div className={`p-6 bg-[#faf6f0] border border-[#d6c9b8] rounded-lg flex flex-col gap-3 md:gap-3 md:gap-6 shadow-sm transition-all ${isUnlocked ? 'opacity-100' : 'opacity-70'}`}>
+      <div className={`p-6 bg-[#faf6f0] border border-[#d6c9b8] rounded-lg flex flex-col gap-3 md:gap-6 shadow-sm transition-all ${isUnlocked ? 'opacity-100' : 'opacity-70'}`}>
         <div className="flex items-center justify-between">
           <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] uppercase tracking-widest flex flex-col sm:flex-row items-center gap-2">
             <Key size={16} className="text-[#800000]" /> API Credentials
@@ -337,7 +337,7 @@ const renderPaymentSettings = () => {
             disabled={!isUnlocked}
             value={config.publicKey} 
             onChange={(e) => handleChange('publicKey', e.target.value)}
-            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none disabled:bg-[#f5f5f5] disabled:cursor-not-allowed focus:border-[#800000] focus:ring-1"
+            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none disabled:bg-[#f5f5f5] disabled:cursor-not-allowed focus:border-[#800000] focus:ring-1"
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -347,7 +347,7 @@ const renderPaymentSettings = () => {
             disabled={!isUnlocked}
             value={config.secretKey} 
             onChange={(e) => handleChange('secretKey', e.target.value)}
-            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none disabled:bg-[#f5f5f5] disabled:cursor-not-allowed focus:border-[#800000] focus:ring-1"
+            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none disabled:bg-[#f5f5f5] disabled:cursor-not-allowed focus:border-[#800000] focus:ring-1"
           />
         </div>
       </div>
@@ -356,7 +356,7 @@ const renderPaymentSettings = () => {
 };
 
   const renderSecuritySettings = () => (
-    <div className="animate-in fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-in fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-2 border-b border-[#d6c9b8] pb-4">
         <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <ShieldCheck size={16} className="text-[#800000]" /> Security & Access
@@ -382,7 +382,7 @@ const renderPaymentSettings = () => {
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Session Timeout (Minutes)</label>
           <input 
             type="number" value={config.sessionTimeout} onChange={(e) => handleChange('sessionTimeout', e.target.value)}
-            className="w-full max-w-xs bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-sans font-bold break-words text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1"
+            className="w-full max-w-xs bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-sans font-bold  text-[#3b2a23] outline-none focus:border-[#800000] focus:ring-1"
           />
         </div>
       </div>
@@ -390,7 +390,7 @@ const renderPaymentSettings = () => {
   );
 
   const renderMockDataEngine = () => (
-    <div className="animate-in fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-in fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-2 border-b border-[#d6c9b8] pb-4">
         <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <Database size={16} className="text-[#800000]" /> Mock Data Engine
@@ -406,7 +406,7 @@ const renderPaymentSettings = () => {
           </div>
           <button 
             type="button" onClick={() => handleDataReset('Reset Lead Packages')} disabled={isProcessingData !== null}
-            className="flex items-center justify-center gap-2 px-2 py-1.5 bg-[#faf6f0] border border-[#d6c9b8] group-hover:bg-[#800000] group-hover:text-white group-hover:border-[#800000] break-words text-[#3b2a23] sm:text-xs md:text-xs lg:text-xs font-bold rounded-lg transition-colors w-full sm:w-auto"
+            className="flex items-center justify-center gap-2 px-2 py-1.5 bg-[#faf6f0] border border-[#d6c9b8] group-hover:bg-[#800000] group-hover:text-white group-hover:border-[#800000]  text-[#3b2a23] sm:text-xs md:text-xs lg:text-xs font-bold rounded-lg transition-colors w-full sm:w-auto"
           >
             {isProcessingData === 'Reset Lead Packages' ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />} Reset Leads
           </button>
@@ -477,7 +477,7 @@ const renderPaymentSettings = () => {
         </div>
       </div>
 
-      <div className="px-0 mt-8 w-full grid md:grid-cols-1 grid-cols-1 lg:grid-cols-12 gap-3 md:gap-3 md:gap-6 items-start">
+      <div className="px-0 mt-8 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-6 items-start">
         <div className="lg:col-span-3 flex flex-col gap-2 sticky top-32">
           <button 
             onClick={() => setActiveTab('general')}

@@ -151,7 +151,7 @@ const Account = () => {
       
       {/* Toast Notification */}
       {message.text && (
-        <div className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border flex flex-col sm:flex-row items-center gap-3 md:gap-3 md:gap-6 animate-fade-in-up ${message.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+        <div className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border flex flex-col sm:flex-row items-center gap-3 md:gap-6 animate-fade-in-up ${message.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
           {message.type === 'success' ? <CheckCircle2 size={21} /> : <AlertOctagon size={21} />}
           <span className="text-xs font-bold">{message.text}</span>
         </div>
@@ -159,7 +159,7 @@ const Account = () => {
 
       {/* --- HEADER --- */}
       <div className="overflow-x-auto bg-white border-b border-[#d8cdcd] px-8 lg:px-10 py-8">
-        <div className="max-w-full md:max-w-300 mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-3 md:gap-6">
+        <div className="max-w-full md:max-w-300 mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6">
           <div>
             <h1 className="text-xs md:text-xs font-bold tracking-tight text-[#2a1b1b]" style={{ fontSize: '78%' }}>{t('settingsTitle')}</h1>
             <p className="text-xs text-[#7a6b6b] mt-1">{t('settingsSubtitle')}</p>
@@ -185,7 +185,7 @@ const Account = () => {
                   : 'bg-white text-[#2a1b1b] hover:bg-[#f9fafb] border-l-2 border-l-transparent'
               }`}
             >
-              <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-3 md:gap-6">
+              <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-6">
                 <span className={activeTab === tab.id ? 'text-[#800000]' : 'text-[#7a6b6b]'}>{tab.icon}</span>
                 {tab.label}
               </div>
@@ -195,11 +195,11 @@ const Account = () => {
         </div>
 
         {/* CONTENT */}
-        <div className="flex-1 min-w-0 w-full flex flex-col gap-3 md:gap-3 md:gap-6">
+        <div className="flex-1 min-w-0 w-full flex flex-col gap-3 md:gap-6">
 
           {/* === PROFILE TAB === */}
           {activeTab === 'profile' && (
-            <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+            <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
               
               <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-xl shadow-sm overflow-hidden">
                 <div className="px-3 md:px-6 py-2 border-b border-[#e8e2e2] bg-[#fcfbfb]">
@@ -207,14 +207,14 @@ const Account = () => {
                 </div>
                 
                 <div className="p-6 flex flex-col sm:flex-row items-start gap-7">
-                  <div className="flex flex-col items-center gap-3 md:gap-3 md:gap-6">
+                  <div className="flex flex-col items-center gap-3 md:gap-6">
                     <div className="w-24 h-24 rounded-full border border-[#d8cdcd] overflow-hidden bg-[#f5f2f2]">
                       <img src={`https://ui-avatars.com/api/?name=${profile.firstName}+${profile.lastName}&background=2a1b1b&color=fff&size=128`} alt="Profile" className="w-full h-full object-cover" />
                     </div>
                     <button className="text-xs font-bold text-[#7a6b6b] hover:text-[#800000] transition-colors border border-[#d8cdcd] px-3 py-1 rounded bg-white shadow-sm">Change Photo</button>
                   </div>
 
-                  <form onSubmit={saveProfile} className="flex-1 min-w-0 w-full grid md:grid-cols-1 grid-cols-1 sm:grid-cols-2 gap-3 md:gap-3 md:gap-6">
+                  <form onSubmit={saveProfile} className="flex-1 min-w-0 w-full grid grid-cols-1 md:grid-cols-2 sm:grid-cols-2 gap-3 md:gap-6">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-bold text-[#2a1b1b]">First Name</label>
                       <input type="text" name="firstName" value={profile.firstName} onChange={handleProfileChange} required className="w-full px-3 py-2.5 border border-[#d8cdcd] rounded-md text-xs outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000]" />
@@ -257,8 +257,8 @@ const Account = () => {
               </div>
 
               {/* DANGER ZONE */}
-              <div className="border border-red-200 bg-red-50/50 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-3 md:gap-6">
-                <div className="flex items-start gap-3 md:gap-3 md:gap-6">
+              <div className="border border-red-200 bg-red-50/50 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-6">
+                <div className="flex items-start gap-3 md:gap-6">
                   <AlertOctagon size={21} className="text-red-600 shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-xs md:text-xs font-bold text-red-900">Delete Account</h3>
@@ -275,17 +275,17 @@ const Account = () => {
 
           {/* === SECURITY TAB === */}
           {activeTab === 'security' && (
-            <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+            <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
               <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-xl shadow-sm overflow-hidden">
                 <div className="px-3 md:px-6 py-2 border-b border-[#e8e2e2] bg-[#fcfbfb]">
                   <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Security Settings</h2>
                 </div>
                 
-                <div className="p-6 flex flex-col gap-3 md:gap-3 md:gap-6">
+                <div className="p-6 flex flex-col gap-3 md:gap-6">
                   {/* Password */}
                   <div className="flex flex-col border border-[#d8cdcd] rounded-lg overflow-x-auto bg-white overflow-hidden">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4">
-                      <div className="flex items-start gap-3 md:gap-3 md:gap-6 mb-3 sm:mb-0">
+                      <div className="flex items-start gap-3 md:gap-6 mb-3 sm:mb-0">
                         <div className="w-10 h-10 bg-[#f5f2f2] rounded-lg flex items-center justify-center shrink-0 border border-[#e8e2e2]">
                           <Key size={21} className="text-[#2a1b1b]" />
                         </div>
@@ -300,8 +300,8 @@ const Account = () => {
                     </div>
 
                     {showPasswordForm && (
-                      <form onSubmit={updatePassword} className="p-4 bg-[#f9fafb] border-t border-[#e8e2e2] flex flex-col gap-3 md:gap-3 md:gap-6">
-                        <div className="flex flex-col sm:flex-row gap-3 md:gap-3 md:gap-6">
+                      <form onSubmit={updatePassword} className="p-4 bg-[#f9fafb] border-t border-[#e8e2e2] flex flex-col gap-3 md:gap-6">
+                        <div className="flex flex-col sm:flex-row gap-3 md:gap-6">
                           <input type="password" placeholder="Current Password" required value={passwords.current} onChange={e => setPasswords({...passwords, current: e.target.value})} className="flex-1 min-w-0 px-3 py-2 border border-[#d8cdcd] rounded-md text-xs outline-none focus:border-[#800000]" />
                           <input type="password" placeholder="New Password" required value={passwords.new} onChange={e => setPasswords({...passwords, new: e.target.value})} className="flex-1 min-w-0 px-3 py-2 border border-[#d8cdcd] rounded-md text-xs outline-none focus:border-[#800000]" />
                           <button type="submit" disabled={isSaving} className="bg-[#800000] text-white px-3 md:px-6 py-2 rounded-md text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-70">
@@ -314,7 +314,7 @@ const Account = () => {
 
                   {/* 2FA */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-[#d8cdcd] rounded-lg overflow-x-auto bg-white">
-                    <div className="flex items-start gap-3 md:gap-3 md:gap-6 mb-3 sm:mb-0">
+                    <div className="flex items-start gap-3 md:gap-6 mb-3 sm:mb-0">
                       <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center shrink-0 border border-emerald-100">
                         <Smartphone size={21} className="text-emerald-700" />
                       </div>
@@ -340,7 +340,7 @@ const Account = () => {
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between border-b border-[#e8e2e2] pb-4">
-                    <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-3 md:gap-6">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-6">
                       <Laptop size={21} className="text-[#800000]" />
                       <div>
                         <p className="text-xs font-bold text-[#2a1b1b]">Current Session</p>
@@ -361,7 +361,7 @@ const Account = () => {
               <div className="px-3 md:px-6 py-2 border-b border-[#e8e2e2] bg-[#fcfbfb]">
                 <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Email Notifications</h2>
               </div>
-              <div className="p-6 flex flex-col gap-3 md:gap-3 md:gap-6">
+              <div className="p-6 flex flex-col gap-3 md:gap-6">
                 
                 <div className="flex items-center justify-between p-4 border border-[#e8e2e2] rounded-lg hover:bg-[#fcfbfb] transition-colors">
                   <div>
@@ -399,7 +399,7 @@ const Account = () => {
 
           {/* === WORKSPACE / BILLING === */}
           {(activeTab === 'workspace' || activeTab === 'billing') && (
-            <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+            <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
               <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-xl shadow-sm overflow-hidden p-12 text-center flex flex-col items-center justify-center">
                  <Building2 size={28} className="text-[#d8cdcd] mb-4" />
                  <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Workspace Administration</h2>

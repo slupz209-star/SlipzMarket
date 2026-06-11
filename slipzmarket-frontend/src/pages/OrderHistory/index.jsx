@@ -334,12 +334,12 @@ const OrderHistory = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by Invoice ID..." 
-                className="bg-transparent border-none outline-none sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23] w-full px-3 placeholder:text-[#8b6f5a] placeholder:opacity-60"
+                className="bg-transparent border-none outline-none sm:text-xs md:text-xs lg:text-xs  text-[#3b2a23] w-full px-3 placeholder:text-[#8b6f5a] placeholder:opacity-60"
               />
             </div>
             <button 
               onClick={() => setIsFilterDrawerOpen(true)}
-              className="flex flex-col sm:flex-row items-center gap-2 bg-white border border-[#d6c9b8] break-words text-[#3b2a23] hover:bg-[#faf6f0] px-2 py-1.5 rounded-lg shadow-sm sm:text-xs md:text-xs lg:text-xs font-bold transition-colors whitespace-nowrap"
+              className="flex flex-col sm:flex-row items-center gap-2 bg-white border border-[#d6c9b8]  text-[#3b2a23] hover:bg-[#faf6f0] px-2 py-1.5 rounded-lg shadow-sm sm:text-xs md:text-xs lg:text-xs font-bold transition-colors whitespace-nowrap"
             >
               <Filter size={16} className="text-[#8b6f5a]" /> Filters
             </button>
@@ -348,10 +348,10 @@ const OrderHistory = () => {
       </div>
 
       {/* --- MAIN CONTENT AREA --- */}
-      <div className="px-0 mt-8 w-full flex flex-col gap-3 md:gap-3 md:gap-6">
+      <div className="px-0 mt-8 w-full flex flex-col gap-3 md:gap-6">
 
         {/* --- STATS ROW --- */}
-        <div className="grid md:grid-cols-1 grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-2">
           <div className="overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg p-6 shadow-sm flex flex-col justify-between hover:border-[#8b6f5a] transition-colors">
             <div className="flex justify-between items-start mb-6">
               <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#8b6f5a] uppercase tracking-widest">{t('lifetimeSpend')}</span>
@@ -597,7 +597,7 @@ const OrderHistory = () => {
                 <select 
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs  text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 >
                   <option value="All">All Statuses</option>
                   <option value="COMPLETED">Completed</option>
@@ -607,7 +607,7 @@ const OrderHistory = () => {
               </div>
             </div>
             <div className="p-6 border-t border-[#d6c9b8] overflow-x-auto bg-white flex flex-col md:flex-row gap-2">
-              <button onClick={() => { setStatusFilter('All'); setIsFilterDrawerOpen(false); }} className="flex-1 min-w-0 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
+              <button onClick={() => { setStatusFilter('All'); setIsFilterDrawerOpen(false); }} className="flex-1 min-w-0 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
                 Reset
               </button>
               <button onClick={() => setIsFilterDrawerOpen(false)} className="flex-1 min-w-0 bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors">
@@ -637,7 +637,7 @@ const OrderHistory = () => {
               <div className="flex flex-col sm:flex-row items-center gap-2">
                 <button 
                   onClick={(e) => { e.stopPropagation(); generateAndPrintPDF(selectedInvoice); }}
-                  className="flex flex-col sm:flex-row items-center gap-2 px-2 py-2 rounded-lg border border-[#d6c9b8] bg-white sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] hover:bg-[#faf6f0] transition-colors shadow-sm"
+                  className="flex flex-col sm:flex-row items-center gap-2 px-2 py-2 rounded-lg border border-[#d6c9b8] bg-white sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] hover:bg-[#faf6f0] transition-colors shadow-sm"
                 >
                   <Download size={16} className="text-[#8b6f5a]" /> PDF
                 </button>
@@ -650,14 +650,14 @@ const OrderHistory = () => {
               <div className="flex justify-between items-start mb-10 pb-10 border-b border-[#d6c9b8] border-dashed">
                 <div>
                   <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest mb-3">Billed To</h3>
-                  <div className="flex flex-col sm:flex-row items-center gap-2 break-words text-[#3b2a23] font-bold text-xs mb-1">
+                  <div className="flex flex-col sm:flex-row items-center gap-2  text-[#3b2a23] font-bold text-xs mb-1">
                     <Building2 size={16} className="text-[#8b6f5a]" /> Acme Corp Ltd.
                   </div>
                   <p className="sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23]/80 leading-relaxed">Alex Doe<br/>billing@acmecorp.com</p>
                 </div>
                 <div className="text-right">
                   <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest mb-3">Payment Method</h3>
-                  <div className="flex items-center justify-end gap-2 break-words text-[#3b2a23] font-bold text-xs">
+                  <div className="flex items-center justify-end gap-2  text-[#3b2a23] font-bold text-xs">
                     <CreditCard size={16} className="text-[#8b6f5a]" /> {selectedInvoice.payment}
                   </div>
                 </div>
@@ -727,12 +727,12 @@ const OrderHistory = () => {
                   value={refundReason}
                   onChange={(e) => setRefundReason(e.target.value)}
                   placeholder="Please describe why this dataset did not meet the quality standards..." 
-                  className="w-full p-4 bg-white border border-[#d6c9b8] rounded-lg sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none transition-all"
+                  className="w-full p-4 bg-white border border-[#d6c9b8] rounded-lg sm:text-xs md:text-xs lg:text-xs  text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none transition-all"
                 />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 p-6 border-t border-[#d6c9b8] bg-[#faf6f0]">
-              <button type="button" onClick={() => setRefundOrder(null)} className="flex-1 min-w-0 px-2 py-1.5 border border-[#d6c9b8] bg-white break-words text-[#3b2a23] sm:text-xs md:text-xs lg:text-xs font-bold rounded-lg hover:bg-[#f5efe6] transition-colors shadow-sm">
+              <button type="button" onClick={() => setRefundOrder(null)} className="flex-1 min-w-0 px-2 py-1.5 border border-[#d6c9b8] bg-white  text-[#3b2a23] sm:text-xs md:text-xs lg:text-xs font-bold rounded-lg hover:bg-[#f5efe6] transition-colors shadow-sm">
                 Cancel
               </button>
               <button type="submit" className="flex-2 px-2 py-1.5 bg-[#8b6f5a] hover:bg-[#6c5544] text-white sm:text-xs md:text-xs lg:text-xs font-bold rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2">
@@ -756,7 +756,7 @@ const OrderHistory = () => {
                 <X size={16} />
               </button>
             </div>
-            <div className="p-6 flex flex-col gap-3 md:gap-3 md:gap-6">
+            <div className="p-6 flex flex-col gap-3 md:gap-6">
               <p className="sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23]/80">
                 Found an issue with <strong>{discrepancyOrder.id}</strong>? Let us know so our support team can investigate the records.
               </p>
@@ -765,7 +765,7 @@ const OrderHistory = () => {
                 <select 
                   value={discrepancyType}
                   onChange={(e) => setDiscrepancyType(e.target.value)}
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-2 py-2 sm:text-xs md:text-xs lg:text-xs  text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 >
                   <option>High Bounce Rate</option>
                   <option>Incorrect Contact Titles</option>
@@ -781,12 +781,12 @@ const OrderHistory = () => {
                   value={discrepancyDetails}
                   onChange={(e) => setDiscrepancyDetails(e.target.value)}
                   placeholder="Provide context on the corrupted or incorrect data..." 
-                  className="w-full p-4 bg-white border border-[#d6c9b8] rounded-lg sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none transition-all"
+                  className="w-full p-4 bg-white border border-[#d6c9b8] rounded-lg sm:text-xs md:text-xs lg:text-xs  text-[#3b2a23] font-medium outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none transition-all"
                 />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 p-6 border-t border-[#d6c9b8] bg-[#faf6f0]">
-              <button type="button" onClick={() => setDiscrepancyOrder(null)} className="flex-1 min-w-0 px-2 py-1.5 border border-[#d6c9b8] bg-white break-words text-[#3b2a23] sm:text-xs md:text-xs lg:text-xs font-bold rounded-lg hover:bg-[#f5efe6] transition-colors shadow-sm">
+              <button type="button" onClick={() => setDiscrepancyOrder(null)} className="flex-1 min-w-0 px-2 py-1.5 border border-[#d6c9b8] bg-white  text-[#3b2a23] sm:text-xs md:text-xs lg:text-xs font-bold rounded-lg hover:bg-[#f5efe6] transition-colors shadow-sm">
                 Cancel
               </button>
               <button type="submit" className="flex-2 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-2">

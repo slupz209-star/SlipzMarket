@@ -237,7 +237,7 @@ const ManageInvoices = () => {
       </div>
 
       {/* --- MAIN CONTENT --- */}
-      <div className="px-3 lg:px-3 mt-6 max-w-[1400px] mx-auto w-full flex flex-col gap-3 md:gap-3 md:gap-6">
+      <div className="px-3 lg:px-3 mt-6 max-w-[1400px] mx-auto w-full flex flex-col gap-3 md:gap-6">
 
         {/* Filters & Search */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -249,7 +249,7 @@ const ManageInvoices = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search ID, client, or description..." 
-                className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-9 pr-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm"
+                className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-9 pr-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm"
               />
             </div>
           </div>
@@ -258,7 +258,7 @@ const ManageInvoices = () => {
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm w-full sm:w-auto"
+              className="bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm w-full sm:w-auto"
             >
               <option value="All">{t('allStatuses')}</option>
               <option value="COMPLETED">Completed</option>
@@ -270,7 +270,7 @@ const ManageInvoices = () => {
         </div>
 
         {isLoading && (
-          <div className="rounded-lg border border-[#d6c9b8] overflow-x-auto bg-white p-6 text-center break-words text-[#3b2a23] font-medium shadow-sm">
+          <div className="rounded-lg border border-[#d6c9b8] overflow-x-auto bg-white p-6 text-center  text-[#3b2a23] font-medium shadow-sm">
             Loading invoices...
           </div>
         )}
@@ -396,7 +396,7 @@ const ManageInvoices = () => {
               </button>
             </div>
             
-            <form id="invoice-form" onSubmit={handleSaveInvoice} className="p-6 flex-1 min-w-0 overflow-y-auto flex flex-col gap-3 md:gap-3 md:gap-6">
+            <form id="invoice-form" onSubmit={handleSaveInvoice} className="p-6 flex-1 min-w-0 overflow-y-auto flex flex-col gap-3 md:gap-6">
               
               <div className="flex flex-col gap-1.5">
                 <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Invoice ID</label>
@@ -404,7 +404,7 @@ const ManageInvoices = () => {
                   type="text" required 
                   value={formData.id} 
                   onChange={(e) => setFormData({...formData, id: e.target.value})} 
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   disabled={!!editingInvoice} // Disallow changing ID if editing
                 />
               </div>
@@ -416,7 +416,7 @@ const ManageInvoices = () => {
                   value={formData.client} 
                   onChange={(e) => setFormData({...formData, client: e.target.value})} 
                   placeholder="e.g., Acme Corp Ltd."
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 />
               </div>
 
@@ -427,7 +427,7 @@ const ManageInvoices = () => {
                   value={formData.description} 
                   onChange={(e) => setFormData({...formData, description: e.target.value})} 
                   placeholder="e.g., 10,000 Verified Email Leads"
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none"
                 />
               </div>
 
@@ -440,7 +440,7 @@ const ManageInvoices = () => {
                       type="number" step="0.01" required 
                       value={formData.amount} 
                       onChange={(e) => setFormData({...formData, amount: e.target.value})} 
-                      className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-8 pr-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                      className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-8 pr-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                     />
                   </div>
                 </div>
@@ -450,7 +450,7 @@ const ManageInvoices = () => {
                     type="date" required 
                     value={formData.date} 
                     onChange={(e) => setFormData({...formData, date: e.target.value})} 
-                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   />
                 </div>
               </div>
@@ -460,7 +460,7 @@ const ManageInvoices = () => {
                 <select 
                   value={formData.status} 
                   onChange={(e) => setFormData({...formData, status: e.target.value})} 
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 >
                   <option value="COMPLETED">Completed</option>
                   <option value="PROCESSING">Processing</option>
@@ -472,7 +472,7 @@ const ManageInvoices = () => {
             </form>
 
             <div className="p-6 border-t border-[#d6c9b8] overflow-x-auto bg-white flex flex-col md:flex-row gap-2 shrink-0">
-              <button type="button" onClick={closeDrawer} className="flex-1 min-w-0 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
+              <button type="button" onClick={closeDrawer} className="flex-1 min-w-0 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
                 Cancel
               </button>
               <button type="submit" form="invoice-form" className="flex-[2] bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-2">

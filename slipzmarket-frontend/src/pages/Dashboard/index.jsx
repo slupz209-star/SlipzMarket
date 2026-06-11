@@ -4,1288 +4,1288 @@ import axios from 'axios';
 import { API_URL } from '../../utils/api';
 import { useTranslation } from 'react-i18next';
 import { 
-  Search, Filter, Download, Users, 
-  Database as DatabaseIcon, MoreHorizontal, 
-  ArrowRight, Mail, Phone, Zap, X, FolderPlus, Building2,
-  CheckCircle2, Folder, Check, Loader2,
-  LogOut, CreditCard, ChevronDown, User as UserIcon, Lock
+ Search, Filter, Download, Users, 
+ Database as DatabaseIcon, MoreHorizontal, 
+ ArrowRight, Mail, Phone, Zap, X, FolderPlus, Building2,
+ CheckCircle2, Folder, Check, Loader2,
+ LogOut, CreditCard, ChevronDown, User as UserIcon, Lock
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
+ const navigate = useNavigate();
+ const { t } = useTranslation();
 
-  // --- AUTH & USER STATE ---
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('slipz_user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-  const [stats, setStats] = useState(null); 
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const profileRef = useRef(null);
+ // --- AUTH & USER STATE ---
+ const [user, setUser] = useState(() => {
+ const storedUser = localStorage.getItem('slipz_user');
+ return storedUser ? JSON.parse(storedUser) : null;
+ });
+ const [stats, setStats] = useState(null); 
+ const [isProfileOpen, setIsProfileOpen] = useState(false);
+ const profileRef = useRef(null);
 
-  // --- DASHBOARD STATE ---
-  const [activeTab, setActiveTab] = useState('My Lists');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLists, setSelectedLists] = useState([]);
-  const [lists, setLists] = useState([]);
-  const [exportHistory, setExportHistory] = useState([]);
-  const [isLoadingLists, setIsLoadingLists] = useState(true);
+ // --- DASHBOARD STATE ---
+ const [activeTab, setActiveTab] = useState('My Lists');
+ const [searchQuery, setSearchQuery] = useState('');
+ const [selectedLists, setSelectedLists] = useState([]);
+ const [lists, setLists] = useState([]);
+ const [exportHistory, setExportHistory] = useState([]);
+ const [isLoadingLists, setIsLoadingLists] = useState(true);
 
-  // --- MODAL STATES ---
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
-  const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
-  const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
-  const [newFolderName, setNewFolderName] = useState('');
-  const [newListName, setNewListName] = useState('');
-  const [saveMode, setSaveMode] = useState('new');
-  const [existingListId, setExistingListId] = useState('');
-  const [folderLoading, setFolderLoading] = useState(false);
-  const [listLoading, setListLoading] = useState(false);
-  const [selectedProspects, setSelectedProspects] = useState(() => {
-    try {
-      return JSON.parse(sessionStorage.getItem('selected_prospects') || '[]');
-    } catch (err) {
-      void err;
-      return [];
-    }
-  });
-  const [notification, setNotification] = useState(null);
-  const notificationTimeoutRef = useRef(null);
+ // --- MODAL STATES ---
+ const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+ const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+ const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
+ const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+ const [newFolderName, setNewFolderName] = useState('');
+ const [newListName, setNewListName] = useState('');
+ const [saveMode, setSaveMode] = useState('new');
+ const [existingListId, setExistingListId] = useState('');
+ const [folderLoading, setFolderLoading] = useState(false);
+ const [listLoading, setListLoading] = useState(false);
+ const [selectedProspects, setSelectedProspects] = useState(() => {
+ try {
+ return JSON.parse(sessionStorage.getItem('selected_prospects') || '[]');
+ } catch (err) {
+ void err;
+ return [];
+ }
+ });
+ const [notification, setNotification] = useState(null);
+ const notificationTimeoutRef = useRef(null);
 
-  const showNotification = (message, type = 'success') => {
-    setNotification({ message, type });
-    if (notificationTimeoutRef.current) {
-      clearTimeout(notificationTimeoutRef.current);
-    }
-    notificationTimeoutRef.current = window.setTimeout(() => {
-      setNotification(null);
-    }, 5000);
-  };
+ const showNotification = (message, type = 'success') => {
+ setNotification({ message, type });
+ if (notificationTimeoutRef.current) {
+ clearTimeout(notificationTimeoutRef.current);
+ }
+ notificationTimeoutRef.current = window.setTimeout(() => {
+ setNotification(null);
+ }, 5000);
+ };
 
-  useEffect(() => {
-    return () => {
-      if (notificationTimeoutRef.current) {
-        clearTimeout(notificationTimeoutRef.current);
-      }
-    };
-  }, []);
+ useEffect(() => {
+ return () => {
+ if (notificationTimeoutRef.current) {
+ clearTimeout(notificationTimeoutRef.current);
+ }
+ };
+ }, []);
 
-  // --- PROSPECT SEARCH STATE ---
-  const [searchFilters, setSearchFilters] = useState({
-    jobTitle: '',
-    industry: 'All',
-    location: '',
-    minSize: '',
-    maxSize: ''
-  });
-  const [searchResults, setSearchResults] = useState(null);
-  const [searchPermissions, setSearchPermissions] = useState({ canViewEmail: false, canViewPhone: false });
-  const [isSearchingProspects, setIsSearchingProspects] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 20;
+ // --- PROSPECT SEARCH STATE ---
+ const [searchFilters, setSearchFilters] = useState({
+ jobTitle: '',
+ industry: 'All',
+ location: '',
+ minSize: '',
+ maxSize: ''
+ });
+ const [searchResults, setSearchResults] = useState(null);
+ const [searchPermissions, setSearchPermissions] = useState({ canViewEmail: false, canViewPhone: false });
+ const [isSearchingProspects, setIsSearchingProspects] = useState(false);
+ const [currentPage, setCurrentPage] = useState(1);
+ const resultsPerPage = 20;
 
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem('slipz_token');
-    localStorage.removeItem('slipz_user');
-    navigate('/auth');
-  }, [navigate]);
-  
-  // --- INITIALIZATION & API FETCHING ---
-  useEffect(() => {
-    const token = localStorage.getItem('slipz_token');
-    
-    if (!token) {
-      navigate('/auth'); 
-      return;
-    } 
+ const handleLogout = useCallback(() => {
+ localStorage.removeItem('slipz_token');
+ localStorage.removeItem('slipz_user');
+ navigate('/auth');
+ }, [navigate]);
+ 
+ // --- INITIALIZATION & API FETCHING ---
+ useEffect(() => {
+ const token = localStorage.getItem('slipz_token');
+ 
+ if (!token) {
+ navigate('/auth'); 
+ return;
+ } 
 
-    const fetchDashboardData = async () => {
-      try {
-        const statsRes = await axios.get(`${API_URL}/dashboard/stats`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        console.log('?? Stats from backend:', statsRes.data.data);
-        setStats(statsRes.data.data);
-        setUser(prev => (prev ? { ...prev, ...statsRes.data.data } : statsRes.data.data));
+ const fetchDashboardData = async () => {
+ try {
+ const statsRes = await axios.get(`${API_URL}/dashboard/stats`, {
+ headers: { Authorization: `Bearer ${token}` }
+ });
+ console.log('?? Stats from backend:', statsRes.data.data);
+ setStats(statsRes.data.data);
+ setUser(prev => (prev ? { ...prev, ...statsRes.data.data } : statsRes.data.data));
 
-        const listsRes = await axios.get(`${API_URL}/dashboard/lists`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setLists(listsRes.data.data);
+ const listsRes = await axios.get(`${API_URL}/dashboard/lists`, {
+ headers: { Authorization: `Bearer ${token}` }
+ });
+ setLists(listsRes.data.data);
 
-        const historyRes = await axios.get(`${API_URL}/dashboard/export-history`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setExportHistory(historyRes.data.data);
+ const historyRes = await axios.get(`${API_URL}/dashboard/export-history`, {
+ headers: { Authorization: `Bearer ${token}` }
+ });
+ setExportHistory(historyRes.data.data);
 
-      } catch (error) {
-        console.error("Failed to load dashboard data:", error);
-        if (error.response?.status === 401) handleLogout(); 
-      } finally {
-        setIsLoadingLists(false);
-      }
-    };
+ } catch (error) {
+ console.error("Failed to load dashboard data:", error);
+ if (error.response?.status === 401) handleLogout(); 
+ } finally {
+ setIsLoadingLists(false);
+ }
+ };
 
-    fetchDashboardData();
-  }, [navigate, handleLogout]);
+ fetchDashboardData();
+ }, [navigate, handleLogout]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+ useEffect(() => {
+ const handleClickOutside = (event) => {
+ if (profileRef.current && !profileRef.current.contains(event.target)) {
+ setIsProfileOpen(false);
+ }
+ };
+ document.addEventListener('mousedown', handleClickOutside);
+ return () => document.removeEventListener('mousedown', handleClickOutside);
+ }, []);
 
-  // Reset search state when modal opens
-  useEffect(() => {
-    if (isGlobalSearchOpen) {
-      setIsSearchingProspects(false);
-    }
-  }, [isGlobalSearchOpen]);
+ // Reset search state when modal opens
+ useEffect(() => {
+ if (isGlobalSearchOpen) {
+ setIsSearchingProspects(false);
+ }
+ }, [isGlobalSearchOpen]);
 
-  const filteredLists = useMemo(() => {
-    return lists.filter(list => 
-      list.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      list.status.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [lists, searchQuery]);
+ const filteredLists = useMemo(() => {
+ return lists.filter(list => 
+ list.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+ list.status.toLowerCase().includes(searchQuery.toLowerCase())
+ );
+ }, [lists, searchQuery]);
 
-  const paginatedResults = useMemo(() => {
-    if (!Array.isArray(searchResults)) return [];
-    const start = (currentPage - 1) * resultsPerPage;
-    return searchResults.slice(start, start + resultsPerPage);
-  }, [searchResults, currentPage]);
+ const paginatedResults = useMemo(() => {
+ if (!Array.isArray(searchResults)) return [];
+ const start = (currentPage - 1) * resultsPerPage;
+ return searchResults.slice(start, start + resultsPerPage);
+ }, [searchResults, currentPage]);
 
-  const totalPages = useMemo(() => {
-    return Math.max(1, Math.ceil((searchResults?.length || 0) / resultsPerPage));
-  }, [searchResults]);
+ const totalPages = useMemo(() => {
+ return Math.max(1, Math.ceil((searchResults?.length || 0) / resultsPerPage));
+ }, [searchResults]);
 
-  const currentPageStartIndex = (currentPage - 1) * resultsPerPage;
-  const currentPageEndIndex = currentPageStartIndex + resultsPerPage;
+ const currentPageStartIndex = (currentPage - 1) * resultsPerPage;
+ const currentPageEndIndex = currentPageStartIndex + resultsPerPage;
 
-  const handleSelectAll = (e) => {
-    if (e.target.checked) setSelectedLists(filteredLists.map(list => list.id));
-    else setSelectedLists([]);
-  };
+ const handleSelectAll = (e) => {
+ if (e.target.checked) setSelectedLists(filteredLists.map(list => list.id));
+ else setSelectedLists([]);
+ };
 
-  const handleSelectRow = (id) => {
-    setSelectedLists(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
-  };
+ const handleSelectRow = (id) => {
+ setSelectedLists(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
+ };
 
-  // --- NAME MASKING UTILITY ---
-  const maskName = (name) => {
-    if (!name) return '';
-    const str = String(name);
-    if (str.length <= 2) return str[0] + '*';
-    return str[0] + '*'.repeat(str.length - 2) + str[str.length - 1];
-  };
+ // --- NAME MASKING UTILITY ---
+ const maskName = (name) => {
+ if (!name) return '';
+ const str = String(name);
+ if (str.length <= 2) return str[0] + '*';
+ return str[0] + '*'.repeat(str.length - 2) + str[str.length - 1];
+ };
 
 const executeProspectSearch = async () => {
-  console.log('?? Button clicked!');
-  const token = localStorage.getItem('slipz_token');
-  const remainingCredits = stats ? (stats.exportCreditsTotal - stats.exportCreditsUsed) : 0;
+ console.log('?? Button clicked!');
+ const token = localStorage.getItem('slipz_token');
+ const remainingCredits = stats ? (stats.exportCreditsTotal - stats.exportCreditsUsed) : 0;
 
-  console.log('?? Token:', token ? 'exists' : 'missing');
-  console.log('?? Credits:', remainingCredits);
+ console.log('?? Token:', token ? 'exists' : 'missing');
+ console.log('?? Credits:', remainingCredits);
 
-  if (!token) {
-    showNotification('Your session has expired. Please sign in again.', 'warning');
-    handleLogout();
-    return;
-  }
+ if (!token) {
+ showNotification('Your session has expired. Please sign in again.', 'warning');
+ handleLogout();
+ return;
+ }
 
-  if (remainingCredits <= 0) {
-    console.log('?? No credits, stopping');
-    showNotification('You have no remaining prospect credits. Please purchase more to unlock paid leads.', 'warning');
-    return;
-  }
+ if (remainingCredits <= 0) {
+ console.log('?? No credits, stopping');
+ showNotification('You have no remaining prospect credits. Please purchase more to unlock paid leads.', 'warning');
+ return;
+ }
 
-  console.log('?? Setting isSearchingProspects to true');
-  setIsSearchingProspects(true);
+ console.log('?? Setting isSearchingProspects to true');
+ setIsSearchingProspects(true);
 
-  try {
-    console.log('?? Making API call with filters:', searchFilters);
-    const res = await axios.post(`${API_URL}/datasets/search`, searchFilters, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+ try {
+ console.log('?? Making API call with filters:', searchFilters);
+ const res = await axios.post(`${API_URL}/datasets/search`, searchFilters, {
+ headers: { Authorization: `Bearer ${token}` }
+ });
 
-    console.log('?? API response received:', res.data);
-    // 2. ROBUST PAYLOAD HANDLING
-    // Support both direct data arrays and wrapped payloads.
-    const payload = res.data || {};
-    const results = Array.isArray(payload.data)
-      ? payload.data
-      : Array.isArray(payload)
-      ? payload
-      : [];
+ console.log('?? API response received:', res.data);
+ // 2. ROBUST PAYLOAD HANDLING
+ // Support both direct data arrays and wrapped payloads.
+ const payload = res.data || {};
+ const results = Array.isArray(payload.data)
+ ? payload.data
+ : Array.isArray(payload)
+ ? payload
+ : [];
 
-    console.log('?? Results found:', results.length);
-    setSearchResults(results);
-    setSearchPermissions(payload.permissions || { canViewEmail: false, canViewPhone: false });
-    setCurrentPage(1);
+ console.log('?? Results found:', results.length);
+ setSearchResults(results);
+ setSearchPermissions(payload.permissions || { canViewEmail: false, canViewPhone: false });
+ setCurrentPage(1);
 
-    // 3. UI FEEDBACK
-    if (results.length === 0) {
-      console.warn("No results returned from server.");
-    }
-  } catch (error) {
-    console.error("?? Search API failed:", error);
-    setSearchResults([]);
+ // 3. UI FEEDBACK
+ if (results.length === 0) {
+ console.warn("No results returned from server.");
+ }
+ } catch (error) {
+ console.error("?? Search API failed:", error);
+ setSearchResults([]);
 
-    if (error.response?.status === 401) {
-      handleLogout();
-      return;
-    }
+ if (error.response?.status === 401) {
+ handleLogout();
+ return;
+ }
 
-    const serverMessage = error.response?.data?.error || error.response?.data?.message;
-    if (error.response?.status === 403) {
-      showNotification(serverMessage || 'You have no remaining prospect credits. Please purchase more to unlock paid leads.', 'warning');
-    } else {
-      showNotification(serverMessage || 'Failed to connect to the search engine. Please try again.', 'error');
-    }
-  } finally {
-    console.log('?? Setting isSearchingProspects to false');
-    setIsSearchingProspects(false);
-  }
+ const serverMessage = error.response?.data?.error || error.response?.data?.message;
+ if (error.response?.status === 403) {
+ showNotification(serverMessage || 'You have no remaining prospect credits. Please purchase more to unlock paid leads.', 'warning');
+ } else {
+ showNotification(serverMessage || 'Failed to connect to the search engine. Please try again.', 'error');
+ }
+ } finally {
+ console.log('?? Setting isSearchingProspects to false');
+ setIsSearchingProspects(false);
+ }
 };
 
-  // Persist selection across modal opens so users can build a list across searches
-  useEffect(() => {
-    try {
-      sessionStorage.setItem('selected_prospects', JSON.stringify(selectedProspects));
-    } catch (err) { void err; }
-  }, [selectedProspects]);
+ // Persist selection across modal opens so users can build a list across searches
+ useEffect(() => {
+ try {
+ sessionStorage.setItem('selected_prospects', JSON.stringify(selectedProspects));
+ } catch (err) { void err; }
+ }, [selectedProspects]);
 
-  const toggleSelectProspect = (prospect) => {
-    setSelectedProspects(prev => {
-      const exists = prev.find(p => p.id === prospect.id);
-      if (exists) return prev.filter(p => p.id !== prospect.id);
-      return [...prev, prospect];
-    });
-  };
+ const toggleSelectProspect = (prospect) => {
+ setSelectedProspects(prev => {
+ const exists = prev.find(p => p.id === prospect.id);
+ if (exists) return prev.filter(p => p.id !== prospect.id);
+ return [...prev, prospect];
+ });
+ };
 
-  const addAllVisibleToSelection = () => {
-    if (!searchResults || searchResults.length === 0) return;
-    setSelectedProspects(prev => {
-      const map = new Map(prev.map(p => [p.id, p]));
-      // Only grab currently visible page results or all? Let's assume the paginated view handles "visible"
-      const startIdx = (currentPage - 1) * resultsPerPage;
-      const endIdx = startIdx + resultsPerPage;
-      const visibleResults = searchResults.slice(startIdx, endIdx);
-      
-      visibleResults.forEach(s => map.set(s.id, s));
-      return Array.from(map.values());
-    });
-  };
+ const addAllVisibleToSelection = () => {
+ if (!searchResults || searchResults.length === 0) return;
+ setSelectedProspects(prev => {
+ const map = new Map(prev.map(p => [p.id, p]));
+ // Only grab currently visible page results or all? Let's assume the paginated view handles "visible"
+ const startIdx = (currentPage - 1) * resultsPerPage;
+ const endIdx = startIdx + resultsPerPage;
+ const visibleResults = searchResults.slice(startIdx, endIdx);
+ 
+ visibleResults.forEach(s => map.set(s.id, s));
+ return Array.from(map.values());
+ });
+ };
 
-  const removeFromSelection = (id) => {
-    setSelectedProspects(prev => prev.filter(p => p.id !== id));
-  };
+ const removeFromSelection = (id) => {
+ setSelectedProspects(prev => prev.filter(p => p.id !== id));
+ };
 
-  const clearSelection = () => {
-    setSelectedProspects([]);
-    try { sessionStorage.removeItem('selected_prospects'); } catch (err) { void err; }
-  };
+ const clearSelection = () => {
+ setSelectedProspects([]);
+ try { sessionStorage.removeItem('selected_prospects'); } catch (err) { void err; }
+ };
 
-  const closeGlobalSearch = () => {
-    setIsGlobalSearchOpen(false);
-    setSearchResults(null);
-    setCurrentPage(1);
-    setSearchFilters({ jobTitle: '', industry: 'All', location: '', minSize: '', maxSize: '' });
-    setIsSearchingProspects(false);
-  };
+ const closeGlobalSearch = () => {
+ setIsGlobalSearchOpen(false);
+ setSearchResults(null);
+ setCurrentPage(1);
+ setSearchFilters({ jobTitle: '', industry: 'All', location: '', minSize: '', maxSize: '' });
+ setIsSearchingProspects(false);
+ };
 
-  // --- FOLDER CREATION ---
-  const handleCreateFolder = async (e) => {
-    e.preventDefault();
-    if (!newFolderName.trim()) return;
-    
-    setFolderLoading(true);
-    const token = localStorage.getItem('slipz_token');
+ // --- FOLDER CREATION ---
+ const handleCreateFolder = async (e) => {
+ e.preventDefault();
+ if (!newFolderName.trim()) return;
+ 
+ setFolderLoading(true);
+ const token = localStorage.getItem('slipz_token');
 
-    try {
-      await axios.post(`${API_URL}/dashboard/folders`, 
-        { name: newFolderName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      setIsFolderModalOpen(false);
-      setNewFolderName('');
-      showNotification(`Folder "${newFolderName}" created successfully!`, 'success');
-    } catch (error) {
-      console.error("Error creating folder:", error);
-      showNotification(error.response?.data?.error || "Failed to create folder", 'error');
-    } finally {
-      setFolderLoading(false);
-    }
-  };
+ try {
+ await axios.post(`${API_URL}/dashboard/folders`, 
+ { name: newFolderName },
+ { headers: { Authorization: `Bearer ${token}` } }
+ );
+ 
+ setIsFolderModalOpen(false);
+ setNewFolderName('');
+ showNotification(`Folder "${newFolderName}" created successfully!`, 'success');
+ } catch (error) {
+ console.error("Error creating folder:", error);
+ showNotification(error.response?.data?.error || "Failed to create folder", 'error');
+ } finally {
+ setFolderLoading(false);
+ }
+ };
 
-  const handleSaveList = async (e) => {
-    e.preventDefault();
+ const handleSaveList = async (e) => {
+ e.preventDefault();
 
-    const countToSave = (selectedProspects && selectedProspects.length > 0)
-      ? selectedProspects.length
-      : (searchResults?.length ?? 0);
+ const countToSave = (selectedProspects && selectedProspects.length > 0)
+ ? selectedProspects.length
+ : (searchResults?.length ?? 0);
 
-    if (countToSave <= 0) {
-      showNotification('No prospects selected to save.', 'warning');
-      return;
-    }
+ if (countToSave <= 0) {
+ showNotification('No prospects selected to save.', 'warning');
+ return;
+ }
 
-    if (saveMode === 'new' && !newListName.trim()) {
-      showNotification('Please enter a list name.', 'warning');
-      return;
-    }
+ if (saveMode === 'new' && !newListName.trim()) {
+ showNotification('Please enter a list name.', 'warning');
+ return;
+ }
 
-    if (saveMode === 'existing' && !existingListId) {
-      showNotification('Please choose an existing list.', 'warning');
-      return;
-    }
+ if (saveMode === 'existing' && !existingListId) {
+ showNotification('Please choose an existing list.', 'warning');
+ return;
+ }
 
-    const remainingCredits = stats ? (stats.exportCreditsTotal - stats.exportCreditsUsed) : 0;
-    if (countToSave > remainingCredits) {
-      showNotification('You do not have enough credits to save this list.', 'warning');
-      return;
-    }
+ const remainingCredits = stats ? (stats.exportCreditsTotal - stats.exportCreditsUsed) : 0;
+ if (countToSave > remainingCredits) {
+ showNotification('You do not have enough credits to save this list.', 'warning');
+ return;
+ }
 
-    setListLoading(true);
-    const token = localStorage.getItem('slipz_token');
+ setListLoading(true);
+ const token = localStorage.getItem('slipz_token');
 
-    const selectedLeadIds = (selectedProspects && selectedProspects.length > 0)
-      ? selectedProspects.map(p => p.id)
-      : (searchResults || []).map(p => p.id);
+ const selectedLeadIds = (selectedProspects && selectedProspects.length > 0)
+ ? selectedProspects.map(p => p.id)
+ : (searchResults || []).map(p => p.id);
 
-    const uniqueSelectedLeadIds = Array.from(new Set(selectedLeadIds.filter(id => typeof id === 'string' && id.trim() !== '')));
-    const selectedLeadCount = uniqueSelectedLeadIds.length;
+ const uniqueSelectedLeadIds = Array.from(new Set(selectedLeadIds.filter(id => typeof id === 'string' && id.trim() !== '')));
+ const selectedLeadCount = uniqueSelectedLeadIds.length;
 
-    if (selectedLeadCount === 0) {
-      showNotification('No prospects are available to save.', 'warning');
-      setListLoading(false);
-      return;
-    }
+ if (selectedLeadCount === 0) {
+ showNotification('No prospects are available to save.', 'warning');
+ setListLoading(false);
+ return;
+ }
 
-    const payload = {
-      selectedLeadIds: uniqueSelectedLeadIds,
-      contactCount: selectedLeadCount,
-      dataType: 'Email & Phone'
-    };
+ const payload = {
+ selectedLeadIds: uniqueSelectedLeadIds,
+ contactCount: selectedLeadCount,
+ dataType: 'Email & Phone'
+ };
 
-    if (saveMode === 'new') {
-      payload.name = newListName.trim();
-    } else {
-      payload.listId = existingListId;
-    }
+ if (saveMode === 'new') {
+ payload.name = newListName.trim();
+ } else {
+ payload.listId = existingListId;
+ }
 
-    console.log('?? Saving list with payload:', JSON.stringify(payload, null, 2));
-    console.log('?? API URL:', `${API_URL}/dashboard/lists`);
+ console.log('?? Saving list with payload:', JSON.stringify(payload, null, 2));
+ console.log('?? API URL:', `${API_URL}/dashboard/lists`);
 
-    try {
-      await axios.post(`${API_URL}/dashboard/lists`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+ try {
+ await axios.post(`${API_URL}/dashboard/lists`, payload, {
+ headers: { Authorization: `Bearer ${token}` }
+ });
 
-      const listsRes = await axios.get(`${API_URL}/dashboard/lists`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setLists(listsRes.data.data);
+ const listsRes = await axios.get(`${API_URL}/dashboard/lists`, {
+ headers: { Authorization: `Bearer ${token}` }
+ });
+ setLists(listsRes.data.data);
 
-      setStats(prev => ({ ...prev, exportCreditsUsed: (prev?.exportCreditsUsed || 0) + countToSave }));
+ setStats(prev => ({ ...prev, exportCreditsUsed: (prev?.exportCreditsUsed || 0) + countToSave }));
 
-      setIsSaveListModalOpen(false);
-      setNewListName('');
-      setExistingListId('');
-      setSaveMode('new');
-      setSelectedProspects([]);
-      try { sessionStorage.removeItem('selected_prospects'); } catch (err) { void err; }
-      showNotification(
-        saveMode === 'new'
-          ? `List "${newListName}" saved successfully!`
-          : 'Prospects added to the existing list successfully!',
-        'success'
-      );
-    } catch (error) {
-      console.error("? Error saving list:", error);
-      if (error.response) {
-        console.error('?? Response status:', error.response.status);
-        console.error('?? Response data:', error.response.data);
-      }
-      showNotification(error.response?.data?.error || "Failed to save list", 'error');
-    } finally {
-      setListLoading(false);
-    }
-  };
+ setIsSaveListModalOpen(false);
+ setNewListName('');
+ setExistingListId('');
+ setSaveMode('new');
+ setSelectedProspects([]);
+ try { sessionStorage.removeItem('selected_prospects'); } catch (err) { void err; }
+ showNotification(
+ saveMode === 'new'
+ ? `List "${newListName}" saved successfully!`
+ : 'Prospects added to the existing list successfully!',
+ 'success'
+ );
+ } catch (error) {
+ console.error("? Error saving list:", error);
+ if (error.response) {
+ console.error('?? Response status:', error.response.status);
+ console.error('?? Response data:', error.response.data);
+ }
+ showNotification(error.response?.data?.error || "Failed to save list", 'error');
+ } finally {
+ setListLoading(false);
+ }
+ };
 
-  // --- EXPORT LIST ENGINE ---
-  const handleExportLists = async (idsToExport) => {
-    const token = localStorage.getItem('slipz_token');
-    try {
-      const res = await axios.post(`${API_URL}/dashboard/lists/export`, 
-        { listIds: idsToExport },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+ // --- EXPORT LIST ENGINE ---
+ const handleExportLists = async (idsToExport) => {
+ const token = localStorage.getItem('slipz_token');
+ try {
+ const res = await axios.post(`${API_URL}/dashboard/lists/export`, 
+ { listIds: idsToExport },
+ { headers: { Authorization: `Bearer ${token}` } }
+ );
 
-      const blob = new Blob([res.data.csvData], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", res.data.filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+ const blob = new Blob([res.data.csvData], { type: 'text/csv;charset=utf-8;' });
+ const url = URL.createObjectURL(blob);
+ const link = document.createElement("a");
+ link.setAttribute("href", url);
+ link.setAttribute("download", res.data.filename);
+ document.body.appendChild(link);
+ link.click();
+ document.body.removeChild(link);
 
-      const updatedLists = await axios.get(`${API_URL}/dashboard/lists`, { headers: { Authorization: `Bearer ${token}` } });
-      const updatedHistory = await axios.get(`${API_URL}/dashboard/export-history`, { headers: { Authorization: `Bearer ${token}` } });
-      
-      setLists(updatedLists.data.data);
-      setExportHistory(updatedHistory.data.data);
-      setSelectedLists([]); 
-      
-    } catch (error) {
-      console.error("Export error:", error);
-      showNotification("Export processing failed.", 'error');
-    }
-  };
+ const updatedLists = await axios.get(`${API_URL}/dashboard/lists`, { headers: { Authorization: `Bearer ${token}` } });
+ const updatedHistory = await axios.get(`${API_URL}/dashboard/export-history`, { headers: { Authorization: `Bearer ${token}` } });
+ 
+ setLists(updatedLists.data.data);
+ setExportHistory(updatedHistory.data.data);
+ setSelectedLists([]); 
+ 
+ } catch (error) {
+ console.error("Export error:", error);
+ showNotification("Export processing failed.", 'error');
+ }
+ };
 
-  if (!user) return null; 
+ if (!user) return null; 
 
-  const creditPercentage = stats 
-    ? Math.min((stats.exportCreditsUsed / stats.exportCreditsTotal) * 100, 100) 
-    : 0;
+ const creditPercentage = stats 
+ ? Math.min((stats.exportCreditsUsed / stats.exportCreditsTotal) * 100, 100) 
+ : 0;
 
-  const totalLists = lists.length;
-  const totalContactsSaved = lists.reduce((sum, list) => sum + list.count, 0);
-  const creditsRemaining = stats ? stats.exportCreditsTotal - stats.exportCreditsUsed : 0;
-  const recentExports = exportHistory.slice(0, 4);
+ const totalLists = lists.length;
+ const totalContactsSaved = lists.reduce((sum, list) => sum + list.count, 0);
+ const creditsRemaining = stats ? stats.exportCreditsTotal - stats.exportCreditsUsed : 0;
+ const recentExports = exportHistory.slice(0, 4);
 
-  
+ 
 
 
-  return (
-    <div className="flex flex-col h-full min-h-screen bg-[#f9fafb] font-sans selection:bg-[#800000] selection:text-white pb-12" style={{ zoom: '1.22' }}>
-      {notification && (
-        <div className="fixed right-4 top-4 z-[100002] w-full max-w-sm rounded-lg shadow-xl border border-[#d8cdcd] overflow-x-auto bg-white px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] animate-fade-in-up" style={{ transform: 'scale(0.9)' }}>
-          <div className="flex items-center justify-between gap-2">
-            <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wider ${
-              notification.type === 'error'
-                ? 'bg-red-100 text-red-700'
-                : notification.type === 'warning'
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-emerald-100 text-emerald-700'
-            }`}>
-              {notification.type === 'error' ? 'Error' : notification.type === 'warning' ? 'Warning' : 'Success'}
-            </span>
-            <button
-              type="button"
-              onClick={() => setNotification(null)}
-              className="text-[#7a6b6b] hover:text-[#2a1b1b]"
-            >
-              ?
-            </button>
-          </div>
-          <p className="mt-2 sm:text-xs md:text-xs lg:text-xs leading-relaxed">{notification.message}</p>
-        </div>
-      )}
+ return (
+ <div className="flex flex-col h-full min-h-screen bg-[#f9fafb] font-sans selection:bg-[#800000] selection:text-white pb-12" style={{ zoom: '1.22' }}>
+ {notification && (
+ <div className="fixed right-4 top-4 z-[100002] w-full max-w-sm rounded-lg shadow-xl border border-[#d8cdcd] overflow-x-auto bg-white px-2 py-2 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] animate-fade-in-up" style={{ transform: 'scale(0.9)' }}>
+ <div className="flex items-center justify-between gap-2">
+ <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wider ${
+ notification.type === 'error'
+ ? 'bg-red-100 text-red-700'
+ : notification.type === 'warning'
+ ? 'bg-amber-100 text-amber-800'
+ : 'bg-emerald-100 text-emerald-700'
+ }`}>
+ {notification.type === 'error' ? 'Error' : notification.type === 'warning' ? 'Warning' : 'Success'}
+ </span>
+ <button
+ type="button"
+ onClick={() => setNotification(null)}
+ className="text-[#7a6b6b] hover:text-[#2a1b1b]"
+ >
+ ?
+ </button>
+ </div>
+ <p className="mt-2 sm:text-xs md:text-xs lg:text-xs leading-relaxed">{notification.message}</p>
+ </div>
+ )}
 
-      {/* --- WORKSPACE HEADER --- */}
-      <div className="overflow-x-auto bg-white border-b border-[#d8cdcd] px-0 lg:px-0 pt-8 pb-0 relative z-40">
-        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-2 mb-6 w-full">
-          
-          <div className="flex justify-between items-start w-full lg:w-auto">
-            <div>
-              <h1 className="text-xs md:text-xs font-bold text-[#2a1b1b] tracking-tight" style={{ fontSize: '78%' }}>
-                {t('dashboardTitle')}, {user.firstName}
-              </h1>
-              <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mt-1">
-                Manage your saved lists, enrich contacts, and export leads.
-              </p>
-            </div>
+ {/* --- WORKSPACE HEADER --- */}
+ <div className="overflow-x-auto bg-white border-b border-[#d8cdcd] px-0 lg:px-0 pt-8 pb-0 relative z-40">
+ <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-2 mb-6 w-full">
+ 
+ <div className="flex justify-between items-start w-full lg:w-auto">
+ <div>
+ <h1 className="text-xs md:text-xs font-bold text-[#2a1b1b] tracking-tight" style={{ fontSize: '78%' }}>
+ {t('dashboardTitle')}, {user.firstName}
+ </h1>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mt-1">
+ Manage your saved lists, enrich contacts, and export leads.
+ </p>
+ </div>
 
-            <div className="lg:hidden" ref={profileRef}>
-              <button onClick={() => setIsProfileOpen(!isProfileOpen)} className="w-6 h-6 bg-[#800000] text-white rounded-full flex items-center justify-center font-bold shadow-sm uppercase">
-                {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-              </button>
-            </div>
-          </div>
+ <div className="lg:hidden" ref={profileRef}>
+ <button onClick={() => setIsProfileOpen(!isProfileOpen)} className="w-6 h-6 bg-[#800000] text-white rounded-full flex items-center justify-center font-bold shadow-sm uppercase">
+ {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+ </button>
+ </div>
+ </div>
 
-          <div className="flex flex-col md:flex-row items-stretch md:items-start gap-2">
-            <div className="bg-[#f5f2f2] border border-[#d8cdcd] rounded-lg p-4 w-full md:w-72 shadow-sm">
-              <div className="flex justify-between items-end mb-2">
-                <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] uppercase tracking-wider">Export Credits</span>
-                <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b]">
-                  {stats?.exportCreditsUsed.toLocaleString() || 0} <span className="text-[#7a6b6b] font-medium">/ {stats?.exportCreditsTotal.toLocaleString() || 5000}</span>
-                </span>
-              </div>
-              <div className="w-full h-2 bg-[#e8e2e2] rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-[#800000] rounded-full transition-all duration-1000" 
-                  style={{ width: `${creditPercentage}%` }}
-                />
-              </div>
-              <div className="flex justify-between items-center mt-2">
-                <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] font-medium uppercase tracking-wider">{stats?.planTier || 'Free Trial'}</p>
-                <button className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#800000] hover:text-[#660000] transition-colors">Upgrade Plan</button>
-              </div>
-            </div>
+ <div className="flex flex-col md:flex-row items-stretch md:items-start gap-2">
+ <div className="bg-[#f5f2f2] border border-[#d8cdcd] rounded-lg p-4 w-full md:w-72 shadow-sm">
+ <div className="flex justify-between items-end mb-2">
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] uppercase tracking-wider">Export Credits</span>
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b]">
+ {stats?.exportCreditsUsed.toLocaleString() || 0} <span className="text-[#7a6b6b] font-medium">/ {stats?.exportCreditsTotal.toLocaleString() || 5000}</span>
+ </span>
+ </div>
+ <div className="w-full h-2 bg-[#e8e2e2] rounded-full overflow-hidden">
+ <div 
+ className="h-full bg-[#800000] rounded-full transition-all duration-1000" 
+ style={{ width: `${creditPercentage}%` }}
+ />
+ </div>
+ <div className="flex justify-between items-center mt-2">
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] font-medium uppercase tracking-wider">{stats?.planTier || 'Free Trial'}</p>
+ <button className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#800000] hover:text-[#660000] transition-colors">Upgrade Plan</button>
+ </div>
+ </div>
 
-            <div className="hidden lg:block relative" ref={profileRef}>
-              <button 
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex flex-col sm:flex-row items-center gap-2 bg-white border border-[#d8cdcd] hover:bg-[#f5f2f2] p-2 pr-3 rounded-lg transition-colors shadow-sm"
-              >
-                <div className="w-6 h-6 bg-[#800000] text-white rounded-lg flex items-center justify-center font-bold sm:text-xs md:text-xs lg:text-xs uppercase">
-                  {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-                </div>
-                <div className="text-left hidden xl:block">
-                  <p className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] leading-tight">{user.firstName} {user.lastName}</p>
-                  <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#7a6b6b] leading-tight">{user.email}</p>
-                </div>
-                <ChevronDown size={16} className={`text-[#7a6b6b] transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
-              </button>
+ <div className="hidden lg:block relative" ref={profileRef}>
+ <button 
+ onClick={() => setIsProfileOpen(!isProfileOpen)}
+ className="flex flex-col sm:flex-row items-center gap-2 bg-white border border-[#d8cdcd] hover:bg-[#f5f2f2] p-2 pr-3 rounded-lg transition-colors shadow-sm"
+ >
+ <div className="w-6 h-6 bg-[#800000] text-white rounded-lg flex items-center justify-center font-bold sm:text-xs md:text-xs lg:text-xs uppercase">
+ {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+ </div>
+ <div className="text-left hidden xl:block">
+ <p className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] leading-tight">{user.firstName} {user.lastName}</p>
+ <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#7a6b6b] leading-tight">{user.email}</p>
+ </div>
+ <ChevronDown size={16} className={`text-[#7a6b6b] transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+ </button>
 
-              {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-56 overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-xl py-2 animate-fade-in-up origin-top-right">
-                  <div className="px-2 py-2 border-b border-[#e8e2e2] xl:hidden">
-                     <p className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] truncate">{user.firstName} {user.lastName}</p>
-                     <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#7a6b6b] truncate">{user.email}</p>
-                  </div>
-                  <button className="w-full flex flex-col sm:flex-row items-center gap-2 px-2 py-1.5 sm:text-xs md:text-sm lg:text-sm font-medium text-[#2a1b1b] hover:bg-[#f5f2f2] transition-colors">
-                    <UserIcon size={16} className="text-[#7a6b6b]" /> Profile Settings
-                  </button>
-                  <button onClick={() => { setActiveTab('Billing'); setIsProfileOpen(false); }} className="w-full flex flex-col sm:flex-row items-center gap-2 px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] hover:bg-[#f5f2f2] transition-colors">
-                    <CreditCard size={16} className="text-[#7a6b6b]" /> Billing & Plans
-                  </button>
-                  <div className="h-px bg-[#e8e2e2] my-1" />
-                  <button onClick={handleLogout} className="w-full flex flex-col sm:flex-row items-center gap-2 px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold text-red-600 hover:bg-red-50 transition-colors">
-                    <LogOut size={16} /> Log Out
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+ {isProfileOpen && (
+ <div className="absolute right-0 mt-2 w-56 overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-xl py-2 animate-fade-in-up origin-top-right">
+ <div className="px-2 py-2 border-b border-[#e8e2e2] xl:hidden">
+ <p className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b]">{user.firstName} {user.lastName}</p>
+ <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#7a6b6b]">{user.email}</p>
+ </div>
+ <button className="w-full flex flex-col sm:flex-row items-center gap-2 px-2 py-1.5 sm:text-xs md:text-sm lg:text-sm font-medium text-[#2a1b1b] hover:bg-[#f5f2f2] transition-colors">
+ <UserIcon size={16} className="text-[#7a6b6b]" /> Profile Settings
+ </button>
+ <button onClick={() => { setActiveTab('Billing'); setIsProfileOpen(false); }} className="w-full flex flex-col sm:flex-row items-center gap-2 px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] hover:bg-[#f5f2f2] transition-colors">
+ <CreditCard size={16} className="text-[#7a6b6b]" /> Billing & Plans
+ </button>
+ <div className="h-px bg-[#e8e2e2] my-1" />
+ <button onClick={handleLogout} className="w-full flex flex-col sm:flex-row items-center gap-2 px-2 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold text-red-600 hover:bg-red-50 transition-colors">
+ <LogOut size={16} /> Log Out
+ </button>
+ </div>
+ )}
+ </div>
+ </div>
+ </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 md:gap-3 md:gap-6 mt-4 overflow-x-auto custom-scrollbar w-full">
-          {['Overview', 'My Lists', 'Export History', 'Enrichment Jobs', 'Billing'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => { setActiveTab(tab); setSelectedLists([]); }}
-              className={`pb-3 text-xs font-medium transition-colors relative whitespace-nowrap ${
-                activeTab === tab ? 'text-[#800000]' : 'text-[#7a6b6b] hover:text-[#2a1b1b]'
-              }`}
-            >
-              {tab}
-              {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#800000] rounded-t-full" />}
-            </button>
-          ))}
-        </div>
-      </div>
+ <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 md:gap-6 mt-4 overflow-x-auto custom-scrollbar w-full">
+ {['Overview', 'My Lists', 'Export History', 'Enrichment Jobs', 'Billing'].map((tab) => (
+ <button
+ key={tab}
+ onClick={() => { setActiveTab(tab); setSelectedLists([]); }}
+ className={`pb-3 text-xs font-medium transition-colors relative whitespace-nowrap ${
+ activeTab === tab ? 'text-[#800000]' : 'text-[#7a6b6b] hover:text-[#2a1b1b]'
+ }`}
+ >
+ {tab}
+ {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#800000] rounded-t-full" />}
+ </button>
+ ))}
+ </div>
+ </div>
 
-      <div className="px-0 mt-8 w-full flex flex-col gap-2 relative z-10">
+ <div className="px-0 mt-8 w-full flex flex-col gap-2 relative z-10">
 
-        {/* TAB 1: OVERVIEW */}
-        {activeTab === 'Overview' && (
-          <div className="animate-fade-in flex flex-col gap-2">
-            <div className="grid md:grid-cols-1 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-              <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 shadow-sm flex flex-col">
-                <div className="flex flex-col sm:flex-row items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-[#800000]/10 text-[#800000] rounded-lg flex items-center justify-center"><DatabaseIcon size={16} /></div>
-                  <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Total Lists</h4>
-                </div>
-                <p className="text-xs font-black text-[#2a1b1b]" style={{ fontSize: '78%' }}>{totalLists}</p>
-              </div>
+ {/* TAB 1: OVERVIEW */}
+ {activeTab === 'Overview' && (
+ <div className="animate-fade-in flex flex-col gap-2">
+ <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+ <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 shadow-sm flex flex-col">
+ <div className="flex flex-col sm:flex-row items-center gap-2 mb-3">
+ <div className="w-8 h-8 bg-[#800000]/10 text-[#800000] rounded-lg flex items-center justify-center"><DatabaseIcon size={16} /></div>
+ <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Total Lists</h4>
+ </div>
+ <p className="text-xs font-black text-[#2a1b1b]" style={{ fontSize: '78%' }}>{totalLists}</p>
+ </div>
 
-              <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 shadow-sm flex flex-col">
-                <div className="flex flex-col sm:flex-row items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center"><Users size={16} /></div>
-                  <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Saved Contacts</h4>
-                </div>
-                <p className="text-xs font-black text-[#2a1b1b]" style={{ fontSize: '78%' }}>{totalContactsSaved.toLocaleString()}</p>
-              </div>
+ <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 shadow-sm flex flex-col">
+ <div className="flex flex-col sm:flex-row items-center gap-2 mb-3">
+ <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center"><Users size={16} /></div>
+ <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Saved Contacts</h4>
+ </div>
+ <p className="text-xs font-black text-[#2a1b1b]" style={{ fontSize: '78%' }}>{totalContactsSaved.toLocaleString()}</p>
+ </div>
 
-              <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 shadow-sm flex flex-col">
-                <div className="flex flex-col sm:flex-row items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center"><Download size={16} /></div>
-                  <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Total Exported</h4>
-                </div>
-                <p className="text-xs font-black text-[#2a1b1b]" style={{ fontSize: '78%' }}>{stats?.exportCreditsUsed.toLocaleString() || 0}</p>
-              </div>
+ <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 shadow-sm flex flex-col">
+ <div className="flex flex-col sm:flex-row items-center gap-2 mb-3">
+ <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center"><Download size={16} /></div>
+ <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Total Exported</h4>
+ </div>
+ <p className="text-xs font-black text-[#2a1b1b]" style={{ fontSize: '78%' }}>{stats?.exportCreditsUsed.toLocaleString() || 0}</p>
+ </div>
 
-              <div className="overflow-x-auto bg-white border border-[#800000] rounded-lg p-6 shadow-xs flex flex-col relative overflow-hidden">
-                <div className="absolute -right-4 -top-4 opacity-5"><CreditCard size={21} /></div>
-                <div className="flex flex-col sm:flex-row items-center gap-2 mb-3 relative z-10">
-                  <div className="w-8 h-8 bg-[#800000] text-white rounded-lg flex items-center justify-center"><Zap size={16} /></div>
-                  <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#800000] uppercase tracking-wider">Credits Left</h4>
-                </div>
-                <p className="text-xs font-black text-[#2a1b1b] relative z-10" style={{ fontSize: '78%' }}>{creditsRemaining.toLocaleString()}</p>
-              </div>
-            </div>
+ <div className="overflow-x-auto bg-white border border-[#800000] rounded-lg p-6 shadow-xs flex flex-col relative overflow-hidden">
+ <div className="absolute -right-4 -top-4 opacity-5"><CreditCard size={21} /></div>
+ <div className="flex flex-col sm:flex-row items-center gap-2 mb-3 relative z-10">
+ <div className="w-8 h-8 bg-[#800000] text-white rounded-lg flex items-center justify-center"><Zap size={16} /></div>
+ <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#800000] uppercase tracking-wider">Credits Left</h4>
+ </div>
+ <p className="text-xs font-black text-[#2a1b1b] relative z-10" style={{ fontSize: '78%' }}>{creditsRemaining.toLocaleString()}</p>
+ </div>
+ </div>
 
-            <div className="grid md:grid-cols-1 grid-cols-1 lg:grid-cols-3 gap-2">
-              <div className="lg:col-span-2 overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm overflow-hidden flex flex-col">
-                <div className="p-6 border-b border-[#d8cdcd] flex items-center justify-between">
-                  <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Recent Exports</h3>
-                  <button onClick={() => setActiveTab('Export History')} className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#800000] hover:text-[#660000]">View All</button>
-                </div>
-                
-                {recentExports.length === 0 ? (
-                  <div className="p-8 text-center flex flex-col items-center justify-center">
-                    <Download size={21} className="text-[#d8cdcd] mb-3" />
-                    <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">No recent exports found.</p>
-                  </div>
-                ) : (
-                  <div className="divide-y divide-[#e8e2e2]">
-                    {recentExports.map(log => (
-                      <div key={log.id} className="p-4 flex items-center justify-between hover:bg-[#f9fafb] transition-colors">
-                        <div>
-                          <p className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] mb-0.5">{log.listName}</p>
-                          <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">{new Date(log.createdAt).toLocaleDateString()}</p>
-                        </div>
-                        <span className="bg-emerald-50 text-emerald-700 sm:text-xs md:text-xs lg:text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
-                          +{log.recordCount.toLocaleString()} leads
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+ <div className="lg:col-span-2 overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm overflow-hidden flex flex-col">
+ <div className="p-6 border-b border-[#d8cdcd] flex items-center justify-between">
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Recent Exports</h3>
+ <button onClick={() => setActiveTab('Export History')} className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#800000] hover:text-[#660000]">View All</button>
+ </div>
+ 
+ {recentExports.length === 0 ? (
+ <div className="p-8 text-center flex flex-col items-center justify-center">
+ <Download size={21} className="text-[#d8cdcd] mb-3" />
+ <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">No recent exports found.</p>
+ </div>
+ ) : (
+ <div className="divide-y divide-[#e8e2e2]">
+ {recentExports.map(log => (
+ <div key={log.id} className="p-4 flex items-center justify-between hover:bg-[#f9fafb] transition-colors">
+ <div>
+ <p className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] mb-0.5">{log.listName}</p>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">{new Date(log.createdAt).toLocaleDateString()}</p>
+ </div>
+ <span className="bg-emerald-50 text-emerald-700 sm:text-xs md:text-xs lg:text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
+ +{log.recordCount.toLocaleString()} leads
+ </span>
+ </div>
+ ))}
+ </div>
+ )}
+ </div>
 
-              <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm p-6">
-                <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-4">Quick Actions</h3>
-                <div className="flex flex-col gap-2">
-                  <button onClick={() => setIsGlobalSearchOpen(true)} className="w-full flex items-center justify-between p-3 rounded-lg border border-[#e8e2e2] hover:border-[#800000] hover:bg-[#800000]/5 transition-all group">
-                    <div className="flex flex-col sm:flex-row items-center gap-2 text-[#2a1b1b]">
-                      <Search size={16} className="text-[#7a6b6b] group-hover:text-[#800000]" />
-                      <span className="sm:text-xs md:text-xs lg:text-xs font-bold">Search Database</span>
-                    </div>
-                    <ArrowRight size={16} className="text-[#d8cdcd] group-hover:text-[#800000] group-hover:translate-x-1 transition-all" />
-                  </button>
-                  <button onClick={() => setActiveTab('My Lists')} className="w-full flex items-center justify-between p-3 rounded-lg border border-[#e8e2e2] hover:border-[#800000] hover:bg-[#800000]/5 transition-all group">
-                    <div className="flex flex-col sm:flex-row items-center gap-2 text-[#2a1b1b]">
-                      <Users size={16} className="text-[#7a6b6b] group-hover:text-[#800000]" />
-                      <span className="sm:text-xs md:text-xs lg:text-xs font-bold">View My Lists</span>
-                    </div>
-                    <ArrowRight size={16} className="text-[#d8cdcd] group-hover:text-[#800000] group-hover:translate-x-1 transition-all" />
-                  </button>
-                  <button onClick={() => setIsFolderModalOpen(true)} className="w-full flex items-center justify-between p-3 rounded-lg border border-[#e8e2e2] hover:border-[#800000] hover:bg-[#800000]/5 transition-all group">
-                    <div className="flex flex-col sm:flex-row items-center gap-2 text-[#2a1b1b]">
-                      <FolderPlus size={16} className="text-[#7a6b6b] group-hover:text-[#800000]" />
-                      <span className="sm:text-xs md:text-xs lg:text-xs font-bold">Create Folder</span>
-                    </div>
-                    <ArrowRight size={16} className="text-[#d8cdcd] group-hover:text-[#800000] group-hover:translate-x-1 transition-all" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+ <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm p-6">
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-4">Quick Actions</h3>
+ <div className="flex flex-col gap-2">
+ <button onClick={() => setIsGlobalSearchOpen(true)} className="w-full flex items-center justify-between p-3 rounded-lg border border-[#e8e2e2] hover:border-[#800000] hover:bg-[#800000]/5 transition-all group">
+ <div className="flex flex-col sm:flex-row items-center gap-2 text-[#2a1b1b]">
+ <Search size={16} className="text-[#7a6b6b] group-hover:text-[#800000]" />
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold">Search Database</span>
+ </div>
+ <ArrowRight size={16} className="text-[#d8cdcd] group-hover:text-[#800000] group-hover:translate-x-1 transition-all" />
+ </button>
+ <button onClick={() => setActiveTab('My Lists')} className="w-full flex items-center justify-between p-3 rounded-lg border border-[#e8e2e2] hover:border-[#800000] hover:bg-[#800000]/5 transition-all group">
+ <div className="flex flex-col sm:flex-row items-center gap-2 text-[#2a1b1b]">
+ <Users size={16} className="text-[#7a6b6b] group-hover:text-[#800000]" />
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold">View My Lists</span>
+ </div>
+ <ArrowRight size={16} className="text-[#d8cdcd] group-hover:text-[#800000] group-hover:translate-x-1 transition-all" />
+ </button>
+ <button onClick={() => setIsFolderModalOpen(true)} className="w-full flex items-center justify-between p-3 rounded-lg border border-[#e8e2e2] hover:border-[#800000] hover:bg-[#800000]/5 transition-all group">
+ <div className="flex flex-col sm:flex-row items-center gap-2 text-[#2a1b1b]">
+ <FolderPlus size={16} className="text-[#7a6b6b] group-hover:text-[#800000]" />
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold">Create Folder</span>
+ </div>
+ <ArrowRight size={16} className="text-[#d8cdcd] group-hover:text-[#800000] group-hover:translate-x-1 transition-all" />
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+ )}
 
-        {/* TAB 2: MY LISTS */}
-        {activeTab === 'My Lists' && (
-          <div className="animate-fade-in flex flex-col gap-2">
-            <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-sm">
-              <div className="flex flex-col sm:flex-row items-center gap-2">
-                <div className="w-16 md:w-18 h-18 bg-[#800000]/10 rounded-full flex items-center justify-center shrink-0">
-                  <DatabaseIcon size={16} className="text-[#800000]" />
-                </div>
-                <div>
-                  <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Build a new lead list</h2>
-                  <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">Search from over 270M+ verified B2B contacts across 190 countries.</p>
-                </div>
-              </div>
-              <button onClick={() => setIsGlobalSearchOpen(true)} className="w-full sm:w-auto whitespace-nowrap bg-[#800000] hover:bg-[#660000] text-white px-3 md:px-6 py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
-                <Search size={16} /> Prospect Search
-              </button>
-            </div>
+ {/* TAB 2: MY LISTS */}
+ {activeTab === 'My Lists' && (
+ <div className="animate-fade-in flex flex-col gap-2">
+ <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-6 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-sm">
+ <div className="flex flex-col sm:flex-row items-center gap-2">
+ <div className="w-16 md:w-18 h-18 bg-[#800000]/10 rounded-full flex items-center justify-center shrink-0">
+ <DatabaseIcon size={16} className="text-[#800000]" />
+ </div>
+ <div>
+ <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Build a new lead list</h2>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">Search from over 270M+ verified B2B contacts across 190 countries.</p>
+ </div>
+ </div>
+ <button onClick={() => setIsGlobalSearchOpen(true)} className="w-full sm:w-auto whitespace-nowrap bg-[#800000] hover:bg-[#660000] text-white px-3 md:px-6 py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+ <Search size={16} /> Prospect Search
+ </button>
+ </div>
 
-            <div className={`bg-white border border-[#800000] rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs transition-all duration-300 ${selectedLists.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 hidden'}`}>
-              <div className="flex flex-col sm:flex-row items-center gap-2">
-                <span className="bg-[#800000]/10 text-[#800000] sm:text-xs md:text-xs lg:text-xs font-bold px-3 py-1 rounded-full">
-                  {selectedLists.length} Selected
-                </span>
-                <span className="sm:text-xs md:text-xs lg:text-xs text-[#2a1b1b] font-medium">Ready for action</span>
-              </div>
-              <div className="flex flex-col md:flex-row gap-2 w-full sm:w-auto">
-                <button className="flex-1 min-w-0 sm:flex-none sm:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b] hover:bg-[#f5f2f2] px-2 py-2 border border-[#d8cdcd] rounded-lg bg-white shadow-sm transition-colors">
-                  Merge Lists
-                </button>
-                <button 
-                  onClick={() => handleExportLists(selectedLists)}
-                  className="flex-1 min-w-0 sm:flex-none sm:text-xs md:text-xs lg:text-xs font-bold text-white bg-[#800000] hover:bg-[#660000] px-2 py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <Download size={16} /> Export Selected
-                </button>
-              </div>
-            </div>
+ <div className={`bg-white border border-[#800000] rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs transition-all duration-300 ${selectedLists.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 hidden'}`}>
+ <div className="flex flex-col sm:flex-row items-center gap-2">
+ <span className="bg-[#800000]/10 text-[#800000] sm:text-xs md:text-xs lg:text-xs font-bold px-3 py-1 rounded-full">
+ {selectedLists.length} Selected
+ </span>
+ <span className="sm:text-xs md:text-xs lg:text-xs text-[#2a1b1b] font-medium">Ready for action</span>
+ </div>
+ <div className="flex flex-col md:flex-row gap-2 w-full sm:w-auto">
+ <button className="flex-1 min-w-0 sm:flex-none sm:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b] hover:bg-[#f5f2f2] px-2 py-2 border border-[#d8cdcd] rounded-lg bg-white shadow-sm transition-colors">
+ Merge Lists
+ </button>
+ <button 
+ onClick={() => handleExportLists(selectedLists)}
+ className="flex-1 min-w-0 sm:flex-none sm:text-xs md:text-xs lg:text-xs font-bold text-white bg-[#800000] hover:bg-[#660000] px-2 py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5"
+ >
+ <Download size={16} /> Export Selected
+ </button>
+ </div>
+ </div>
 
-            <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-[#d8cdcd] flex flex-col sm:flex-row sm:items-center justify-between gap-2 overflow-x-auto bg-white">
-                <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-                  <div className="relative flex-1 min-w-0 sm:w-full md:w-38">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7a6b6b]" />
-                    <input type="text" placeholder="Search lists..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9 pr-4 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs w-full outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all" />
-                  </div>
-                  <button onClick={() => setIsFilterModalOpen(true)} className="flex flex-col sm:flex-row items-center gap-2 px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] hover:bg-[#f5f2f2] transition-colors">
-                    <Filter size={16} /> <span className="hidden sm:inline">Filters</span>
-                  </button>
-                </div>
-                <button onClick={() => setIsFolderModalOpen(true)} className="flex items-center justify-center gap-2 sm:text-xs md:text-xs lg:text-xs font-medium text-[#800000] hover:text-[#660000] transition-colors">
-                  <FolderPlus size={16} /> Create Folder
-                </button>
-              </div>
+ <div className="overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm overflow-hidden flex flex-col">
+ <div className="p-4 border-b border-[#d8cdcd] flex flex-col sm:flex-row sm:items-center justify-between gap-2 overflow-x-auto bg-white">
+ <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+ <div className="relative flex-1 min-w-0 sm:w-full md:w-38">
+ <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7a6b6b]" />
+ <input type="text" placeholder="Search lists..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9 pr-4 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs w-full outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all" />
+ </div>
+ <button onClick={() => setIsFilterModalOpen(true)} className="flex flex-col sm:flex-row items-center gap-2 px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] hover:bg-[#f5f2f2] transition-colors">
+ <Filter size={16} /> <span className="hidden sm:inline">Filters</span>
+ </button>
+ </div>
+ <button onClick={() => setIsFolderModalOpen(true)} className="flex items-center justify-center gap-2 sm:text-xs md:text-xs lg:text-xs font-medium text-[#800000] hover:text-[#660000] transition-colors">
+ <FolderPlus size={16} /> Create Folder
+ </button>
+ </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-200">
-                  <thead>
-                    <tr className="bg-[#f9fafb] border-b border-[#d8cdcd]">
-                      <th className="w-16 md:w-18 px-2 py-2 text-center">
-                        <input type="checkbox" checked={selectedLists.length === filteredLists.length && filteredLists.length > 0} onChange={handleSelectAll} className="rounded border-[#d8cdcd] text-[#800000] focus:ring-[#800000] cursor-pointer" />
-                      </th>
-                      <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">List Name</th>
-                      <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Contacts</th>
-                      <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Data Types</th>
-                      <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Status</th>
-                      <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Date Created</th>
-                      <th className="px-2 py-2 text-center sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#e8e2e2]">
-                    {isLoadingLists ? (
-                      <tr><td colSpan="7" className="px-2 py-12 text-center"><Loader2 size={16} className="animate-spin text-[#800000] mx-auto mb-2" /><p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">Loading your lists...</p></td></tr>
-                    ) : filteredLists.length === 0 ? (
-                      <tr>
-                        <td colSpan="7" className="px-2 py-16 text-center">
-                          <div className="flex flex-col items-center justify-center">
-                            <DatabaseIcon size={21} className="text-[#d8cdcd] mb-3" />
-                            <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-1">No lists found</h3>
-                            <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mb-4">{searchQuery ? `No results matching "${searchQuery}"` : "You haven't built any lead lists yet."}</p>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredLists.map((list) => {
-                        const isSelected = selectedLists.includes(list.id);
-                        return (
-                          <tr key={list.id} className={`transition-colors group ${isSelected ? 'bg-[#f5f2f2]' : 'hover:bg-[#f5f2f2]'}`}>
-                            <td className="px-2 py-2 text-center"><input type="checkbox" checked={isSelected} onChange={() => handleSelectRow(list.id)} className="rounded border-[#d8cdcd] text-[#800000] focus:ring-[#800000] cursor-pointer" /></td>
-                            <td className="px-2 py-2"><div className="flex flex-col sm:flex-row items-center gap-2"><div className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${isSelected ? 'bg-white border border-[#d8cdcd]' : 'bg-[#e8e2e2]'} text-[#2a1b1b]`}><Users size={16} /></div><span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] cursor-pointer hover:text-[#800000]">{list.name}</span></div></td>
-                            <td className="px-2 py-2"><span className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b]">{list.count.toLocaleString()}</span></td>
-                            <td className="px-2 py-2">
-                              <div className="flex flex-col sm:flex-row items-center gap-1.5 text-[#7a6b6b]">
-                                {list.type.includes('Email') && <Mail size={16} title="Emails Included" />}
-                                {list.type.includes('Phone') && <Phone size={16} title="Phones Included" />}
-                                {list.type === 'Full Profile' && <DatabaseIcon size={16} title="Full Profiles" />}
-                                <span className="sm:text-xs md:text-xs lg:text-xs ml-1">{list.type}</span>
-                              </div>
-                            </td>
-                            <td className="px-2 py-2">
-                              <span className={`inline-flex flex-col sm:flex-row items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                                list.status === 'Ready to Export' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                                list.status === 'Enriching...' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                                list.status === 'Exported' ? 'bg-[#800000]/10 text-[#800000] border border-[#800000]/20' : 'bg-white text-[#7a6b6b] border border-[#d8cdcd]'
-                              }`}>
-                                {list.status === 'Enriching...' && <Zap size={16} className="animate-pulse" />}
-                                {list.status === 'Ready to Export' && <CheckCircle2 size={16} />}
-                                {list.status}
-                              </span>
-                            </td>
-                            <td className="px-2 py-2"><span className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">{list.date}</span></td>
-                            <td className="px-2 py-2">
-                              <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => handleExportLists([list.id])} className="p-1.5 text-[#7a6b6b] hover:text-[#800000] hover:bg-[#800000]/10 rounded transition-colors" title="Export CSV"><Download size={16} /></button>
-                                <button className="p-1.5 text-[#7a6b6b] hover:text-[#2a1b1b] hover:bg-[#e8e2e2] rounded transition-colors" title="More Options"><MoreHorizontal size={16} /></button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="p-4 border-t border-[#d8cdcd] bg-[#f9fafb] flex items-center justify-between">
-                <span className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">Showing {filteredLists.length} of {lists.length} lists</span>
-              </div>
-            </div>
-          </div>
-        )}
+ <div className="overflow-x-auto">
+ <table className="w-full text-left border-collapse min-w-200">
+ <thead>
+ <tr className="bg-[#f9fafb] border-b border-[#d8cdcd]">
+ <th className="w-16 md:w-18 px-2 py-2 text-center">
+ <input type="checkbox" checked={selectedLists.length === filteredLists.length && filteredLists.length > 0} onChange={handleSelectAll} className="rounded border-[#d8cdcd] text-[#800000] focus:ring-[#800000] cursor-pointer" />
+ </th>
+ <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">List Name</th>
+ <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Contacts</th>
+ <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Data Types</th>
+ <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Status</th>
+ <th className="px-2 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Date Created</th>
+ <th className="px-2 py-2 text-center sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Actions</th>
+ </tr>
+ </thead>
+ <tbody className="divide-y divide-[#e8e2e2]">
+ {isLoadingLists ? (
+ <tr><td colSpan="7" className="px-2 py-12 text-center"><Loader2 size={16} className="animate-spin text-[#800000] mx-auto mb-2" /><p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">Loading your lists...</p></td></tr>
+ ) : filteredLists.length === 0 ? (
+ <tr>
+ <td colSpan="7" className="px-2 py-16 text-center">
+ <div className="flex flex-col items-center justify-center">
+ <DatabaseIcon size={21} className="text-[#d8cdcd] mb-3" />
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-1">No lists found</h3>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mb-4">{searchQuery ? `No results matching "${searchQuery}"` : "You haven't built any lead lists yet."}</p>
+ </div>
+ </td>
+ </tr>
+ ) : (
+ filteredLists.map((list) => {
+ const isSelected = selectedLists.includes(list.id);
+ return (
+ <tr key={list.id} className={`transition-colors group ${isSelected ? 'bg-[#f5f2f2]' : 'hover:bg-[#f5f2f2]'}`}>
+ <td className="px-2 py-2 text-center"><input type="checkbox" checked={isSelected} onChange={() => handleSelectRow(list.id)} className="rounded border-[#d8cdcd] text-[#800000] focus:ring-[#800000] cursor-pointer" /></td>
+ <td className="px-2 py-2"><div className="flex flex-col sm:flex-row items-center gap-2"><div className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${isSelected ? 'bg-white border border-[#d8cdcd]' : 'bg-[#e8e2e2]'} text-[#2a1b1b]`}><Users size={16} /></div><span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] cursor-pointer hover:text-[#800000]">{list.name}</span></div></td>
+ <td className="px-2 py-2"><span className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b]">{list.count.toLocaleString()}</span></td>
+ <td className="px-2 py-2">
+ <div className="flex flex-col sm:flex-row items-center gap-1.5 text-[#7a6b6b]">
+ {list.type.includes('Email') && <Mail size={16} title="Emails Included" />}
+ {list.type.includes('Phone') && <Phone size={16} title="Phones Included" />}
+ {list.type === 'Full Profile' && <DatabaseIcon size={16} title="Full Profiles" />}
+ <span className="sm:text-xs md:text-xs lg:text-xs ml-1">{list.type}</span>
+ </div>
+ </td>
+ <td className="px-2 py-2">
+ <span className={`inline-flex flex-col sm:flex-row items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+ list.status === 'Ready to Export' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+ list.status === 'Enriching...' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+ list.status === 'Exported' ? 'bg-[#800000]/10 text-[#800000] border border-[#800000]/20' : 'bg-white text-[#7a6b6b] border border-[#d8cdcd]'
+ }`}>
+ {list.status === 'Enriching...' && <Zap size={16} className="animate-pulse" />}
+ {list.status === 'Ready to Export' && <CheckCircle2 size={16} />}
+ {list.status}
+ </span>
+ </td>
+ <td className="px-2 py-2"><span className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">{list.date}</span></td>
+ <td className="px-2 py-2">
+ <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+ <button onClick={() => handleExportLists([list.id])} className="p-1.5 text-[#7a6b6b] hover:text-[#800000] hover:bg-[#800000]/10 rounded transition-colors" title="Export CSV"><Download size={16} /></button>
+ <button className="p-1.5 text-[#7a6b6b] hover:text-[#2a1b1b] hover:bg-[#e8e2e2] rounded transition-colors" title="More Options"><MoreHorizontal size={16} /></button>
+ </div>
+ </td>
+ </tr>
+ );
+ })
+ )}
+ </tbody>
+ </table>
+ </div>
+ <div className="p-4 border-t border-[#d8cdcd] bg-[#f9fafb] flex items-center justify-between">
+ <span className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">Showing {filteredLists.length} of {lists.length} lists</span>
+ </div>
+ </div>
+ </div>
+ )}
 
-        {/* TAB 3: EXPORT HISTORY */}
-        {activeTab === 'Export History' && (
-          <div className="animate-fade-in overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-[#d8cdcd] overflow-x-auto bg-white">
-              <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Your Export Downloads</h3>
-            </div>
-            {exportHistory.length === 0 ? (
-              <div className="p-12 text-center flex flex-col items-center justify-center">
-                <Download size={21} className="text-[#d8cdcd] mb-4" />
-                <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">You haven't initiated any file downloads yet.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#f9fafb] border-b border-[#d8cdcd]">
-                      <th className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Target Campaign List</th>
-                      <th className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Leads Exported</th>
-                      <th className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Timestamp</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#e8e2e2]">
-                    {exportHistory.map((log) => (
-                      <tr key={log.id} className="hover:bg-[#f9fafb]">
-                        <td className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b]">{log.listName}</td>
-                        <td className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm text-emerald-700 font-semibold">+{log.recordCount.toLocaleString()} leads</td>
-                        <td className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm text-[#7a6b6b]">{new Date(log.createdAt).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+ {/* TAB 3: EXPORT HISTORY */}
+ {activeTab === 'Export History' && (
+ <div className="animate-fade-in overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg shadow-sm overflow-hidden">
+ <div className="p-6 border-b border-[#d8cdcd] overflow-x-auto bg-white">
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Your Export Downloads</h3>
+ </div>
+ {exportHistory.length === 0 ? (
+ <div className="p-12 text-center flex flex-col items-center justify-center">
+ <Download size={21} className="text-[#d8cdcd] mb-4" />
+ <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">You haven't initiated any file downloads yet.</p>
+ </div>
+ ) : (
+ <div className="overflow-x-auto">
+ <table className="w-full text-left border-collapse">
+ <thead>
+ <tr className="bg-[#f9fafb] border-b border-[#d8cdcd]">
+ <th className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Target Campaign List</th>
+ <th className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Leads Exported</th>
+ <th className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Timestamp</th>
+ </tr>
+ </thead>
+ <tbody className="divide-y divide-[#e8e2e2]">
+ {exportHistory.map((log) => (
+ <tr key={log.id} className="hover:bg-[#f9fafb]">
+ <td className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b]">{log.listName}</td>
+ <td className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm text-emerald-700 font-semibold">+{log.recordCount.toLocaleString()} leads</td>
+ <td className="px-3 py-2 sm:text-xs md:text-sm lg:text-sm text-[#7a6b6b]">{new Date(log.createdAt).toLocaleString()}</td>
+ </tr>
+ ))}
+ </tbody>
+ </table>
+ </div>
+ )}
+ </div>
+ )}
 
-        {/* TAB 4: ENRICHMENT JOBS */}
-        {activeTab === 'Enrichment Jobs' && (
-          <div className="animate-fade-in overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-12 shadow-sm flex flex-col items-center justify-center text-center">
-             <Zap size={21} className="text-[#d8cdcd] mb-4" />
-             <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]" style={{ fontSize: '78%' }}>No records found</h3>
-             <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs max-w-md mt-2">You haven't initiated any enrichment jobs yet.</p>
-          </div>
-        )}
+ {/* TAB 4: ENRICHMENT JOBS */}
+ {activeTab === 'Enrichment Jobs' && (
+ <div className="animate-fade-in overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-12 shadow-sm flex flex-col items-center justify-center text-center">
+ <Zap size={21} className="text-[#d8cdcd] mb-4" />
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]" style={{ fontSize: '78%' }}>No records found</h3>
+ <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs max-w-md mt-2">You haven't initiated any enrichment jobs yet.</p>
+ </div>
+ )}
 
-        {/* TAB 5: BILLING */}
-        {activeTab === 'Billing' && (
-          <div className="animate-fade-in overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-12 shadow-sm flex flex-col items-center justify-center text-center">
-             <CreditCard size={21} className="text-[#d8cdcd] mb-4" />
-             <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]" style={{ fontSize: '78%' }}>Subscription & Billing</h3>
-             <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs max-w-md mt-2">Manage your current plan, view invoice history, and purchase additional export credits via Stripe.</p>
-             <button className="mt-6 bg-[#2a1b1b] text-white px-3 md:px-6 py-1.5 rounded-lg sm:text-xs md:text-sm lg:text-sm font-bold shadow-sm hover:bg-black transition-colors">
-               Manage Billing
-             </button>
-          </div>
-        )}
+ {/* TAB 5: BILLING */}
+ {activeTab === 'Billing' && (
+ <div className="animate-fade-in overflow-x-auto bg-white border border-[#d8cdcd] rounded-lg p-12 shadow-sm flex flex-col items-center justify-center text-center">
+ <CreditCard size={21} className="text-[#d8cdcd] mb-4" />
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]" style={{ fontSize: '78%' }}>Subscription & Billing</h3>
+ <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs max-w-md mt-2">Manage your current plan, view invoice history, and purchase additional export credits via Stripe.</p>
+ <button className="mt-6 bg-[#2a1b1b] text-white px-3 md:px-6 py-1.5 rounded-lg sm:text-xs md:text-sm lg:text-sm font-bold shadow-sm hover:bg-black transition-colors">
+ Manage Billing
+ </button>
+ </div>
+ )}
 
-      </div>
+ </div>
 
-      {/* MODALS */}
-      {isFilterModalOpen && (
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
-          <div className="absolute inset-0 bg-[#2a1b1b]/40 backdrop-blur-sm animate-fade-in" onClick={() => setIsFilterModalOpen(false)} />
-          <div className="relative overflow-x-auto bg-white rounded-lg w-full max-w-sm shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
-            <div className="flex items-center justify-between p-6 border-b border-[#e8e2e2]">
-              <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] flex flex-col sm:flex-row items-center gap-2"><Filter size={16} className="text-[#800000]"/> Filter Lists</h3>
-              <button onClick={() => setIsFilterModalOpen(false)} className="text-[#7a6b6b] hover:text-[#2a1b1b] transition-colors bg-[#f5f2f2] p-1.5 rounded-md"><X size={16} /></button>
-            </div>
-            <div className="p-6 flex flex-col gap-3 md:gap-3 md:gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Status</label>
-                <select className="w-full bg-white border border-[#d8cdcd] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] outline-none focus:border-[#800000]">
-                  <option>All Statuses</option>
-                  <option>Ready to Export</option>
-                  <option>Enriching...</option>
-                  <option>Exported</option>
-                </select>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Data Type</label>
-                <select className="w-full bg-white border border-[#d8cdcd] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] outline-none focus:border-[#800000]">
-                  <option>All Types</option>
-                  <option>Email & Phone</option>
-                  <option>Email Only</option>
-                  <option>Full Profile</option>
-                </select>
-              </div>
-            </div>
-            <div className="p-6 border-t border-[#e8e2e2] bg-[#f9fafb] flex flex-col md:flex-row gap-2">
-              <button onClick={() => setIsFilterModalOpen(false)} className="flex-1 min-w-0 py-2 sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] bg-white border border-[#d8cdcd] hover:bg-[#f5f2f2] transition-colors rounded-lg shadow-sm">Clear</button>
-              <button onClick={() => setIsFilterModalOpen(false)} className="flex-2 bg-[#800000] hover:bg-[#660000] text-white py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors">Apply</button>
-            </div>
-          </div>
-        </div>
-      )}
+ {/* MODALS */}
+ {isFilterModalOpen && (
+ <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
+ <div className="absolute inset-0 bg-[#2a1b1b]/40 backdrop-blur-sm animate-fade-in" onClick={() => setIsFilterModalOpen(false)} />
+ <div className="relative overflow-x-auto bg-white rounded-lg w-full max-w-sm shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+ <div className="flex items-center justify-between p-6 border-b border-[#e8e2e2]">
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] flex flex-col sm:flex-row items-center gap-2"><Filter size={16} className="text-[#800000]"/> Filter Lists</h3>
+ <button onClick={() => setIsFilterModalOpen(false)} className="text-[#7a6b6b] hover:text-[#2a1b1b] transition-colors bg-[#f5f2f2] p-1.5 rounded-md"><X size={16} /></button>
+ </div>
+ <div className="p-6 flex flex-col gap-3 md:gap-6">
+ <div className="flex flex-col gap-2">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Status</label>
+ <select className="w-full bg-white border border-[#d8cdcd] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] outline-none focus:border-[#800000]">
+ <option>All Statuses</option>
+ <option>Ready to Export</option>
+ <option>Enriching...</option>
+ <option>Exported</option>
+ </select>
+ </div>
+ <div className="flex flex-col gap-2">
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Data Type</label>
+ <select className="w-full bg-white border border-[#d8cdcd] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] outline-none focus:border-[#800000]">
+ <option>All Types</option>
+ <option>Email & Phone</option>
+ <option>Email Only</option>
+ <option>Full Profile</option>
+ </select>
+ </div>
+ </div>
+ <div className="p-6 border-t border-[#e8e2e2] bg-[#f9fafb] flex flex-col md:flex-row gap-2">
+ <button onClick={() => setIsFilterModalOpen(false)} className="flex-1 min-w-0 py-2 sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] bg-white border border-[#d8cdcd] hover:bg-[#f5f2f2] transition-colors rounded-lg shadow-sm">Clear</button>
+ <button onClick={() => setIsFilterModalOpen(false)} className="flex-2 bg-[#800000] hover:bg-[#660000] text-white py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors">Apply</button>
+ </div>
+ </div>
+ </div>
+ )}
 
-      {isFolderModalOpen && (
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
-          <div className="absolute inset-0 bg-[#2a1b1b]/40 backdrop-blur-sm animate-fade-in" onClick={() => setIsFolderModalOpen(false)} />
-          <form onSubmit={handleCreateFolder} className="relative bg-white rounded-lg w-full max-w-sm shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
-            <div className="p-6">
-              <div className="w-16 md:w-18 h-18 bg-[#800000]/10 rounded-full flex items-center justify-center mb-4"><Folder size={16} className="text-[#800000]" /></div>
-              <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-1" style={{ fontSize: '78%' }}>Create new folder</h3>
-              <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mb-5">Organize your saved lists into specific campaigns or territories.</p>
-              <input type="text" autoFocus placeholder="e.g., Q4 Enterprise Outreach" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} className="w-full px-2 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all" required />
-            </div>
-            <div className="p-6 border-t border-[#e8e2e2] bg-[#f9fafb] flex flex-col md:flex-row gap-2 justify-end">
-              <button type="button" onClick={() => setIsFolderModalOpen(false)} className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] hover:text-[#2a1b1b] transition-colors">Cancel</button>
-              <button type="submit" disabled={folderLoading} className="bg-[#2a1b1b] hover:bg-[#1a1010] text-white px-3 md:px-6 py-1.5.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex flex-col sm:flex-row items-center gap-2">
-                {folderLoading ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} Save Folder
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+ {isFolderModalOpen && (
+ <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
+ <div className="absolute inset-0 bg-[#2a1b1b]/40 backdrop-blur-sm animate-fade-in" onClick={() => setIsFolderModalOpen(false)} />
+ <form onSubmit={handleCreateFolder} className="relative bg-white rounded-lg w-full max-w-sm shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+ <div className="p-6">
+ <div className="w-16 md:w-18 h-18 bg-[#800000]/10 rounded-full flex items-center justify-center mb-4"><Folder size={16} className="text-[#800000]" /></div>
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-1" style={{ fontSize: '78%' }}>Create new folder</h3>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mb-5">Organize your saved lists into specific campaigns or territories.</p>
+ <input type="text" autoFocus placeholder="e.g., Q4 Enterprise Outreach" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} className="w-full px-2 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all" required />
+ </div>
+ <div className="p-6 border-t border-[#e8e2e2] bg-[#f9fafb] flex flex-col md:flex-row gap-2 justify-end">
+ <button type="button" onClick={() => setIsFolderModalOpen(false)} className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] hover:text-[#2a1b1b] transition-colors">Cancel</button>
+ <button type="submit" disabled={folderLoading} className="bg-[#2a1b1b] hover:bg-[#1a1010] text-white px-3 md:px-6 py-1.5.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex flex-col sm:flex-row items-center gap-2">
+ {folderLoading ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} Save Folder
+ </button>
+ </div>
+ </form>
+ </div>
+ )}
 
-      {isSaveListModalOpen && (
-        <div className="fixed inset-0 z-[100001] flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
-          <div className="absolute inset-0 bg-[#2a1b1b]/40 backdrop-blur-sm animate-fade-in" onClick={() => { setIsSaveListModalOpen(false); setNewListName(''); setExistingListId(''); setSaveMode('new'); }} />
-          <form onSubmit={handleSaveList} className="relative bg-white rounded-lg w-full max-w-sm shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
-            <div className="p-6">
-              <div className="w-16 md:w-18 h-18 bg-[#800000]/10 rounded-full flex items-center justify-center mb-4"><FolderPlus size={16} className="text-[#800000]" /></div>
-              <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-1" style={{ fontSize: '78%' }}>Save search results</h3>
-              <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mb-5">Save {selectedProspects.length > 0 ? selectedProspects.length : (searchResults?.length ?? 0)} prospect{(selectedProspects.length > 0 ? selectedProspects.length : (searchResults?.length ?? 0)) === 1 ? '' : 's'} to a new or existing list.</p>
-              <div className="grid gap-2 mb-4">
-                <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSaveMode('new')}
-                    className={`rounded-lg border px-3 py-2 text-xs font-bold transition-colors ${saveMode === 'new' ? 'bg-[#800000] text-white border-[#800000]' : 'bg-white text-[#2a1b1b] border-[#d8cdcd]'}`}
-                  >
-                    New list
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSaveMode('existing')}
-                    className={`rounded-lg border px-3 py-2 text-xs font-bold transition-colors ${saveMode === 'existing' ? 'bg-[#800000] text-white border-[#800000]' : 'bg-white text-[#2a1b1b] border-[#d8cdcd]'}`}
-                  >
-                    Existing list
-                  </button>
-                </div>
-                {saveMode === 'existing' ? (
-                  <select
-                    value={existingListId}
-                    onChange={(e) => setExistingListId(e.target.value)}
-                    className="w-full px-2 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all"
-                  >
-                    <option value="">Choose an existing list</option>
-                    {lists.map((list) => (
-                      <option key={list.id} value={list.id}>{list.name} ({list.count.toLocaleString()})</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    autoFocus
-                    placeholder="e.g., Q4 Enterprise Outreach"
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    className="w-full px-2 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all"
-                    required={saveMode === 'new'}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="p-6 border-t border-[#e8e2e2] bg-[#f9fafb] flex flex-col md:flex-row gap-2 justify-end">
-              <button type="button" onClick={() => { setIsSaveListModalOpen(false); setNewListName(''); setExistingListId(''); setSaveMode('new'); }} className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] hover:text-[#2a1b1b] transition-colors">Cancel</button>
-              <button type="submit" disabled={listLoading} className="bg-[#2a1b1b] hover:bg-[#1a1010] text-white px-3 md:px-6 py-1.5.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex flex-col sm:flex-row items-center gap-2">
-                {listLoading ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} {saveMode === 'new' ? 'Save List' : 'Add to List'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+ {isSaveListModalOpen && (
+ <div className="fixed inset-0 z-[100001] flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
+ <div className="absolute inset-0 bg-[#2a1b1b]/40 backdrop-blur-sm animate-fade-in" onClick={() => { setIsSaveListModalOpen(false); setNewListName(''); setExistingListId(''); setSaveMode('new'); }} />
+ <form onSubmit={handleSaveList} className="relative bg-white rounded-lg w-full max-w-sm shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+ <div className="p-6">
+ <div className="w-16 md:w-18 h-18 bg-[#800000]/10 rounded-full flex items-center justify-center mb-4"><FolderPlus size={16} className="text-[#800000]" /></div>
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-1" style={{ fontSize: '78%' }}>Save search results</h3>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mb-5">Save {selectedProspects.length > 0 ? selectedProspects.length : (searchResults?.length ?? 0)} prospect{(selectedProspects.length > 0 ? selectedProspects.length : (searchResults?.length ?? 0)) === 1 ? '' : 's'} to a new or existing list.</p>
+ <div className="grid gap-2 mb-4">
+ <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+ <button
+ type="button"
+ onClick={() => setSaveMode('new')}
+ className={`rounded-lg border px-3 py-2 text-xs font-bold transition-colors ${saveMode === 'new' ? 'bg-[#800000] text-white border-[#800000]' : 'bg-white text-[#2a1b1b] border-[#d8cdcd]'}`}
+ >
+ New list
+ </button>
+ <button
+ type="button"
+ onClick={() => setSaveMode('existing')}
+ className={`rounded-lg border px-3 py-2 text-xs font-bold transition-colors ${saveMode === 'existing' ? 'bg-[#800000] text-white border-[#800000]' : 'bg-white text-[#2a1b1b] border-[#d8cdcd]'}`}
+ >
+ Existing list
+ </button>
+ </div>
+ {saveMode === 'existing' ? (
+ <select
+ value={existingListId}
+ onChange={(e) => setExistingListId(e.target.value)}
+ className="w-full px-2 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all"
+ >
+ <option value="">Choose an existing list</option>
+ {lists.map((list) => (
+ <option key={list.id} value={list.id}>{list.name} ({list.count.toLocaleString()})</option>
+ ))}
+ </select>
+ ) : (
+ <input
+ type="text"
+ autoFocus
+ placeholder="e.g., Q4 Enterprise Outreach"
+ value={newListName}
+ onChange={(e) => setNewListName(e.target.value)}
+ className="w-full px-2 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium outline-none focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all"
+ required={saveMode === 'new'}
+ />
+ )}
+ </div>
+ </div>
+ <div className="p-6 border-t border-[#e8e2e2] bg-[#f9fafb] flex flex-col md:flex-row gap-2 justify-end">
+ <button type="button" onClick={() => { setIsSaveListModalOpen(false); setNewListName(''); setExistingListId(''); setSaveMode('new'); }} className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] hover:text-[#2a1b1b] transition-colors">Cancel</button>
+ <button type="submit" disabled={listLoading} className="bg-[#2a1b1b] hover:bg-[#1a1010] text-white px-3 md:px-6 py-1.5.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex flex-col sm:flex-row items-center gap-2">
+ {listLoading ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} {saveMode === 'new' ? 'Save List' : 'Add to List'}
+ </button>
+ </div>
+ </form>
+ </div>
+ )}
 
-      {/* --- FUNCTIONAL PROSPECT SEARCH MODAL --- */}
-      {isGlobalSearchOpen && (
-        <div className="fixed inset-0 z-[100000] flex items-start justify-center p-4 pt-10 sm:p-8" style={{ transform: 'scale(0.9)' }}>
-          <div className="absolute inset-0 bg-[#2a1b1b]/80 backdrop-blur-sm animate-fade-in" onClick={closeGlobalSearch} />
-          <div className="relative overflow-x-auto bg-white rounded-lg w-full max-w-full md:max-w-6xl h-[85vh] shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
-            <div className="flex items-center justify-between px-3 py-2 border-b border-[#e8e2e2] bg-[#f9fafb]">
-              <div className="flex flex-col sm:flex-row items-center gap-2">
-                <Search size={16} className="text-[#800000]" />
-                <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Advanced Prospecting</h3>
-              </div>
-              <button onClick={closeGlobalSearch} className="text-[#7a6b6b] hover:text-[#2a1b1b] bg-[#e8e2e2] hover:bg-[#d8cdcd] p-1.5 rounded-md transition-colors"><X size={16} /></button>
-            </div>
-            
-            <div className="flex flex-1 min-w-0 overflow-hidden">
-              {/* LEFT PANEL: FILTERS */}
-              <div className="w-72 border-r border-[#e8e2e2] overflow-x-auto bg-white overflow-y-auto p-6 flex flex-col gap-2">
-                <div>
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Job Titles</label>
-                  <input 
-                    type="text" 
-                    value={searchFilters.jobTitle}
-                    onChange={(e) => setSearchFilters({...searchFilters, jobTitle: e.target.value})}
-                    placeholder="e.g. Chief Marketing Officer" 
-                    className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
-                  />
-                </div>
-                <div>
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Industry</label>
-                  <select 
-                    value={searchFilters.industry}
-                    onChange={(e) => setSearchFilters({...searchFilters, industry: e.target.value})}
-                    className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]"
-                  >
-                    <option value="">All Industries</option>
-                    <option value="Software Development">Software Development</option>
-                    <option value="Consulting">Consulting</option>
-                    <option value="Logistics">Logistics</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Manufacturing">Manufacturing</option>
-                    <option value="Retail">Retail</option>
-                    <option value="Real Estate">Real Estate</option>
-                    <option value="Marketing & Advertising">Marketing & Advertising</option>
-                    <option value="Education">Education</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Location</label>
-                  <input 
-                    type="text" 
-                    value={searchFilters.location}
-                    onChange={(e) => setSearchFilters({...searchFilters, location: e.target.value})}
-                    placeholder="e.g. United States, London" 
-                    className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
-                  />
-                </div>
-                <div>
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Company Size</label>
-                  <div className="flex flex-col md:flex-row gap-2">
-                    <input 
-                      type="number" 
-                      value={searchFilters.minSize}
-                      onChange={(e) => setSearchFilters({...searchFilters, minSize: e.target.value})}
-                      placeholder="Min" 
-                      className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
-                    />
-                    <input 
-                      type="number" 
-                      value={searchFilters.maxSize}
-                      onChange={(e) => setSearchFilters({...searchFilters, maxSize: e.target.value})}
-                      placeholder="Max" 
-                      className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
-                    />
-                  </div>
-                </div>
-                <button 
-                  onClick={executeProspectSearch}
-                  disabled={isSearchingProspects}
-                  className={`w-full py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors mt-auto flex justify-center items-center gap-2 ${
-                    isSearchingProspects 
-                      ? 'bg-[#d8cdcd] text-[#a09393] cursor-not-allowed' 
-                      : 'bg-[#800000] text-white hover:bg-[#660000]'
-                  }`}
-                >
-                  {isSearchingProspects ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
-                  {isSearchingProspects ? 'Searching...' : 'Apply Filters'}
-                </button>
-              </div>
+ {/* --- FUNCTIONAL PROSPECT SEARCH MODAL --- */}
+ {isGlobalSearchOpen && (
+ <div className="fixed inset-0 z-[100000] flex items-start justify-center p-4 pt-10 sm:p-8" style={{ transform: 'scale(0.9)' }}>
+ <div className="absolute inset-0 bg-[#2a1b1b]/80 backdrop-blur-sm animate-fade-in" onClick={closeGlobalSearch} />
+ <div className="relative overflow-x-auto bg-white rounded-lg w-full max-w-full md:max-w-6xl h-[85vh] shadow-2xl overflow-hidden flex flex-col animate-fade-in-up">
+ <div className="flex items-center justify-between px-3 py-2 border-b border-[#e8e2e2] bg-[#f9fafb]">
+ <div className="flex flex-col sm:flex-row items-center gap-2">
+ <Search size={16} className="text-[#800000]" />
+ <h3 className="text-xs md:text-xs font-bold text-[#2a1b1b]">Advanced Prospecting</h3>
+ </div>
+ <button onClick={closeGlobalSearch} className="text-[#7a6b6b] hover:text-[#2a1b1b] bg-[#e8e2e2] hover:bg-[#d8cdcd] p-1.5 rounded-md transition-colors"><X size={16} /></button>
+ </div>
+ 
+ <div className="flex flex-1 min-w-0 overflow-hidden">
+ {/* LEFT PANEL: FILTERS */}
+ <div className="w-72 border-r border-[#e8e2e2] overflow-x-auto bg-white overflow-y-auto p-6 flex flex-col gap-2">
+ <div>
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Job Titles</label>
+ <input 
+ type="text" 
+ value={searchFilters.jobTitle}
+ onChange={(e) => setSearchFilters({...searchFilters, jobTitle: e.target.value})}
+ placeholder="e.g. Chief Marketing Officer" 
+ className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
+ />
+ </div>
+ <div>
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Industry</label>
+ <select 
+ value={searchFilters.industry}
+ onChange={(e) => setSearchFilters({...searchFilters, industry: e.target.value})}
+ className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]"
+ >
+ <option value="">All Industries</option>
+ <option value="Software Development">Software Development</option>
+ <option value="Consulting">Consulting</option>
+ <option value="Logistics">Logistics</option>
+ <option value="Finance">Finance</option>
+ <option value="Healthcare">Healthcare</option>
+ <option value="Manufacturing">Manufacturing</option>
+ <option value="Retail">Retail</option>
+ <option value="Real Estate">Real Estate</option>
+ <option value="Marketing & Advertising">Marketing & Advertising</option>
+ <option value="Education">Education</option>
+ </select>
+ </div>
+ <div>
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Location</label>
+ <input 
+ type="text" 
+ value={searchFilters.location}
+ onChange={(e) => setSearchFilters({...searchFilters, location: e.target.value})}
+ placeholder="e.g. United States, London" 
+ className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
+ />
+ </div>
+ <div>
+ <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider mb-2 block">Company Size</label>
+ <div className="flex flex-col md:flex-row gap-2">
+ <input 
+ type="number" 
+ value={searchFilters.minSize}
+ onChange={(e) => setSearchFilters({...searchFilters, minSize: e.target.value})}
+ placeholder="Min" 
+ className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
+ />
+ <input 
+ type="number" 
+ value={searchFilters.maxSize}
+ onChange={(e) => setSearchFilters({...searchFilters, maxSize: e.target.value})}
+ placeholder="Max" 
+ className="w-full px-3 py-2 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs outline-none focus:border-[#800000]" 
+ />
+ </div>
+ </div>
+ <button 
+ onClick={executeProspectSearch}
+ disabled={isSearchingProspects}
+ className={`w-full py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors mt-auto flex justify-center items-center gap-2 ${
+ isSearchingProspects 
+ ? 'bg-[#d8cdcd] text-[#a09393] cursor-not-allowed' 
+ : 'bg-[#800000] text-white hover:bg-[#660000]'
+ }`}
+ >
+ {isSearchingProspects ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+ {isSearchingProspects ? 'Searching...' : 'Apply Filters'}
+ </button>
+ </div>
 
-              {/* CENTER PANEL: RESULTS OR DEFAULT VIEW */}
-              {isSearchingProspects ? (
-                <div className="flex-1 min-w-0 bg-[#f9fafb] flex flex-col items-center justify-center p-8 text-center">
-                  <Loader2 size={21} className="animate-spin text-[#800000] mb-4" />
-                  <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b]" style={{ fontSize: '78%' }}>Searching Database...</h2>
-                  <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mt-2">Querying 270M+ records based on your criteria.</p>
-                </div>
-              ) : searchResults !== null ? (
-                <div className="flex-1 min-w-0 overflow-x-auto bg-white flex flex-col">
-                  <div className="p-4 border-b border-[#e8e2e2] flex justify-between items-center bg-[#f9fafb]">
-                    <div>
-                      <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b]">Found {searchResults.length} prospects</h3>
-                      <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">Select contacts below to build your lead list.</p>
-                    </div>
+ {/* CENTER PANEL: RESULTS OR DEFAULT VIEW */}
+ {isSearchingProspects ? (
+ <div className="flex-1 min-w-0 bg-[#f9fafb] flex flex-col items-center justify-center p-8 text-center">
+ <Loader2 size={21} className="animate-spin text-[#800000] mb-4" />
+ <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b]" style={{ fontSize: '78%' }}>Searching Database...</h2>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] mt-2">Querying 270M+ records based on your criteria.</p>
+ </div>
+ ) : searchResults !== null ? (
+ <div className="flex-1 min-w-0 overflow-x-auto bg-white flex flex-col">
+ <div className="p-4 border-b border-[#e8e2e2] flex justify-between items-center bg-[#f9fafb]">
+ <div>
+ <h3 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b]">Found {searchResults.length} prospects</h3>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">Select contacts below to build your lead list.</p>
+ </div>
 
-                    {/* NEW: PACKAGE PERMISSIONS INDICATOR / UPSELL */}
-                    <div className="hidden md:flex flex-col sm:flex-row items-center gap-2 overflow-x-auto bg-white border border-[#e8e2e2] px-3 py-1.5 rounded-lg shadow-sm">
-                       <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] uppercase tracking-wider">Unlocks:</span>
-                       <div className="flex flex-col sm:flex-row items-center gap-1.5">
-                         {searchPermissions.canViewEmail ? <Mail size={16} className="text-emerald-600"/> : <Lock size={16} className="text-[#d8cdcd]"/>}
-                         <span className={`text-xs font-medium ${searchPermissions.canViewEmail ? 'text-[#2a1b1b]' : 'text-[#a09393]'}`}>Email</span>
-                       </div>
-                       <div className="flex flex-col sm:flex-row items-center gap-1.5">
-                         {searchPermissions.canViewPhone ? <Phone size={16} className="text-emerald-600"/> : <Lock size={16} className="text-[#d8cdcd]"/>}
-                         <span className={`text-xs font-medium ${searchPermissions.canViewPhone ? 'text-[#2a1b1b]' : 'text-[#a09393]'}`}>Phone</span>
-                       </div>
-                       {(!searchPermissions.canViewEmail || !searchPermissions.canViewPhone) && (
-                          <button onClick={() => { closeGlobalSearch(); setActiveTab('Billing'); }} className="ml-2 sm:text-xs md:text-xs lg:text-xs font-bold text-[#800000] hover:underline">
-                            Upgrade
-                          </button>
-                       )}
-                    </div>
+ {/* NEW: PACKAGE PERMISSIONS INDICATOR / UPSELL */}
+ <div className="hidden md:flex flex-col sm:flex-row items-center gap-2 overflow-x-auto bg-white border border-[#e8e2e2] px-3 py-1.5 rounded-lg shadow-sm">
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#7a6b6b] uppercase tracking-wider">Unlocks:</span>
+ <div className="flex flex-col sm:flex-row items-center gap-1.5">
+ {searchPermissions.canViewEmail ? <Mail size={16} className="text-emerald-600"/> : <Lock size={16} className="text-[#d8cdcd]"/>}
+ <span className={`text-xs font-medium ${searchPermissions.canViewEmail ? 'text-[#2a1b1b]' : 'text-[#a09393]'}`}>Email</span>
+ </div>
+ <div className="flex flex-col sm:flex-row items-center gap-1.5">
+ {searchPermissions.canViewPhone ? <Phone size={16} className="text-emerald-600"/> : <Lock size={16} className="text-[#d8cdcd]"/>}
+ <span className={`text-xs font-medium ${searchPermissions.canViewPhone ? 'text-[#2a1b1b]' : 'text-[#a09393]'}`}>Phone</span>
+ </div>
+ {(!searchPermissions.canViewEmail || !searchPermissions.canViewPhone) && (
+ <button onClick={() => { closeGlobalSearch(); setActiveTab('Billing'); }} className="ml-2 sm:text-xs md:text-xs lg:text-xs font-bold text-[#800000] hover:underline">
+ Upgrade
+ </button>
+ )}
+ </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setIsSaveListModalOpen(true)}
-                      disabled={searchResults.length === 0}
-                      className="bg-[#800000] disabled:cursor-not-allowed disabled:bg-[#d1c0c0] hover:bg-[#660000] transition-colors text-white px-2 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm flex flex-col sm:flex-row items-center gap-2"
-                    >
-                      <FolderPlus size={16} /> Save to New List
-                    </button>
-                  </div>
-                  
-                  {searchResults.length === 0 ? (
-                    <div className="flex-1 min-w-0 flex flex-col items-center justify-center p-8 text-center">
-                      <Search size={21} className="text-[#d8cdcd] mb-3" />
-                      <p className="text-[#2a1b1b] font-bold sm:text-xs md:text-xs lg:text-xs">No prospects found</p>
-                      <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">Try broadening your search criteria.</p>
-                    </div>
-                  ) : (
-                    <div className="flex-1 min-w-0 overflow-y-auto flex flex-col">
-                      <>
-                        <table className="w-full text-left border-collapse">
-                          <thead className="bg-white sticky top-0 border-b border-[#e8e2e2] shadow-[0_1px_2px_rgba(0,0,0,0.02)] z-10">
-                            <tr>
-                              <th className="px-3 md:px-6 py-1.5.5 w-16 md:w-18 text-left">
-                                <input
-                                  type="checkbox"
-                                  className="cursor-pointer"
-                                  checked={paginatedResults.length > 0 && paginatedResults.every(s => selectedProspects.some(p => p.id === s.id))}
-                                  onChange={(e) => {
-                                    if (e.target.checked) addAllVisibleToSelection();
-                                    else setSelectedProspects(prev => prev.filter(p => !paginatedResults.some(s => s.id === p.id)));
-                                  }}
-                                />
-                              </th>
-                              <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Prospect Name</th>
-                              <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Job Title</th>
-                              <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Company</th>
-                              <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Location</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#e8e2e2]">
-                            {paginatedResults.length === 0 ? (
-                              <tr>
-                                <td colSpan="5" className="px-3 md:px-6 py-10 text-center sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">
-                                  No prospects found on this page.
-                                </td>
-                              </tr>
-                            ) : (
-                              paginatedResults.map((prospect) => (
-                                <tr key={prospect.id} className="hover:bg-[#f9fafb] transition-colors group">
-                                  <td className="px-3 md:px-6 py-1.5.5">
-                                    <input 
-                                      type="checkbox" 
-                                      checked={selectedProspects.some(p => p.id === prospect.id)} 
-                                      onChange={() => toggleSelectProspect(prospect)} 
-                                      className="cursor-pointer" 
-                                    />
-                                  </td>
-                                  <td className="px-3 md:px-6 py-1.5.5">
-                                    <div className="flex flex-col sm:flex-row items-center gap-2">
-                                      <div className="w-8 h-8 rounded-full bg-[#f5f2f2] text-[#800000] flex items-center justify-center sm:text-xs md:text-xs lg:text-xs font-bold uppercase">
-                                        {maskName(prospect.firstName)?.charAt(0)}
-                                      </div>
-                                      <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b]">
-                                        {maskName(prospect.firstName)} {maskName(prospect.lastName)}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm text-[#4a3b3b] font-medium">{prospect.jobTitle}</td>
-                                  <td className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm text-[#7a6b6b] flex flex-col sm:flex-row items-center gap-2">
-                                    <Building2 size={16} /> {prospect.companyName}
-                                  </td>
-                                  <td className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm text-[#7a6b6b]">{prospect.country}</td>
-                                </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
-                        
-                        {/* Pagination Controls */}
-                        <div className="border-t border-[#e8e2e2] bg-[#f9fafb] px-2 py-2 flex items-center justify-between mt-auto">
-                          <span className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] font-medium">
-                            Showing {currentPageStartIndex + 1}�{Math.min(currentPageEndIndex, searchResults.length)} of {searchResults.length} prospects
-                          </span>
-                          <div className="flex flex-col sm:flex-row items-center gap-2">
-                            <button 
-                              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                              disabled={currentPage === 1}
-                              className="px-3 py-1.5 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] disabled:text-[#7a6b6b] disabled:bg-[#f9fafb] hover:bg-white transition-colors disabled:cursor-not-allowed"
-                            >
-                              ? Prev
-                            </button>
-                            <div className="flex flex-col sm:flex-row items-center gap-1">
-                              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                <button
-                                  key={page}
-                                  onClick={() => setCurrentPage(page)}
-                                  className={`w-8 h-8 rounded text-xs font-bold transition-colors ${
-                                    currentPage === page
-                                      ? 'bg-[#800000] text-white'
-                                      : 'border border-[#d8cdcd] text-[#2a1b1b] hover:bg-[#f5f2f2]'
-                                  }`}
-                                >
-                                  {page}
-                                </button>
-                              ))}
-                            </div>
-                            <button 
-                              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                              disabled={currentPage === totalPages}
-                              className="px-3 py-1.5 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] disabled:text-[#7a6b6b] disabled:bg-[#f9fafb] hover:bg-white transition-colors disabled:cursor-not-allowed"
-                            >
-                              Next ?
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex-1 min-w-0 bg-[#f9fafb] flex flex-col items-center justify-center p-8 text-center">
-                   <div className="w-20 h-20 overflow-x-auto bg-white border border-[#d8cdcd] rounded-full flex items-center justify-center mb-6 shadow-sm">
-                     <Users size={21} className="text-[#800000]" />
-                   </div>
-                   <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-2" style={{ fontSize: '78%' }}>270,000,000+ Contacts</h2>
-                   <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] max-w-md">Use the filters on the left to narrow down your ideal customer profile. Once you build a list, you can save it to your dashboard.</p>
-                </div>
-              )}
+ <button
+ type="button"
+ onClick={() => setIsSaveListModalOpen(true)}
+ disabled={searchResults.length === 0}
+ className="bg-[#800000] disabled:cursor-not-allowed disabled:bg-[#d1c0c0] hover:bg-[#660000] transition-colors text-white px-2 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm flex flex-col sm:flex-row items-center gap-2"
+ >
+ <FolderPlus size={16} /> Save to New List
+ </button>
+ </div>
+ 
+ {searchResults.length === 0 ? (
+ <div className="flex-1 min-w-0 flex flex-col items-center justify-center p-8 text-center">
+ <Search size={21} className="text-[#d8cdcd] mb-3" />
+ <p className="text-[#2a1b1b] font-bold sm:text-xs md:text-xs lg:text-xs">No prospects found</p>
+ <p className="text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs">Try broadening your search criteria.</p>
+ </div>
+ ) : (
+ <div className="flex-1 min-w-0 overflow-y-auto flex flex-col">
+ <>
+ <table className="w-full text-left border-collapse">
+ <thead className="bg-white sticky top-0 border-b border-[#e8e2e2] shadow-[0_1px_2px_rgba(0,0,0,0.02)] z-10">
+ <tr>
+ <th className="px-3 md:px-6 py-1.5.5 w-16 md:w-18 text-left">
+ <input
+ type="checkbox"
+ className="cursor-pointer"
+ checked={paginatedResults.length > 0 && paginatedResults.every(s => selectedProspects.some(p => p.id === s.id))}
+ onChange={(e) => {
+ if (e.target.checked) addAllVisibleToSelection();
+ else setSelectedProspects(prev => prev.filter(p => !paginatedResults.some(s => s.id === p.id)));
+ }}
+ />
+ </th>
+ <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Prospect Name</th>
+ <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Job Title</th>
+ <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Company</th>
+ <th className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#7a6b6b] uppercase tracking-wider">Location</th>
+ </tr>
+ </thead>
+ <tbody className="divide-y divide-[#e8e2e2]">
+ {paginatedResults.length === 0 ? (
+ <tr>
+ <td colSpan="5" className="px-3 md:px-6 py-10 text-center sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">
+ No prospects found on this page.
+ </td>
+ </tr>
+ ) : (
+ paginatedResults.map((prospect) => (
+ <tr key={prospect.id} className="hover:bg-[#f9fafb] transition-colors group">
+ <td className="px-3 md:px-6 py-1.5.5">
+ <input 
+ type="checkbox" 
+ checked={selectedProspects.some(p => p.id === prospect.id)} 
+ onChange={() => toggleSelectProspect(prospect)} 
+ className="cursor-pointer" 
+ />
+ </td>
+ <td className="px-3 md:px-6 py-1.5.5">
+ <div className="flex flex-col sm:flex-row items-center gap-2">
+ <div className="w-8 h-8 rounded-full bg-[#f5f2f2] text-[#800000] flex items-center justify-center sm:text-xs md:text-xs lg:text-xs font-bold uppercase">
+ {maskName(prospect.firstName)?.charAt(0)}
+ </div>
+ <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b]">
+ {maskName(prospect.firstName)} {maskName(prospect.lastName)}
+ </span>
+ </div>
+ </td>
+ <td className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm text-[#4a3b3b] font-medium">{prospect.jobTitle}</td>
+ <td className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm text-[#7a6b6b] flex flex-col sm:flex-row items-center gap-2">
+ <Building2 size={16} /> {prospect.companyName}
+ </td>
+ <td className="px-3 md:px-6 py-1.5.5 sm:text-xs md:text-sm lg:text-sm text-[#7a6b6b]">{prospect.country}</td>
+ </tr>
+ ))
+ )}
+ </tbody>
+ </table>
+ 
+ {/* Pagination Controls */}
+ <div className="border-t border-[#e8e2e2] bg-[#f9fafb] px-2 py-2 flex items-center justify-between mt-auto">
+ <span className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] font-medium">
+ Showing {currentPageStartIndex + 1}�{Math.min(currentPageEndIndex, searchResults.length)} of {searchResults.length} prospects
+ </span>
+ <div className="flex flex-col sm:flex-row items-center gap-2">
+ <button 
+ onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+ disabled={currentPage === 1}
+ className="px-3 py-1.5 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] disabled:text-[#7a6b6b] disabled:bg-[#f9fafb] hover:bg-white transition-colors disabled:cursor-not-allowed"
+ >
+ ? Prev
+ </button>
+ <div className="flex flex-col sm:flex-row items-center gap-1">
+ {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+ <button
+ key={page}
+ onClick={() => setCurrentPage(page)}
+ className={`w-8 h-8 rounded text-xs font-bold transition-colors ${
+ currentPage === page
+ ? 'bg-[#800000] text-white'
+ : 'border border-[#d8cdcd] text-[#2a1b1b] hover:bg-[#f5f2f2]'
+ }`}
+ >
+ {page}
+ </button>
+ ))}
+ </div>
+ <button 
+ onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+ disabled={currentPage === totalPages}
+ className="px-3 py-1.5 border border-[#d8cdcd] rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium text-[#2a1b1b] disabled:text-[#7a6b6b] disabled:bg-[#f9fafb] hover:bg-white transition-colors disabled:cursor-not-allowed"
+ >
+ Next ?
+ </button>
+ </div>
+ </div>
+ </>
+ </div>
+ )}
+ </div>
+ ) : (
+ <div className="flex-1 min-w-0 bg-[#f9fafb] flex flex-col items-center justify-center p-8 text-center">
+ <div className="w-20 h-20 overflow-x-auto bg-white border border-[#d8cdcd] rounded-full flex items-center justify-center mb-6 shadow-sm">
+ <Users size={21} className="text-[#800000]" />
+ </div>
+ <h2 className="text-xs md:text-xs font-bold text-[#2a1b1b] mb-2" style={{ fontSize: '78%' }}>270,000,000+ Contacts</h2>
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] max-w-md">Use the filters on the left to narrow down your ideal customer profile. Once you build a list, you can save it to your dashboard.</p>
+ </div>
+ )}
 
-              {/* RIGHT PANEL: SELECTION CART */}
-              {searchResults !== null && (
-                <div className="w-72 border-l border-[#e8e2e2] overflow-x-auto bg-white overflow-y-auto p-4 flex flex-col gap-2">
-                  <div className="flex items-center justify-between sticky top-0 overflow-x-auto bg-white pb-3 border-b border-[#e8e2e2]">
-                    <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b]">Selection ({selectedProspects.length})</h4>
-                    <button onClick={clearSelection} className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#800000] hover:text-[#660000]">Clear</button>
-                  </div>
-                  <div className="flex-1 min-w-0 space-y-2">
-                    {selectedProspects.length === 0 ? (
-                      <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] text-center py-2">No prospects selected yet. Use the checkboxes to add.</p>
-                    ) : (
-                      selectedProspects.map(p => {
-                        const mFirstName = maskName(p.firstName);
-                        const mLastName = maskName(p.lastName);
+ {/* RIGHT PANEL: SELECTION CART */}
+ {searchResults !== null && (
+ <div className="w-72 border-l border-[#e8e2e2] overflow-x-auto bg-white overflow-y-auto p-4 flex flex-col gap-2">
+ <div className="flex items-center justify-between sticky top-0 overflow-x-auto bg-white pb-3 border-b border-[#e8e2e2]">
+ <h4 className="sm:text-xs md:text-xs md:text-sm lg:text-sm font-bold text-[#2a1b1b]">Selection ({selectedProspects.length})</h4>
+ <button onClick={clearSelection} className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#800000] hover:text-[#660000]">Clear</button>
+ </div>
+ <div className="flex-1 min-w-0 space-y-2">
+ {selectedProspects.length === 0 ? (
+ <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] text-center py-2">No prospects selected yet. Use the checkboxes to add.</p>
+ ) : (
+ selectedProspects.map(p => {
+ const mFirstName = maskName(p.firstName);
+ const mLastName = maskName(p.lastName);
 
-                        return (
-                          <div key={p.id} className="p-2 border border-[#e8e2e2] rounded-lg hover:border-[#800000] transition-colors">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1 min-w-0 overflow-hidden">
-                                <div className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b] truncate">{mFirstName} {mLastName}</div>
-                                <div className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] truncate">{p.jobTitle}</div>
-                                <div className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] truncate">{p.companyName}</div>
-                              </div>
-                              <button onClick={() => removeFromSelection(p.id)} className="text-[#800000] hover:text-[#660000] text-xs font-bold">?</button>
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                  <div className="border-t border-[#e8e2e2] pt-3 space-y-2">
-                    <button onClick={() => setIsSaveListModalOpen(true)} disabled={selectedProspects.length === 0} className="w-full bg-[#800000] disabled:bg-[#d1c0c0] text-white py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold hover:bg-[#660000] transition-colors">
-                      Save {selectedProspects.length > 0 ? `(${selectedProspects.length})` : ''}
-                    </button>
-                    <button onClick={addAllVisibleToSelection} className="w-full bg-white border border-[#d8cdcd] text-[#2a1b1b] py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium hover:bg-[#f9fafb] transition-colors">
-                      + Add All Visible
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+ return (
+ <div key={p.id} className="p-2 border border-[#e8e2e2] rounded-lg hover:border-[#800000] transition-colors">
+ <div className="flex items-start justify-between gap-2">
+ <div className="flex-1 min-w-0 overflow-hidden">
+ <div className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#2a1b1b]">{mFirstName} {mLastName}</div>
+ <div className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">{p.jobTitle}</div>
+ <div className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b]">{p.companyName}</div>
+ </div>
+ <button onClick={() => removeFromSelection(p.id)} className="text-[#800000] hover:text-[#660000] text-xs font-bold">?</button>
+ </div>
+ </div>
+ );
+ })
+ )}
+ </div>
+ <div className="border-t border-[#e8e2e2] pt-3 space-y-2">
+ <button onClick={() => setIsSaveListModalOpen(true)} disabled={selectedProspects.length === 0} className="w-full bg-[#800000] disabled:bg-[#d1c0c0] text-white py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold hover:bg-[#660000] transition-colors">
+ Save {selectedProspects.length > 0 ? `(${selectedProspects.length})` : ''}
+ </button>
+ <button onClick={addAllVisibleToSelection} className="w-full bg-white border border-[#d8cdcd] text-[#2a1b1b] py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium hover:bg-[#f9fafb] transition-colors">
+ + Add All Visible
+ </button>
+ </div>
+ </div>
+ )}
+ </div>
+ </div>
+ </div>
+ )}
+ </div>
+ );
 };
 
 export default Dashboard;

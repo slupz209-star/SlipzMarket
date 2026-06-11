@@ -167,7 +167,7 @@ const ForgotPasswordForm = ({
               }} 
               required 
               placeholder="name@company.com" 
-              className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" 
+              className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" 
             />
           </div>
         </div>
@@ -277,7 +277,7 @@ const ResetPasswordForm = ({
               }} 
               required 
               placeholder="••••••••" 
-              className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" 
+              className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" 
             />
           </div>
           
@@ -363,7 +363,7 @@ const AuthDetailsForm = ({
         </button>
       </div>
 
-      <form id="auth-form" onSubmit={handleInitialSubmit} noValidate className="flex flex-col gap-3 md:gap-3 md:gap-6">
+      <form id="auth-form" onSubmit={handleInitialSubmit} noValidate className="flex flex-col gap-3 md:gap-6">
         {activeTab === 'register' && (
           <>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -371,14 +371,14 @@ const AuthDetailsForm = ({
                 <label className="sm:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] group-focus-within:text-[#8b6f5a] transition-colors">First Name</label>
                 <div className="relative">
                   <UserIcon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#8b6f5a] transition-colors" />
-                  <input name="firstName" type="text" value={formData.firstName} onChange={handleChange} required className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
+                  <input name="firstName" type="text" value={formData.firstName} onChange={handleChange} required className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
                 </div>
               </div>
               <div className="flex flex-col gap-1.5 flex-1 min-w-0 group">
                 <label className="sm:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] group-focus-within:text-[#8b6f5a] transition-colors">Last Name</label>
                 <div className="relative">
                   <UserIcon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#8b6f5a] transition-colors" />
-                  <input name="lastName" type="text" value={formData.lastName} onChange={handleChange} required className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
+                  <input name="lastName" type="text" value={formData.lastName} onChange={handleChange} required className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
                 </div>
               </div>
             </div>
@@ -386,7 +386,7 @@ const AuthDetailsForm = ({
               <label className="sm:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] group-focus-within:text-[#8b6f5a] transition-colors">Company Name</label>
               <div className="relative">
                 <Building2 size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#8b6f5a] transition-colors" />
-                <input name="companyName" type="text" value={formData.companyName} onChange={handleChange} required className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
+                <input name="companyName" type="text" value={formData.companyName} onChange={handleChange} required className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
               </div>
             </div>
           </>
@@ -396,7 +396,7 @@ const AuthDetailsForm = ({
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold break-words text-[#3b2a23] group-focus-within:text-[#8b6f5a] transition-colors">Work Email</label>
           <div className="relative">
             <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#8b6f5a] transition-colors" />
-            <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="name@company.com" className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
+            <input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="name@company.com" className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
           </div>
         </div>
 
@@ -407,7 +407,7 @@ const AuthDetailsForm = ({
           </div>
           <div className="relative">
             <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#8b6f5a] transition-colors" />
-            <input name="password" type="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
+            <input name="password" type="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" className="w-full bg-white border border-[#e5ded5] pl-10 pr-4 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-4 focus:ring-[#8b6f5a]/10 transition-all shadow-sm" />
           </div>
           
           {activeTab === 'register' && formData.password.length > 0 && (

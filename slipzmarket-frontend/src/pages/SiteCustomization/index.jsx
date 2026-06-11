@@ -119,7 +119,7 @@ const SiteCustomization = () => {
 
   // --- TAB RENDERERS ---
   const renderLocalization = () => (
-    <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-1 border-b border-[#d6c9b8] pb-3">
         <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <Languages size={16} className="text-[#8b6f5a]" /> Language & Region
@@ -127,13 +127,13 @@ const SiteCustomization = () => {
         <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] font-medium">Manage available site languages and regional data formats.</p>
       </div>
 
-      <div className="grid md:grid-cols-1 grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-2 gap-2">
         <div className="flex flex-col gap-1.5">
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Default Site Language</label>
           <select 
             value={config.defaultLanguage}
             onChange={(e) => handleChange('defaultLanguage', e.target.value)}
-            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
           >
             {(config.enabledLanguages || []).map(code => {
               const lang = availableLanguages.find(l => l.code === code);
@@ -147,7 +147,7 @@ const SiteCustomization = () => {
           <select 
             value={config.timezone}
             onChange={(e) => handleChange('timezone', e.target.value)}
-            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
           >
             <option value="UTC">UTC (Universal Coordinated Time)</option>
             <option value="GMT">GMT (Greenwich Mean Time)</option>
@@ -161,7 +161,7 @@ const SiteCustomization = () => {
           <select 
             value={config.dateFormat}
             onChange={(e) => handleChange('dateFormat', e.target.value)}
-            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+            className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
           >
             <option value="MM/DD/YYYY">MM/DD/YYYY (US Format)</option>
             <option value="DD/MM/YYYY">DD/MM/YYYY (UK/EU Format)</option>
@@ -240,7 +240,7 @@ const SiteCustomization = () => {
   );
 
   const renderTheme = () => (
-    <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-1 border-b border-[#d6c9b8] pb-3">
         <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <Palette size={16} className="text-[#8b6f5a]" /> Theme & Branding
@@ -248,7 +248,7 @@ const SiteCustomization = () => {
         <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] font-medium">Customize the visual appearance, colors, and typography.</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 md:gap-3 md:gap-6 items-center p-4 bg-[#faf6f0] border border-[#d6c9b8] rounded-lg">
+      <div className="flex flex-col sm:flex-row gap-3 md:gap-6 items-center p-4 bg-[#faf6f0] border border-[#d6c9b8] rounded-lg">
         <div className="w-16 md:w-18 h-18 overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg flex items-center justify-center shadow-sm shrink-0">
           <ImageIcon size={16} className="text-[#8b6f5a]" />
         </div>
@@ -261,7 +261,7 @@ const SiteCustomization = () => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-1 grid-cols-1 md:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-2">
         <div className="flex flex-col gap-1.5">
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Primary Color</label>
           <div className="flex flex-col sm:flex-row items-center gap-2">
@@ -270,7 +270,7 @@ const SiteCustomization = () => {
               type="text" 
               value={config.primaryColor}
               onChange={(e) => handleChange('primaryColor', e.target.value)}
-              className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
+              className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
             />
           </div>
         </div>
@@ -283,7 +283,7 @@ const SiteCustomization = () => {
               type="text" 
               value={config.accentColor}
               onChange={(e) => handleChange('accentColor', e.target.value)}
-              className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
+              className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
             />
           </div>
         </div>
@@ -296,7 +296,7 @@ const SiteCustomization = () => {
               type="text" 
               value={config.backgroundColor}
               onChange={(e) => handleChange('backgroundColor', e.target.value)}
-              className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
+              className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
             />
           </div>
         </div>
@@ -307,7 +307,7 @@ const SiteCustomization = () => {
         <select 
           value={config.fontFamily}
           onChange={(e) => handleChange('fontFamily', e.target.value)}
-          className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+          className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-medium  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
         >
           <option value="Inter, system-ui, sans-serif">Inter (Modern Sans)</option>
           <option value="Roboto, sans-serif">Roboto (Material)</option>
@@ -319,7 +319,7 @@ const SiteCustomization = () => {
   );
 
   const renderScripts = () => (
-    <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-1 border-b border-[#d6c9b8] pb-3">
         <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <Code size={16} className="text-[#8b6f5a]" /> Custom Scripts
@@ -335,7 +335,7 @@ const SiteCustomization = () => {
             value={config.googleAnalyticsId}
             onChange={(e) => handleChange('googleAnalyticsId', e.target.value)}
             placeholder="G-XXXXXXXXXX"
-            className="w-full max-w-sm bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+            className="w-full max-w-sm bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
           />
         </div>
 
@@ -355,7 +355,7 @@ const SiteCustomization = () => {
   );
 
   const renderEmails = () => (
-    <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+    <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
       <div className="flex flex-col gap-1 border-b border-[#d6c9b8] pb-3">
         <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
           <LayoutTemplate size={16} className="text-[#8b6f5a]" /> Email Templates
@@ -368,7 +368,7 @@ const SiteCustomization = () => {
           <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Template</label>
           <div className="flex flex-col sm:flex-row items-center gap-2">
             <select
-              className="w-full max-w-sm bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
+              className="w-full max-w-sm bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
               onChange={(e) => {
                 const selected = emailTemplates.find(t => t.id === e.target.value || t.name === e.target.value);
                 if (selected) {
@@ -404,7 +404,7 @@ const SiteCustomization = () => {
               type="text" 
               value={config.emailSubject}
               onChange={(e) => handleChange('emailSubject', e.target.value)}
-              className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
+              className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-bold  text-[#3b2a23] outline-none focus:border-[#8b6f5a]"
             />
           </div>
 
@@ -414,7 +414,7 @@ const SiteCustomization = () => {
               rows="8"
               value={config.emailTemplate}
               onChange={(e) => handleChange('emailTemplate', e.target.value)}
-              className="w-full bg-white border border-[#d6c9b8] rounded-lg p-3 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] resize-none"
+              className="w-full bg-white border border-[#d6c9b8] rounded-lg p-3 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a] resize-none"
             />
             <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-1">Available variables: <code className="bg-white px-1 py-0.5 rounded border border-[#d6c9b8]">{`{{user_name}}`}</code> <code className="bg-white px-1 py-0.5 rounded border border-[#d6c9b8]">{`{{invoice_id}}`}</code> <code className="bg-white px-1 py-0.5 rounded border border-[#d6c9b8]">{`{{total_amount}}`}</code></p>
           </div>
@@ -458,7 +458,7 @@ const SiteCustomization = () => {
     };
 
     return (
-      <div className="animate-fade-in flex flex-col gap-3 md:gap-3 md:gap-6">
+      <div className="animate-fade-in flex flex-col gap-3 md:gap-6">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2"><Globe size={16} className="text-[#8b6f5a]" /> System Variables</h3>
@@ -483,7 +483,7 @@ const SiteCustomization = () => {
               <input 
                 value={v} 
                 onChange={(e) => handleVarChange(i, 'value', e.target.value)} 
-                className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a]" 
+                className="flex-1 min-w-0 bg-white border border-[#d6c9b8] rounded-lg px-3 py-2 sm:text-xs md:text-xs lg:text-xs font-sans  text-[#3b2a23] outline-none focus:border-[#8b6f5a]" 
                 placeholder="Value..."
               />
               <button 
@@ -522,7 +522,7 @@ const SiteCustomization = () => {
       </div>
 
       {/* --- MAIN CONTENT --- */}
-      <div className="px-0 mt-5 w-full grid md:grid-cols-1 grid-cols-1 lg:grid-cols-12 gap-3 md:gap-3 md:gap-6 items-start">
+      <div className="px-0 mt-5 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-6 items-start">
         
         {/* Sidebar Navigation */}
         <div className="lg:col-span-3 flex flex-col gap-1.5 sticky top-24">

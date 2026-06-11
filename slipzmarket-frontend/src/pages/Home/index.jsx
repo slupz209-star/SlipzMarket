@@ -51,7 +51,7 @@ const Home = () => {
           </span>
         </div>
         
-        <div className="hidden md:flex flex-col sm:flex-row items-center gap-3 md:gap-3 md:gap-6">
+        <div className="hidden md:flex flex-col sm:flex-row items-center gap-3 md:gap-6">
           <button onClick={() => navigate('/browse')} className="sm:text-xs md:text-xs lg:text-xs font-bold text-primary hover:text-muted transition-colors flex flex-col sm:flex-row items-center gap-1">
             Platform <ChevronDownIcon />
           </button>
@@ -147,7 +147,7 @@ const Home = () => {
 
       {/* --- STATISTICS / METRICS SECTION --- */}
       <section className="bg-primary py-16 px-3">
-        <div className="max-w-[1200px] mx-auto grid md:grid-cols-1 grid-cols-1 md:grid-cols-3 gap-3 md:gap-3 md:gap-6 divide-y md:divide-y-0 md:divide-x divide-theme/20">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 divide-y md:divide-y-0 md:divide-x divide-theme/20">
           <div className="flex flex-col items-center text-center pt-8 md:pt-0">
             <h3 className="text-xs md:text-xs font-black text-surface mb-2 tracking-tight" style={{ fontSize: '78%' }}>275M+</h3>
             <p className="sm:text-xs md:text-xs lg:text-xs font-medium text-muted">Verified global contacts</p>
@@ -171,7 +171,7 @@ const Home = () => {
             <p className="text-xs text-muted font-medium">Replace your fragmented tech stack. SlipZMarket gives you the data, engagement tools, and analytics to scale revenue fast.</p>
           </div>
 
-          <div className="grid md:grid-cols-1 grid-cols-1 md:grid-cols-3 gap-3 md:gap-3 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
             <div className="bg-surface border border-theme rounded-3xl p-7 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
               <div className="w-16 md:w-18 h-18 bg-surface border border-theme rounded-lg flex items-center justify-center mb-6 shadow-sm">
                 <Users size={16} className="text-muted" />
