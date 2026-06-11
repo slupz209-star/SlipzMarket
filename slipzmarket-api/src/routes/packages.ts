@@ -3,6 +3,9 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import csvParser from 'csv-parser';
 import { Readable } from 'stream';
+import fs from 'fs';
+import os from 'os';
+import readline from 'readline';
 import { z } from 'zod';
 import { CoreService } from '../services/core.services';
 import prisma from '../db';
@@ -10,8 +13,14 @@ import { requireAuth, requireAdmin } from './middleware/auth.middleware';
 
 const router = Router();
 
-// Configure multer to store uploaded files in memory (perfect for serverless/cloud)
-const upload = multer({ storage: multer.memoryStorage() });
+// ==========================================
+// MULTER CONFIGURATIONS
+// ==========================================
+// 1. Memory storage for small payloads (Package Metadata Import)
+const uploadMemory = multer({ storage: multer.memoryStorage() });
+
+// 2. Disk storage for massive payloads (50k+ Leads/Credentials) to prevent RAM crashes
+const uploadDisk = multer({ dest: os.tmpdir() });
 
 // ==========================================
 // VALIDATION SCHEMAS
@@ -83,10 +92,9 @@ router.post('/', requireAuth, requireAdmin, CoreService.catchAsync(async (req: R
   const existing = await prisma.package.findUnique({ where: { id: validation.data.id } });
   if (existing) return CoreService.error(res, 400, 'A package with this ID already exists.');
 
-const newPackage = await prisma.package.create({ 
+  const newPackage = await prisma.package.create({ 
     data: {
       ...validation.data,
-      // Force these to be numbers to satisfy Prisma's strict requirements
       leadsCount: Number(validation.data.leadsCount || 0),
       price: Number(validation.data.price || 0)
     } 
@@ -126,8 +134,8 @@ router.delete('/:id', requireAuth, requireAdmin, CoreService.catchAsync(async (r
 // ==========================================
 // CSV BULK IMPORT METADATA (ADMIN ONLY)
 // ==========================================
-router.post('/import', requireAuth, requireAdmin, upload.single('file'), CoreService.catchAsync(async (req: Request | any, res: Response) => {
-  if (!req.file) return CoreService.error(res, 400, 'No CSV file uploaded.');
+router.post('/import', requireAuth, requireAdmin, uploadMemory.single('file'), CoreService.catchAsync(async (req: Request | any, res: Response) => {
+  if (!req.file) return CoreService.error(res, 400, 'No file uploaded.');
 
   const results: any[] = [];
   const errors: string[] = [];
@@ -153,7 +161,7 @@ router.post('/import', requireAuth, requireAdmin, upload.single('file'), CoreSer
       }
     })
     .on('end', async () => {
-      console.log('📦 CSV Processing Finished. Total rows parsed:', results.length);
+      console.log('📦 CSV Metadata Processing Finished. Total rows parsed:', results.length);
       if (results.length === 0) return CoreService.error(res, 400, 'CSV file is empty or formatted incorrectly.');
 
       try {
@@ -175,72 +183,235 @@ router.post('/import', requireAuth, requireAdmin, upload.single('file'), CoreSer
 }));
 
 // ==========================================
-// 👉 NEW: UPLOAD RAW LEADS DATASET TO A PACKAGE
+// HELPER FUNCTIONS FOR BULK LEAD UPLOADS
 // ==========================================
-router.post('/:id/upload-leads', requireAuth, requireAdmin, upload.single('file'), CoreService.catchAsync(async (req: Request | any, res: Response) => {
-  const { id } = req.params; // The target Package ID
+const cleanupFile = (filePath: string | undefined) => {
+  if (filePath && fs.existsSync(filePath)) {
+    try {
+      fs.unlinkSync(filePath);
+      console.log(`🧹 Cleaned up temporary file: ${filePath}`);
+    } catch (err) {
+      console.error(`⚠️ Failed to delete temporary file ${filePath}:`, err);
+    }
+  }
+};
+
+const normalizeCsvRow = (data: any, defaultCategory: string) => {
+  // 1. Initial extraction of names
+  let firstName = data['firstName']?.trim() || data['First Name']?.trim() || data['first_name']?.trim() || '';
+  let lastName = data['lastName']?.trim() || data['Last Name']?.trim() || data['last_name']?.trim() || '';
+  let contactName = data['contactName']?.trim() || data['Contact Name']?.trim() || data['ContactName']?.trim() || '';
+
+  // 2. 👉 SPLIT NAME LOGIC: If we have a contactName but no explicit first/last name, split it
+  if (contactName && (!firstName && !lastName)) {
+    const nameParts = contactName.split(' ');
+    firstName = nameParts[0] || ''; // First word
+    lastName = nameParts.slice(1).join(' ') || ''; // Everything else
+  } else if (!contactName && (firstName || lastName)) {
+    // If we only have first/last name, combine them for the contactName field
+    contactName = `${firstName} ${lastName}`.trim();
+  }
+
+  // 3. Email Extraction
+  const email = data['email']?.trim() || data['Email']?.trim() || '';
+  const emailAddress = data['emailAddress']?.trim() || data['Email Address']?.trim() || data['EmailAddress']?.trim() || email;
   
-  if (!req.file) return CoreService.error(res, 400, 'No CSV file uploaded.');
+  // 4. 👉 UNIFIED PHONE LOGIC: Grab the first available phone number and apply to BOTH fields
+  const unifiedPhone = data['phoneNumber']?.trim() || data['PhoneNumber']?.trim() || data['Phone Number']?.trim() || data['phone']?.trim() || data['Phone']?.trim() || null;
+  
+  const title = data['title']?.trim() || data['Title']?.trim() || data['jobTitle']?.trim() || '';
 
-  // 1. Verify the package actually exists
+  return {
+    contactName: contactName || null,
+    firstName: firstName || null,
+    lastName: lastName || null,
+    speciality: data['speciality']?.trim() || data['Speciality']?.trim() || null,
+    specialityID: data['specialityID']?.trim() || data['Speciality ID']?.trim() || data['specialityId']?.trim() || null,
+    description: data['description']?.trim() || data['Description']?.trim() || null,
+    title: title || null,
+    companyName: data['companyName']?.trim() || data['Company']?.trim() || data['Company Name']?.trim() || 'Unknown',
+    email: emailAddress || '',
+    emailAddress: emailAddress || null,
+    website: data['website']?.trim() || data['Website']?.trim() || null,
+    
+    // Assigning the unified phone string to both database fields
+    phone: unifiedPhone,
+    phoneNumber: unifiedPhone,
+    
+    faxNumber: data['faxNumber']?.trim() || data['Fax Number']?.trim() || null,
+    address: data['address']?.trim() || data['Address']?.trim() || null,
+    city: data['city']?.trim() || data['City']?.trim() || null,
+    state: data['state']?.trim() || data['State']?.trim() || null,
+    zipCode: data['zipCode']?.trim() || data['Zip Code']?.trim() || data['ZipCode']?.trim() || null,
+    jobTitle: data['jobTitle']?.trim() || data['Job Title']?.trim() || 'Professional',
+    industry: data['industry']?.trim() || data['Industry']?.trim() || defaultCategory,
+    country: data['country']?.trim() || data['Country']?.trim() || 'Unknown',
+  };
+};
+
+// ==========================================
+// 👉 UPGRADED: STREAMED & BATCHED LEAD UPLOAD
+// ==========================================
+router.post('/:id/upload-leads', requireAuth, requireAdmin, uploadDisk.single('file'), CoreService.catchAsync(async (req: Request | any, res: Response) => {
+  const { id } = req.params;
+  
+  if (!req.file) return CoreService.error(res, 400, 'No file uploaded.');
+
+  // 1. Validate Target Package Exists
   const pkg = await prisma.package.findUnique({ where: { id } });
-  if (!pkg) return CoreService.error(res, 404, 'Package not found. Cannot attach leads.');
+  if (!pkg) {
+    cleanupFile(req.file.path);
+    return CoreService.error(res, 404, 'Package not found. Cannot attach leads.');
+  }
 
-  const results: any[] = [];
-  const errors: string[] = [];
+  // 2. Metrics & Logs Initialization
+  const startTime = Date.now();
+  const BATCH_SIZE = 2000; // Optimal sweet spot for Prisma bulk inserts
+  
+  let batch: any[] = [];
+  let totalProcessed = 0;
+  let totalInserted = 0;
+  let skippedRowsCount = 0;
+  const errorLogs: string[] = [];
 
-  // 2. Parse the CSV file
-  const stream = Readable.from(req.file.buffer.toString());
+  const isCredentialsPkg = pkg.includesCredentials || pkg.category === 'Email & Password';
+  const originalName = (req.file.originalname || '').toLowerCase();
+  const isTxtFile = /\.txt$/i.test(originalName);
 
-  stream
-    .pipe(csvParser())
-    .on('data', (data) => {
-      // Create a unified payload, catching common CSV header variations
-      const row = {
-        firstName: data['firstName']?.trim() || data['First Name']?.trim() || data['first_name']?.trim(),
-        lastName: data['lastName']?.trim() || data['Last Name']?.trim() || data['last_name']?.trim(),
-        email: data['email']?.trim() || data['Email']?.trim() || data['Email Address']?.trim(),
-        phone: data['phone']?.trim() || data['Phone']?.trim() || data['Phone Number']?.trim() || null,
-        jobTitle: data['jobTitle']?.trim() || data['Job Title']?.trim() || 'Professional',
-        companyName: data['companyName']?.trim() || data['Company']?.trim() || data['Company Name']?.trim() || 'Unknown',
-        
-        // Smart fallback: If the CSV doesn't have an industry column, inherit it from the Package Category
-        industry: data['industry']?.trim() || data['Industry']?.trim() || pkg.category,
-        country: data['country']?.trim() || data['Country']?.trim() || 'Unknown',
-        
-        // If your MasterLead schema has a packageId field, uncomment the line below:
-        // packageId: id 
-      };
+  console.log(`\n🚀 Starting Bulk Upload [Package ID: ${id}]`);
+  console.log(`📁 File Name: ${req.file.originalname} (${(req.file.size / 1024 / 1024).toFixed(2)} MB)`);
+  console.log(`⚙️  Target Mode: ${isCredentialsPkg ? 'CredentialRecord (Bulk)' : 'MasterLead (Bulk)'}`);
 
-      // Email is the minimum required field to save a lead
-      if (row.email) {
-        results.push(row);
-      } else {
-        errors.push(`Missing email address. Row skipped.`);
+  try {
+    // ==========================================
+    // BRANCH A: PROCESSING PLAIN TXT FILES (LINE-BY-LINE)
+    // ==========================================
+    if (isTxtFile) {
+      if (!isCredentialsPkg) {
+        cleanupFile(req.file.path);
+        return CoreService.error(res, 400, 'TXT uploads are only supported for Email & Password credential packages.');
       }
-    })
-    .on('end', async () => {
-      if (results.length === 0) return CoreService.error(res, 400, 'CSV is empty or missing email columns.');
 
-      try {
-        // 3. Bulk insert directly into MasterLead
-        const insertData = await prisma.masterLead.createMany({
-          data: results,
-          skipDuplicates: true, // CRITICAL: Prevents Prisma from crashing on duplicate unique emails
-        });
+      const fileStream = fs.createReadStream(req.file.path);
+      const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
 
-        console.log(`✅ Leads uploaded to package ${id}. Count:`, insertData.count);
+      for await (const line of rl) {
+        totalProcessed++;
+        const trimmed = line.trim();
+        if (!trimmed) continue;
 
-        return CoreService.success(res, 201, 'Leads successfully uploaded to database', {
-          rowsProcessed: results.length,
-          rowsInserted: insertData.count,
-          errors: errors.length > 0 ? errors : null
-        });
-      } catch (dbError: any) {
-        console.error("❌ MasterLead Insert Error:", dbError);
-        return CoreService.error(res, 500, `Database error inserting leads: ${dbError.message}`);
+        const [emailPart, ...passwordParts] = trimmed.split(':');
+        const email = emailPart?.trim() || '';
+        const password = passwordParts.join(':').trim();
+
+        if (email && password) {
+          batch.push({
+            email,
+            password,
+            username: null,
+            website: null,
+            notes: null,
+          });
+        } else {
+          skippedRowsCount++;
+          if (errorLogs.length < 100) errorLogs.push(`Line ${totalProcessed}: Missing email or password format.`);
+        }
+
+        // Process full batches execution
+        if (batch.length >= BATCH_SIZE) {
+          const insertData = await prisma.credentialRecord.createMany({ data: batch, skipDuplicates: true });
+          totalInserted += insertData.count;
+          
+          console.log(`📊 Progress Log: Read ${totalProcessed} lines | Total Inserted: ${totalInserted}`);
+          batch = []; // Free up RAM instantly
+        }
       }
+    } 
+    // ==========================================
+    // BRANCH B: PROCESSING CSV FILES (VIA STREAM PASSTHROUGH)
+    // ==========================================
+    else {
+      const parserStream = fs.createReadStream(req.file.path).pipe(csvParser());
+
+      for await (const data of parserStream) {
+        totalProcessed++;
+        
+        if (isCredentialsPkg) {
+          const email = data['email']?.trim() || data['Email']?.trim() || data['Email Address']?.trim() || '';
+          const password = data['password']?.trim() || data['Password']?.trim() || data['pass']?.trim() || data['Pass']?.trim() || '';
+
+          if (email && password) {
+            batch.push({
+              email,
+              password,
+              username: data['username']?.trim() || data['user']?.trim() || null,
+              website: data['website']?.trim() || null,
+              notes: data['notes']?.trim() || null,
+            });
+          } else {
+            skippedRowsCount++;
+            if (errorLogs.length < 100) errorLogs.push(`Row ${totalProcessed}: Missing credentials.`);
+          }
+        } else {
+          const row = normalizeCsvRow(data, pkg.category);
+          if (row.email) {
+            batch.push({
+              ...row,
+              workspaceId: req.user.workspaceId,
+            });
+          } else {
+            skippedRowsCount++;
+            if (errorLogs.length < 100) errorLogs.push(`Row ${totalProcessed}: Missing valid Email column alignment.`);
+          }
+        }
+
+        // Process full batches execution
+        if (batch.length >= BATCH_SIZE) {
+          const insertData = isCredentialsPkg
+            ? await prisma.credentialRecord.createMany({ data: batch, skipDuplicates: true })
+            : await prisma.masterLead.createMany({ data: batch, skipDuplicates: true });
+
+          totalInserted += insertData.count;
+          console.log(`📊 Progress Log: Parsed ${totalProcessed} rows | Total DB Writes: ${totalInserted}`);
+          batch = []; // Flush buffer from RAM
+        }
+      }
+    }
+
+    // ==========================================
+    // FLUSH FINAL REMAINING CHUNK
+    // ==========================================
+    if (batch.length > 0) {
+      const insertData = isCredentialsPkg
+        ? await prisma.credentialRecord.createMany({ data: batch, skipDuplicates: true })
+        : await prisma.masterLead.createMany({ data: batch, skipDuplicates: true });
+      totalInserted += insertData.count;
+    }
+
+    const durationSeconds = ((Date.now() - startTime) / 1000).toFixed(2);
+    console.log(`🏁 Complete! Processed: ${totalProcessed} | Saved: ${totalInserted} | Duplicates/Skipped: ${totalProcessed - totalInserted} | Time: ${durationSeconds}s\n`);
+
+    // 3. Complete File Execution Cleanup
+    cleanupFile(req.file.path);
+
+    // Return extensive performance payload to front-end metrics dashboard
+    return CoreService.success(res, 201, 'Data import telemetry complete', {
+      telemetry: {
+        totalRowsParsed: totalProcessed,
+        newRowsInserted: totalInserted,
+        skippedInvalidRows: skippedRowsCount,
+        deduplicatedRowsCount: (totalProcessed - totalInserted) - skippedRowsCount,
+        executionTimeSeconds: parseFloat(durationSeconds),
+        rowsPerSecond: Math.round(totalProcessed / parseFloat(durationSeconds)) || totalProcessed
+      },
+      errors: errorLogs.length > 0 ? errorLogs : null
     });
+
+  } catch (error: any) {
+    cleanupFile(req.file.path);
+    console.error("❌ CRITICAL Streaming Crash Log:", error);
+    return CoreService.error(res, 500, `Processing failed at row index ${totalProcessed}: ${error.message}`);
+  }
 }));
 
 export default router;

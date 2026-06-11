@@ -207,29 +207,29 @@ const ManageInvoices = () => {
   // --- RENDERERS ---
   const getStatusBadge = (status) => {
     switch(status) {
-      case 'COMPLETED': return <span className="inline-flex flex-col sm:flex-row items-center gap-1 text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200"><CheckCircle2 size={16}/> {status}</span>;
-      case 'PROCESSING': return <span className="inline-flex flex-col sm:flex-row items-center gap-1 text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200"><Clock size={16}/> {status}</span>;
+      case 'COMPLETED': return <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200"><CheckCircle2 size={12}/> {status}</span>;
+      case 'PROCESSING': return <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200"><Clock size={12}/> {status}</span>;
       case 'FAILED': 
-      case 'OVERDUE': return <span className="inline-flex flex-col sm:flex-row items-center gap-1 text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-red-50 text-red-700 border border-red-200"><AlertTriangle size={16}/> {status}</span>;
-      default: return <span className="inline-flex flex-col sm:flex-row items-center gap-1 text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-[#faf6f0] text-[#8b6f5a] border border-[#d6c9b8]">{status}</span>;
+      case 'OVERDUE': return <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-red-50 text-red-700 border border-red-200"><AlertTriangle size={12}/> {status}</span>;
+      default: return <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-[#faf6f0] text-[#8b6f5a] border border-[#d6c9b8]">{status}</span>;
     }
   };
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-[#f5efe6] font-sans pb-12 selection:bg-[#8b6f5a] selection:text-white relative" style={{ zoom: '1.22' }}>
+    <div className="flex flex-col h-full min-h-screen bg-[#f5efe6] font-sans pb-12 selection:bg-[#8b6f5a] selection:text-white relative">
       
       {/* --- HEADER --- */}
-      <div className="overflow-x-auto bg-white border-b border-[#d6c9b8] px-3 lg:px-3 py-7 sticky top-0 z-30 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 max-w-[1400px] mx-auto w-full">
+      <div className="bg-white border-b border-[#d6c9b8] px-6 lg:px-10 py-5 sticky top-0 z-30 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-[1400px] mx-auto w-full">
           <div>
-            <h1 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] tracking-tight flex flex-col sm:flex-row items-center gap-2" style={{ fontSize: '78%' }}>
-              <Receipt size={21} className="text-[#8b6f5a]" /> {t('invoicesTitle')}
+            <h1 className="text-xl font-bold text-[#3b2a23] tracking-tight flex items-center gap-2">
+              <Receipt size={22} className="text-[#8b6f5a]" /> {t('invoicesTitle')}
             </h1>
-            <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] font-medium mt-0.5">{t('invoicesSubtitle')}</p>
+            <p className="text-[13px] text-[#8b6f5a] font-medium mt-0.5">{t('invoicesSubtitle')}</p>
           </div>
           <button 
             onClick={() => openDrawer()}
-            className="flex items-center justify-center gap-2 bg-[#8b6f5a] hover:bg-[#6c5544] text-white px-3 md:px-6 py-1.5 rounded-lg shadow-sm sm:text-xs md:text-xs lg:text-xs font-bold transition-all w-full md:w-auto"
+            className="flex items-center justify-center gap-2 bg-[#8b6f5a] hover:bg-[#6c5544] text-white px-5 py-2.5 rounded-lg shadow-sm text-[13px] font-bold transition-all w-full md:w-auto"
           >
             <Plus size={16} /> {t('createInvoice')}
           </button>
@@ -237,28 +237,28 @@ const ManageInvoices = () => {
       </div>
 
       {/* --- MAIN CONTENT --- */}
-      <div className="px-3 lg:px-3 mt-6 max-w-[1400px] mx-auto w-full flex flex-col gap-3 md:gap-3 md:gap-6">
+      <div className="px-6 lg:px-10 mt-6 max-w-[1400px] mx-auto w-full flex flex-col gap-5">
 
         {/* Filters & Search */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 min-w-0 sm:w-72">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-72">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b6f5a] opacity-70" />
               <input 
                 type="text" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search ID, client, or description..." 
-                className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-9 pr-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm"
+                className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-9 pr-3 py-2.5 text-[13px] font-medium text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm"
               />
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Filter size={16} className="text-[#8b6f5a]" />
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm w-full sm:w-auto"
+              className="bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-bold text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm w-full sm:w-auto"
             >
               <option value="All">{t('allStatuses')}</option>
               <option value="COMPLETED">Completed</option>
@@ -270,36 +270,36 @@ const ManageInvoices = () => {
         </div>
 
         {isLoading && (
-          <div className="rounded-lg border border-[#d6c9b8] overflow-x-auto bg-white p-6 text-center break-words text-[#3b2a23] font-medium shadow-sm">
+          <div className="rounded-xl border border-[#d6c9b8] bg-white p-6 text-center text-[#3b2a23] font-medium shadow-sm">
             Loading invoices...
           </div>
         )}
 
         {/* Bulk Action Bar */}
-        <div className={`bg-white border border-[#8b6f5a] rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm shadow-[#3b2a23]/5 transition-all duration-300 ${selectedInvoices.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 hidden'}`}>
-          <div className="flex flex-col sm:flex-row items-center gap-2 mb-3 sm:mb-0 px-2">
-            <span className="bg-[#faf6f0] border border-[#d6c9b8] text-[#8b6f5a] sm:text-xs md:text-xs lg:text-xs font-bold px-3 py-1 rounded-full">
+        <div className={`bg-white border border-[#8b6f5a] rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between shadow-lg shadow-[#3b2a23]/5 transition-all duration-300 ${selectedInvoices.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 hidden'}`}>
+          <div className="flex items-center gap-3 mb-3 sm:mb-0 px-2">
+            <span className="bg-[#faf6f0] border border-[#d6c9b8] text-[#8b6f5a] text-[12px] font-bold px-3 py-1 rounded-full">
               {selectedInvoices.length} Selected
             </span>
-            <span className="sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23] font-medium">Selected Value: <span className="font-bold font-sans ml-1">£{bulkTotal.toFixed(2)}</span></span>
+            <span className="text-[13px] text-[#3b2a23] font-medium">Selected Value: <span className="font-bold font-mono ml-1">£{bulkTotal.toFixed(2)}</span></span>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-            <button onClick={handleBulkDelete} className="flex-1 min-w-0 sm:flex-none sm:text-xs md:text-xs lg:text-xs font-bold text-red-600 hover:bg-red-50 px-2 py-2 border border-red-200 rounded-lg bg-white shadow-sm transition-colors flex items-center justify-center gap-1.5">
-              <Trash2 size={16} /> Delete
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button onClick={handleBulkDelete} className="flex-1 sm:flex-none text-[12px] font-bold text-red-600 hover:bg-red-50 px-4 py-2 border border-red-200 rounded-lg bg-white shadow-sm transition-colors flex items-center justify-center gap-1.5">
+              <Trash2 size={14} /> Delete
             </button>
-            <button onClick={handleBulkExport} className="flex-1 min-w-0 sm:flex-none sm:text-xs md:text-xs lg:text-xs font-bold text-white bg-[#8b6f5a] hover:bg-[#6c5544] px-2 py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5">
-              <Download size={16} /> Export Selected
+            <button onClick={handleBulkExport} className="flex-1 sm:flex-none text-[12px] font-bold text-white bg-[#8b6f5a] hover:bg-[#6c5544] px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5">
+              <Download size={14} /> Export Selected
             </button>
           </div>
         </div>
 
         {/* Main Data Table */}
-        <div className="overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div className="bg-white border border-[#d6c9b8] rounded-xl shadow-sm overflow-hidden flex flex-col">
           <div className="overflow-x-auto relative">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="bg-[#faf6f0] border-b border-[#d6c9b8]">
-                  <th className="w-16 md:w-18 px-3 md:px-6 py-1.5 text-center">
+                  <th className="w-12 px-5 py-3.5 text-center">
                     <input 
                       type="checkbox" 
                       checked={selectedInvoices.length === filteredInvoices.length && filteredInvoices.length > 0}
@@ -307,20 +307,20 @@ const ManageInvoices = () => {
                       className="w-4 h-4 rounded border-[#d6c9b8] text-[#8b6f5a] focus:ring-[#8b6f5a] cursor-pointer" 
                     />
                   </th>
-                  <th className="px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Invoice / Client</th>
-                  <th className="px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Description</th>
-                  <th className="px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest text-right">Amount</th>
-                  <th className="px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest text-center">Status</th>
-                  <th className="px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest text-right">Actions</th>
+                  <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Invoice / Client</th>
+                  <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Description</th>
+                  <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest text-right">Amount</th>
+                  <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest text-center">Status</th>
+                  <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#d6c9b8]/50">
                 {filteredInvoices.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-3 py-12 text-center">
-                      <Receipt size={16} className="mx-auto text-[#d6c9b8] mb-3" />
-                      <p className="break-words text-[#3b2a23] font-bold sm:text-xs md:text-xs lg:text-xs">{t('noInvoicesFound')}</p>
-                      <p className="text-[#8b6f5a] sm:text-xs md:text-xs lg:text-xs mt-1">{t('adjustSearchOrCreate')}</p>
+                    <td colSpan="6" className="px-6 py-12 text-center">
+                      <Receipt size={24} className="mx-auto text-[#d6c9b8] mb-3" />
+                      <p className="text-[#3b2a23] font-bold text-[14px]">{t('noInvoicesFound')}</p>
+                      <p className="text-[#8b6f5a] text-[13px] mt-1">{t('adjustSearchOrCreate')}</p>
                     </td>
                   </tr>
                 ) : (
@@ -328,7 +328,7 @@ const ManageInvoices = () => {
                     const isSelected = selectedInvoices.includes(inv.id);
                     return (
                       <tr key={inv.id} className={`transition-colors group ${isSelected ? 'bg-[#faf6f0]' : 'hover:bg-[#f5efe6]/50'}`}>
-                        <td className="px-3 md:px-6 py-1.5 text-center" onClick={(e) => handleSelectRow(e, inv.id)}>
+                        <td className="px-5 py-3.5 text-center" onClick={(e) => handleSelectRow(e, inv.id)}>
                           <input 
                             type="checkbox" 
                             checked={isSelected}
@@ -336,27 +336,27 @@ const ManageInvoices = () => {
                             className="w-4 h-4 rounded border-[#d6c9b8] text-[#8b6f5a] focus:ring-[#8b6f5a] cursor-pointer" 
                           />
                         </td>
-                        <td className="px-3 md:px-6 py-1.5">
+                        <td className="px-5 py-3.5">
                           <div className="flex flex-col">
-                            <span className="sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] leading-tight">{inv.id}</span>
-                            <span className="sm:text-xs md:text-xs lg:text-xs font-medium text-[#8b6f5a] flex flex-col sm:flex-row items-center gap-1 mt-0.5"><Building2 size={16} /> {inv.client}</span>
+                            <span className="text-[14px] font-bold text-[#3b2a23] leading-tight">{inv.id}</span>
+                            <span className="text-[12px] font-medium text-[#8b6f5a] flex items-center gap-1 mt-0.5"><Building2 size={12} /> {inv.client}</span>
                           </div>
                         </td>
-                        <td className="px-3 md:px-6 py-1.5">
+                        <td className="px-5 py-3.5">
                           <div className="flex flex-col">
-                            <span className="sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] leading-tight">{inv.description}</span>
-                            <span className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-0.5 flex flex-col sm:flex-row items-center gap-1"><Calendar size={16}/> Billed: {inv.date}</span>
+                            <span className="text-[13px] font-medium text-[#3b2a23] leading-tight">{inv.description}</span>
+                            <span className="text-[11px] text-[#8b6f5a] mt-0.5 flex items-center gap-1"><Calendar size={10}/> Billed: {inv.date}</span>
                           </div>
                         </td>
-                        <td className="px-3 md:px-6 py-1.5 text-right">
-                          <span className="sm:text-xs md:text-xs lg:text-xs font-sans font-bold break-words text-[#3b2a23]">£{inv.amount.toFixed(2)}</span>
+                        <td className="px-5 py-3.5 text-right">
+                          <span className="text-[14px] font-mono font-bold text-[#3b2a23]">£{inv.amount.toFixed(2)}</span>
                         </td>
-                        <td className="px-3 md:px-6 py-1.5 text-center">
+                        <td className="px-5 py-3.5 text-center">
                           {getStatusBadge(inv.status)}
                         </td>
-                        <td className="px-3 md:px-6 py-1.5 text-right">
+                        <td className="px-5 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => openDrawer(inv)} className="p-1.5 text-[#8b6f5a] hover:bg-[#faf6f0] hover:break-words text-[#3b2a23] rounded-md transition-colors border border-transparent hover:border-[#d6c9b8]" title="Edit">
+                            <button onClick={() => openDrawer(inv)} className="p-1.5 text-[#8b6f5a] hover:bg-[#faf6f0] hover:text-[#3b2a23] rounded-md transition-colors border border-transparent hover:border-[#d6c9b8]" title="Edit">
                               <Edit2 size={16} />
                             </button>
                             <button onClick={() => handleDelete(inv.id)} className="p-1.5 text-red-400 hover:bg-red-50 hover:text-red-700 rounded-md transition-colors border border-transparent hover:border-red-200" title="Delete">
@@ -372,8 +372,8 @@ const ManageInvoices = () => {
             </table>
           </div>
           
-          <div className="px-3 py-1.5 border-t border-[#d6c9b8] bg-[#faf6f0] flex items-center justify-between">
-            <span className="sm:text-xs md:text-xs lg:text-xs font-bold text-[#8b6f5a] uppercase tracking-widest">{filteredInvoices.length} {t('invoicesTotal')}</span>
+          <div className="px-6 py-3.5 border-t border-[#d6c9b8] bg-[#faf6f0] flex items-center justify-between">
+            <span className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">{filteredInvoices.length} {t('invoicesTotal')}</span>
           </div>
         </div>
 
@@ -383,84 +383,84 @@ const ManageInvoices = () => {
       {/* DRAWER: CREATE / EDIT INVOICE             */}
       {/* ========================================= */}
       {isDrawerOpen && (
-        <div className="fixed inset-0 z-[60] flex justify-end" style={{ transform: 'scale(0.9)' }}>
+        <div className="fixed inset-0 z-[60] flex justify-end">
           <div className="absolute inset-0 bg-[#3b2a23]/40 backdrop-blur-sm transition-opacity animate-fade-in" onClick={closeDrawer} />
           
           <div className="relative w-full max-w-[450px] bg-[#f5efe6] h-full shadow-2xl shadow-[#3b2a23]/20 flex flex-col animate-fade-in-right border-l border-[#d6c9b8]">
-            <div className="px-3 py-7 border-b border-[#d6c9b8] overflow-x-auto bg-white flex items-center justify-between shrink-0">
-              <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
-                <Edit2 size={16} className="text-[#8b6f5a]"/> {editingInvoice ? 'Edit Invoice' : 'Create Invoice'}
+            <div className="px-6 py-5 border-b border-[#d6c9b8] bg-white flex items-center justify-between shrink-0">
+              <h3 className="text-[16px] font-bold text-[#3b2a23] flex items-center gap-2">
+                <Edit2 size={18} className="text-[#8b6f5a]"/> {editingInvoice ? 'Edit Invoice' : 'Create Invoice'}
               </h3>
-              <button onClick={closeDrawer} className="p-1.5 text-[#8b6f5a] hover:break-words text-[#3b2a23] hover:bg-[#f5efe6] rounded-lg transition-colors">
-                <X size={16} />
+              <button onClick={closeDrawer} className="p-1.5 text-[#8b6f5a] hover:text-[#3b2a23] hover:bg-[#f5efe6] rounded-lg transition-colors">
+                <X size={18} />
               </button>
             </div>
             
-            <form id="invoice-form" onSubmit={handleSaveInvoice} className="p-6 flex-1 min-w-0 overflow-y-auto flex flex-col gap-3 md:gap-3 md:gap-6">
+            <form id="invoice-form" onSubmit={handleSaveInvoice} className="p-6 flex-1 overflow-y-auto flex flex-col gap-5">
               
               <div className="flex flex-col gap-1.5">
-                <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Invoice ID</label>
+                <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Invoice ID</label>
                 <input 
                   type="text" required 
                   value={formData.id} 
                   onChange={(e) => setFormData({...formData, id: e.target.value})} 
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   disabled={!!editingInvoice} // Disallow changing ID if editing
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Client / Organization</label>
+                <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Client / Organization</label>
                 <input 
                   type="text" required 
                   value={formData.client} 
                   onChange={(e) => setFormData({...formData, client: e.target.value})} 
                   placeholder="e.g., Acme Corp Ltd."
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-medium text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Line Item / Description</label>
+                <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Line Item / Description</label>
                 <textarea 
                   required rows="2"
                   value={formData.description} 
                   onChange={(e) => setFormData({...formData, description: e.target.value})} 
                   placeholder="e.g., 10,000 Verified Email Leads"
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-medium text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] resize-none"
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Amount (£)</label>
+                  <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Amount (£)</label>
                   <div className="relative">
-                    <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b6f5a]" />
+                    <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b6f5a]" />
                     <input 
                       type="number" step="0.01" required 
                       value={formData.amount} 
                       onChange={(e) => setFormData({...formData, amount: e.target.value})} 
-                      className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-8 pr-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                      className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-8 pr-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Billing Date</label>
+                  <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Billing Date</label>
                   <input 
                     type="date" required 
                     value={formData.date} 
                     onChange={(e) => setFormData({...formData, date: e.target.value})} 
-                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Payment Status</label>
+                <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Payment Status</label>
                 <select 
                   value={formData.status} 
                   onChange={(e) => setFormData({...formData, status: e.target.value})} 
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-bold text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 >
                   <option value="COMPLETED">Completed</option>
                   <option value="PROCESSING">Processing</option>
@@ -471,11 +471,11 @@ const ManageInvoices = () => {
 
             </form>
 
-            <div className="p-6 border-t border-[#d6c9b8] overflow-x-auto bg-white flex flex-col md:flex-row gap-2 shrink-0">
-              <button type="button" onClick={closeDrawer} className="flex-1 min-w-0 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
+            <div className="p-5 border-t border-[#d6c9b8] bg-white flex gap-3 shrink-0">
+              <button type="button" onClick={closeDrawer} className="flex-1 py-2.5 text-[13px] font-bold text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
                 Cancel
               </button>
-              <button type="submit" form="invoice-form" className="flex-[2] bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+              <button type="submit" form="invoice-form" className="flex-[2] bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-2.5 rounded-lg text-[13px] font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
                 <Save size={16} /> {editingInvoice ? 'Update Invoice' : 'Create Invoice'}
               </button>
             </div>
@@ -487,9 +487,9 @@ const ManageInvoices = () => {
       {/* TOAST NOTIFICATIONS                       */}
       {/* ========================================= */}
       {toast && (
-        <div className="fixed bottom-8 right-8 z-[80] bg-[#3b2a23] text-white px-3 md:px-6 py-1.5 rounded-lg shadow-2xl flex flex-col sm:flex-row items-center gap-2 animate-fade-in-up border border-[#8b6f5a]" style={{ transform: 'scale(0.9)' }}>
-          <CheckCircle2 size={16} className="text-emerald-400" />
-          <p className="sm:text-xs md:text-xs lg:text-xs font-bold">{toast.msg}</p>
+        <div className="fixed bottom-8 right-8 z-[80] bg-[#3b2a23] text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 animate-fade-in-up border border-[#8b6f5a]">
+          <CheckCircle2 size={18} className="text-emerald-400" />
+          <p className="text-[13px] font-bold">{toast.msg}</p>
         </div>
       )}
 

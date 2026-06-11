@@ -121,12 +121,12 @@ if (result.error) {
 
   return (
     <form onSubmit={handleDeposit} className="p-6">
-      <p className="mb-5 text-[13px] text-primary opacity-80">
+      <p className="mb-5 text-[14px] text-primary opacity-80">
         Top up your workspace balance to purchase datasets instantly. Funds are applied immediately via your secure payment method.
       </p>
 
       <div className="mb-4 flex flex-col gap-2">
-        <label className="text-[12px] font-bold uppercase tracking-widest text-muted">Deposit Amount (£)</label>
+        <label className="text-[14px] font-bold uppercase tracking-widest text-muted">Deposit Amount (£)</label>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-primary">£</span>
           <input
@@ -138,25 +138,25 @@ if (result.error) {
             value={depositAmount}
             onChange={(event) => setDepositAmount(event.target.value)}
             placeholder="100.00"
-            className="w-full rounded-xl border border-theme bg-surface py-3 pl-8 pr-4 text-[16px] font-bold text-primary outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full rounded-xl border border-theme bg-surface py-3 pl-8 pr-4 text-[14px] font-bold text-primary outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent"
           />
         </div>
       </div>
 
       <div className="mb-6 flex flex-col gap-2">
-        <label className="text-[12px] font-bold uppercase tracking-widest text-muted">Card Details</label>
-        <div className="w-full rounded-xl border border-theme bg-surface py-4 px-4 shadow-sm">
+        <label className="text-[14px] font-bold uppercase tracking-widest text-muted">Card Details</label>
+        <div className="w-full rounded-xl border border-theme bg-surface py-5 px-4 shadow-sm">
           <CardElement options={cardElementOptions} />
         </div>
       </div>
 
       {errorMessage && (
-        <div className="mb-4 rounded-lg bg-red-50 p-3 text-[13px] text-red-600 border border-red-200">
+        <div className="mb-4 rounded-lg bg-red-50 p-3 text-[14px] text-red-600 border border-red-200">
           {errorMessage}
         </div>
       )}
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-6">
         <button type="button" onClick={() => setIsFundsModalOpen(false)} className="flex-1 rounded-xl border border-theme bg-surface px-4 py-3 text-[14px] font-bold text-primary shadow-sm transition-colors hover:bg-app">
           Cancel
         </button>
@@ -346,7 +346,7 @@ const Header = () => {
     <>
       {activeDropdown && <div className="fixed inset-0 z-40" onClick={closeDropdowns} />}
 
-      <header className="relative z-50 flex h-18 w-full items-center justify-between border-b-0 bg-surface px-6 transition-colors lg:px-10">
+      <header className="relative z-50 flex h-18 w-full items-center justify-between border-b-0 bg-surface px-8 transition-colors lg:px-10">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -left-8 top-0 h-40 w-40 rounded-full border border-accent/15 bg-accent/5 blur-2xl" />
           <div className="absolute right-0 top-4 h-32 w-32 rounded-full border border-primary/10 bg-primary/5 blur-2xl" />
@@ -354,10 +354,10 @@ const Header = () => {
           <div className="absolute right-10 bottom-4 h-2 w-64 rounded-full bg-gradient-to-l from-accent/20 via-accent/10 to-transparent opacity-80" />
         </div>
 
-        <div className="relative flex shrink-0 items-center gap-4">
+        <div className="relative flex shrink-0 items-center gap-6">
           <button type="button" className="flex items-center gap-2" onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')}>
             <Asterisk size={36} strokeWidth={2.5} className="text-muted" />
-            <span className="hidden text-2xl font-bold tracking-tight text-primary sm:block">SlipZMarket</span>
+            <span className="hidden text-3xl font-bold tracking-tight text-primary sm:block">SlipZMarket</span>
           </button>
 
           {isAuthenticated && isAdmin && (
@@ -366,23 +366,23 @@ const Header = () => {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted">{t('adminActive')}</span>
+              <span className="text-[14px] font-bold uppercase tracking-widest text-muted">{t('adminActive')}</span>
             </div>
           )}
         </div>
 
         {isAuthenticated && (
-          <div className="ml-auto flex items-center gap-3 sm:gap-5">
-            <div className="hidden items-center gap-3 lg:flex">
+          <div className="ml-auto flex items-center gap-6 sm:gap-6">
+            <div className="hidden items-center gap-6 lg:flex">
               <ThemeToggle />
               <button
                 type="button"
                 onClick={() => toggleDropdown('language')}
                 className={`flex items-center gap-1.5 transition-colors ${activeDropdown === 'language' ? 'text-muted' : 'text-primary hover:text-muted'}`}
               >
-                <Languages size={18} />
+                <Languages size={21} />
                 <span className="text-[14px] font-medium">{currentLanguageLabel}</span>
-                <ChevronDown size={14} className={`transition-transform ${activeDropdown === 'language' ? 'rotate-180' : ''}`} />
+                <ChevronDown size={12} className={`transition-transform ${activeDropdown === 'language' ? 'rotate-180' : ''}`} />
               </button>
 
               {activeDropdown === 'language' && (
@@ -392,7 +392,7 @@ const Header = () => {
                       key={language.code}
                       type="button"
                       onClick={() => handleLanguageChange(language.code)}
-                      className={`w-full px-4 py-2.5 text-left text-[13px] font-medium transition-colors ${i18n.resolvedLanguage === language.code ? 'bg-app text-primary' : 'text-primary hover:bg-app hover:text-muted'}`}
+                      className={`w-full px-6 py-2.5 text-left text-[14px] font-medium transition-colors ${i18n.resolvedLanguage === language.code ? 'bg-app text-primary' : 'text-primary hover:bg-app hover:text-muted'}`}
                     >
                       {language.label}
                     </button>
@@ -407,7 +407,7 @@ const Header = () => {
   onClick={() => toggleDropdown('notifications')}
   className={`relative transition-colors ${activeDropdown === 'notifications' ? 'text-muted' : 'text-primary hover:text-muted'}`}
 >
-  <Bell size={20} />
+  <Bell size={21} />
   {unreadCount > 0 && (
     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-white border-2 border-surface">
       {unreadCount}
@@ -420,12 +420,12 @@ const Header = () => {
     <div className="flex items-center justify-between border-b border-theme bg-app px-4 py-3">
       <div>
         <span className="text-[14px] font-bold text-primary">{t('notifications')}</span>
-        <p className="text-[11px] text-muted">{unreadCount} unread</p>
+        <p className="text-[14px] text-muted">{unreadCount} unread</p>
       </div>
       <button
         type="button"
         onClick={markAllNotificationsRead}
-        className="text-[11px] font-bold text-muted hover:underline"
+        className="text-[14px] font-bold text-muted hover:underline"
       >
         {t('markAllRead')}
       </button>
@@ -441,22 +441,22 @@ const Header = () => {
           }}
           className={`w-full p-4 text-left transition-colors ${!n.isRead ? 'bg-surface' : 'bg-app/60'} ${n.link ? 'hover:bg-app/80' : 'hover:bg-app/60'}`}
         >
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-6">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className={`rounded-full border px-2 py-1 text-[10px] font-bold ${getNotificationVariant(n.type)}`}>
+                <span className={`rounded-full border px-2 py-1 text-[14px] font-bold ${getNotificationVariant(n.type)}`}>
                   {n.type || 'INFO'}
                 </span>
-                <span className="text-[12px] text-muted">{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="text-[14px] text-muted">{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
-              <h4 className={`text-[13px] font-bold ${n.isRead ? 'text-primary/80' : 'text-primary'}`}>{n.title}</h4>
+              <h4 className={`text-[14px] font-bold ${n.isRead ? 'text-primary/80' : 'text-primary'}`}>{n.title}</h4>
             </div>
             {!n.isRead && <span className="h-2 w-2 rounded-full bg-accent" />}
           </div>
-          <p className="mt-2 text-[12px] text-primary opacity-80">{n.message}</p>
+          <p className="mt-2 text-[14px] text-primary opacity-80">{n.message}</p>
         </button>
       )) : (
-        <p className="p-4 text-center text-[12px] text-muted">No notifications yet</p>
+        <p className="p-4 text-center text-[14px] text-muted">No notifications yet</p>
       )}
     </div>
   </div>
@@ -465,11 +465,11 @@ const Header = () => {
 
             <div className="hidden h-8 w-px bg-theme lg:block" />
 
-            <div className="flex items-center gap-3">
-              <div className="hidden shrink-0 items-center gap-3 rounded-lg border border-theme bg-surface px-2 py-1.5 shadow-sm sm:flex sm:gap-4 sm:px-3">
+            <div className="flex items-center gap-6">
+              <div className="hidden shrink-0 items-center gap-6 rounded-lg border border-theme bg-surface px-2 py-1.5 shadow-sm sm:flex sm:gap-6 sm:px-3">
                 <div className="flex items-center gap-2 text-primary">
-                  <Wallet size={18} className="text-primary" />
-                  <span className="text-[14px] font-bold tracking-tight sm:text-[15px]">
+                  <Wallet size={21} className="text-primary" />
+                  <span className="text-[14px] font-bold tracking-tight sm:text-[18px]">
                     £{userProfile.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -477,9 +477,9 @@ const Header = () => {
                 <button
                   type="button"
                   onClick={() => setIsFundsModalOpen(true)}
-                  className="flex items-center gap-1.5 rounded-md border border-accent bg-surface px-2 py-1 text-[12px] font-bold text-muted shadow-sm transition-all hover:bg-accent hover:text-surface sm:px-3 sm:text-[13px]"
+                  className="flex items-center gap-1.5 rounded-md border border-accent bg-surface px-2 py-1 text-[14px] font-bold text-muted shadow-sm transition-all hover:bg-accent hover:text-surface sm:px-3 sm:text-[14px]"
                 >
-                  <PlusCircle size={14} /> {t('addFunds')}
+                  <PlusCircle size={12} /> {t('addFunds')}
                 </button>
               </div>
 
@@ -487,21 +487,21 @@ const Header = () => {
                 <button
                   type="button"
                   onClick={() => toggleDropdown('org')}
-                  className="flex items-center gap-2 rounded-lg border border-theme bg-surface px-4 py-2 text-[14px] font-bold text-primary shadow-sm transition-colors hover:bg-app"
+                  className="flex items-center gap-2 rounded-lg border border-theme bg-surface px-6 py-2 text-[14px] font-bold text-primary shadow-sm transition-colors hover:bg-app"
                 >
-                  <Layers size={18} className="text-muted" />
+                  <Layers size={21} className="text-muted" />
                   {userProfile.organization}
                 </button>
 
                 {activeDropdown === 'org' && (
                   <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-theme bg-surface shadow-lg animate-fade-in-up">
-                    <div className="border-b border-theme bg-app px-4 py-2">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-muted">{t('switchWorkspace')}</span>
+                    <div className="border-b border-theme bg-app px-6 py-2">
+                      <span className="text-[14px] font-bold uppercase tracking-wider text-muted">{t('switchWorkspace')}</span>
                     </div>
                     <button
                       type="button"
                       onClick={closeDropdowns}
-                      className="flex w-full items-center justify-between bg-app px-4 py-3 text-left text-[13px] font-bold text-primary"
+                      className="flex w-full items-center justify-between bg-app px-4 py-3 text-left text-[14px] font-bold text-primary"
                     >
                       {userProfile.organization} <CheckCircle2 size={16} className="text-muted" />
                     </button>
@@ -517,17 +517,17 @@ const Header = () => {
 
                   <div className="hidden flex-col items-start leading-tight xl:flex">
                     <span className="text-[14px] font-bold text-primary transition-colors group-hover:text-muted">{userProfile.name}</span>
-                    {isAdmin && <span className="text-[10px] font-bold uppercase text-muted">System Admin</span>}
+                    {isAdmin && <span className="text-[14px] font-bold uppercase text-muted">System Admin</span>}
                   </div>
 
-                  <ChevronDown size={14} className={`hidden text-primary transition-transform group-hover:text-muted sm:block ${activeDropdown === 'user' ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={12} className={`hidden text-primary transition-transform group-hover:text-muted sm:block ${activeDropdown === 'user' ? 'rotate-180' : ''}`} />
                 </button>
 
                 {activeDropdown === 'user' && (
                   <div className="absolute right-0 top-full mt-4 flex w-60 flex-col overflow-hidden rounded-xl border border-theme bg-surface shadow-lg animate-fade-in-up">
                     <div className="border-b border-theme bg-app px-4 py-3">
                       <p className="text-[14px] font-bold text-primary">{userProfile.name}</p>
-                      <p className="truncate text-[12px] text-muted">{userProfile.email}</p>
+                      <p className="truncate text-[14px] text-muted">{userProfile.email}</p>
                     </div>
 
                     <div className="flex flex-col gap-1 border-b border-theme p-2">
@@ -538,7 +538,7 @@ const Header = () => {
                             closeDropdowns();
                             navigate('/settings');
                           }}
-                          className="flex w-full items-center gap-2 rounded-md border border-transparent px-3 py-2 text-left text-[13px] font-bold text-muted transition-colors hover:border-theme hover:bg-surface hover:text-primary"
+                          className="flex w-full items-center gap-2 rounded-md border border-transparent px-3 py-2 text-left text-[14px] font-bold text-muted transition-colors hover:border-theme hover:bg-surface hover:text-primary"
                         >
                           <ShieldCheck size={16} /> Global Settings
                         </button>
@@ -550,14 +550,14 @@ const Header = () => {
                           closeDropdowns();
                           navigate('/account');
                         }}
-                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[13px] font-medium text-primary transition-colors hover:bg-app"
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[14px] font-medium text-primary transition-colors hover:bg-app"
                       >
                         <Settings size={16} className="text-muted" /> Account Settings
                       </button>
                     </div>
 
                     <div className="p-2">
-                      <button type="button" onClick={handleSignOut} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[13px] font-bold text-primary transition-colors hover:bg-app hover:text-muted">
+                      <button type="button" onClick={handleSignOut} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[14px] font-bold text-primary transition-colors hover:bg-app hover:text-muted">
                         <LogOut size={16} /> {t('signOut')}
                       </button>
                     </div>
@@ -575,12 +575,12 @@ const Header = () => {
           <div className="absolute inset-0 animate-fade-in bg-[#3b2a23]/60 backdrop-blur-sm" onClick={() => setIsFundsModalOpen(false)} />
 
           <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-theme bg-surface shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between border-b border-theme bg-app px-6 py-5">
+            <div className="flex items-center justify-between border-b border-theme bg-app px-8 py-7">
               <h3 className="flex items-center gap-2 text-[18px] font-bold text-primary">
-                <Wallet size={20} className="text-muted" /> Add Funds
+                <Wallet size={21} className="text-muted" /> Add Funds
               </h3>
               <button type="button" onClick={() => setIsFundsModalOpen(false)} className="rounded-lg p-1.5 text-muted transition-colors hover:bg-surface hover:text-primary">
-                <X size={20} />
+                <X size={21} />
               </button>
             </div>
 

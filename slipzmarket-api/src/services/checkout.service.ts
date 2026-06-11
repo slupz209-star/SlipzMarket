@@ -2,6 +2,10 @@ import prisma from '../db.js';
 import { MailerService } from './mailer.service.js';
 import { NotificationService } from './notification.service.js'; // 👈 Cleaned up import
 
+const isCredentialsPackage = (pkg: any) => {
+  return pkg?.includesCredentials || pkg?.category === 'Email & Password';
+};
+
 export const CheckoutService = {
   async completeOrder(
     userId: string, 
@@ -92,15 +96,66 @@ const invoice = await tx.invoice.create({
           data: { exportCreditsTotal: { increment: totalLeadsBought } }
         });
 
-        // 7. CLEANUP
+        // 7. IF THE CART CONTAINS CREDENTIAL-ONLY PACKAGES, ALLOCATE AND LOCK THEM
+        const credentialItems = cartItems.filter(i => isCredentialsPackage(i.package));
+        let allocatedCredentials: any[] = [];
+        if (credentialItems.length > 0) {
+          const totalToAllocate = credentialItems.reduce((acc, cur) => acc + (Number(cur.package.leadsCount) * cur.quantity), 0);
+
+          if (totalToAllocate > 0) {
+            // Fetch available (unlocked) credentials
+            const available = await tx.credentialRecord.findMany({ where: { locked: false }, take: totalToAllocate });
+            if (available.length < totalToAllocate) {
+              throw new Error('ORDER_ABORTED: Not enough credentials available to fulfill this purchase.');
+            }
+
+            const ids = available.map(c => c.id);
+
+            // Mark them locked so they can't be re-sold
+            await tx.credentialRecord.updateMany({ where: { id: { in: ids } }, data: { locked: true } });
+
+            // Create UnlockedCredential records linking to this invoice/workspace
+            await tx.unlockedCredential.createMany({ data: ids.map(id => ({ workspaceId: workspaceId, credentialId: id, invoiceId: invoice.id })), skipDuplicates: true });
+
+            // Add a List record for the purchaser to see the purchased dataset in their dashboard
+            await tx.list.create({ data: { name: `Purchased Credentials ${invoice.id}`, contactCount: ids.length, dataType: 'Email & Password', status: 'Ready to Export', userId } });
+
+            allocatedCredentials = available; // return the full records for post-commit emailing
+          }
+        }
+        // 8. CLEANUP
         await tx.cartItem.deleteMany({ where: { userId } });
 
         return { 
           invoice, 
           isDuplicate: false, 
-          receiptData: { email: targetEmail, name: targetName } 
+          receiptData: { email: targetEmail, name: targetName },
+          allocatedCredentials
         };
       });
+
+      // If credentials were allocated, email CSV to buyer (post-transaction to avoid locking issues)
+      if (result && result.allocatedCredentials && result.allocatedCredentials.length > 0) {
+        try {
+          const rows = result.allocatedCredentials.map((r: any) => `${r.email},${r.password}`).join('\n');
+          const csv = `email,password\n${rows}`;
+
+          await MailerService.send({
+            to: result.receiptData.email,
+            templateName: 'CREDENTIALS_DELIVERY',
+            context: { name: result.receiptData.name, invoiceId: result.invoice.id, count: result.allocatedCredentials.length },
+            attachments: [{ filename: `${result.invoice.id}-credentials.csv`, content: csv, contentType: 'text/csv' }]
+          });
+        } catch (err: any) {
+          console.error('Silent failure: Could not send credentials CSV:', err);
+          NotificationService.sendToUser(userId, {
+            title: 'Credentials delivery failed',
+            message: 'Your purchased credentials were allocated but we could not email them. Please contact support.',
+            type: 'ERROR',
+            link: '/dashboard/support'
+          });
+        }
+      }
 
       // ==========================================
       // 🟢 POST-TRANSACTION SUCCESS ACTIONS
@@ -116,16 +171,20 @@ const invoice = await tx.invoice.create({
 
         // 2. Dispatch Email Receipt (Non-blocking)
         if (result.receiptData.email) {
-          MailerService.send({
-            to: result.receiptData.email,
-            templateName: 'INVOICE_CONFIRMATION', // Ensure this matches your EmailTemplate DB table
-            context: {
-              name: result.receiptData.name,
-              invoiceId: result.invoice.id,
-              amount: stripeAmountPaid.toFixed(2),
-              credits: totalLeadsBought
-            }
-          }).catch(err => console.error('Silent failure: Could not send receipt email:', err));
+          try {
+            await MailerService.send({
+              to: result.receiptData.email,
+              templateName: 'INVOICE_CONFIRMATION', // Ensure this matches your EmailTemplate DB table
+              context: {
+                name: result.receiptData.name,
+                invoiceId: result.invoice.id,
+                amount: stripeAmountPaid.toFixed(2),
+                credits: totalLeadsBought
+              }
+            });
+          } catch (err: any) {
+            console.error('Silent failure: Could not send receipt email:', err);
+          }
         }
       }
 

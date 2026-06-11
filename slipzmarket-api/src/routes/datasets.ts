@@ -24,18 +24,18 @@ router.get('/my-datasets', requireAuth, CoreService.catchAsync(async (req: any, 
     },
     include: {
       _count: {
-        select: { unlockedLeads: true }
+        select: { unlockedLeads: true, unlockedCredentials: true }
       }
     },
     orderBy: { date: 'desc' }
   });
 
   const mappedDatasets = invoices
-    .filter(inv => (inv._count?.unlockedLeads || 0) > 0)
+    .filter(inv => ((inv._count?.unlockedLeads || 0) > 0) || ((inv._count?.unlockedCredentials || 0) > 0))
     .map(inv => ({
       invoiceId: inv.id,
       date: inv.date,
-      leadsCount: inv._count?.unlockedLeads || 0,
+      leadsCount: (inv._count?.unlockedLeads || 0) + (inv._count?.unlockedCredentials || 0),
       description: inv.description || 'Custom Data Export',
       filters: (inv as any).queryCriteria || {},
       status: inv.status
@@ -72,28 +72,54 @@ router.get('/download/:invoiceId', requireAuth, CoreService.catchAsync(async (re
   }
 
   // B. FETCH THE ACTUAL LEADS
-  const unlockedRecords = await prisma.unlockedLead.findMany({
-    where: { invoiceId: invoiceId },
-    include: {
-      lead: true // This grabs the actual MasterLead data
-    }
-  });
+  // Try leads first
+  let unlockedRecords = await prisma.unlockedLead.findMany({ where: { invoiceId: invoiceId }, include: { lead: true } });
 
-  if (unlockedRecords.length === 0) {
-    return res.status(404).json({ error: 'No data found for this dataset.' });
+  // If no master leads, fall back to credentials
+  let isCredentialExport = false;
+  let credentialRecords: any[] = [];
+  if (!unlockedRecords || unlockedRecords.length === 0) {
+    const unlockedCreds = await prisma.unlockedCredential.findMany({ where: { invoiceId }, include: { credential: true } });
+    if (!unlockedCreds || unlockedCreds.length === 0) {
+      return res.status(404).json({ error: 'No data found for this dataset.' });
+    }
+    isCredentialExport = true;
+    credentialRecords = unlockedCreds.map(r => r.credential);
   }
 
   // C. FLATTEN THE DATA FOR THE CSV
-  const leadsToExport = unlockedRecords.map(record => ({
-    FirstName: record.lead.firstName || '',
-    LastName: record.lead.lastName || '',
-    Email: record.lead.email || '',
-    Phone: record.lead.phone || 'N/A',
-    JobTitle: record.lead.jobTitle || '',
-    CompanyName: record.lead.companyName || '',
-    Industry: record.lead.industry || '',
-    Country: record.lead.country || ''
-  }));
+  let leadsToExport;
+  if (!isCredentialExport) {
+    leadsToExport = unlockedRecords.map(record => ({
+      ContactName: record.lead.contactName || `${record.lead.firstName || ''} ${record.lead.lastName || ''}`.trim(),
+      FirstName: record.lead.firstName || '',
+      LastName: record.lead.lastName || '',
+      Speciality: record.lead.speciality || '',
+      SpecialityID: record.lead.specialityID || '',
+      Description: record.lead.description || '',
+      Title: record.lead.title || record.lead.jobTitle || '',
+      CompanyName: record.lead.companyName || '',
+      Email: record.lead.email || '',
+      EmailAddress: record.lead.emailAddress || '',
+      Website: record.lead.website || '',
+      Phone: record.lead.phone || 'N/A',
+      PhoneNumber: record.lead.phoneNumber || '',
+      FaxNumber: record.lead.faxNumber || '',
+      Address: record.lead.address || '',
+      City: record.lead.city || '',
+      State: record.lead.state || '',
+      Country: record.lead.country || '',
+      ZipCode: record.lead.zipCode || ''
+    }));
+  } else {
+    leadsToExport = credentialRecords.map(c => ({
+      Email: c.email,
+      Username: c.username || '',
+      Password: c.password,
+      Website: c.website || '',
+      Notes: c.notes || ''
+    }));
+  }
 
   // D. GENERATE CSV
   const json2csvParser = new Parser();
@@ -120,23 +146,59 @@ router.get('/:invoiceId/json', requireAuth, CoreService.catchAsync(async (req: a
   if (!invoice) return CoreService.error(res, 403, 'Unauthorized access to dataset');
 
   // 2. Fetch the raw leads
-  const unlockedRecords = await prisma.unlockedLead.findMany({
-    where: { invoiceId },
-    include: { lead: true }
-  });
-
-  // 3. Format securely for the frontend
-  const leads = unlockedRecords.map(record => ({
-    id: record.lead.id,
-    firstName: record.lead.firstName || '',
-    lastName: record.lead.lastName || '',
-    email: record.lead.email || '',
-    phone: record.lead.phone || 'N/A',
-    jobTitle: record.lead.jobTitle || '',
-    companyName: record.lead.companyName || '',
-    industry: record.lead.industry || '',
-    country: record.lead.country || ''
-  }));
+  // 2. Fetch the raw leads OR credentials
+  let unlockedRecords = await prisma.unlockedLead.findMany({ where: { invoiceId }, include: { lead: true } });
+  let leads: any[] = [];
+  if (unlockedRecords && unlockedRecords.length > 0) {
+    leads = unlockedRecords.map(record => ({
+      id: record.lead.id,
+      contactName: record.lead.contactName || `${record.lead.firstName || ''} ${record.lead.lastName || ''}`.trim(),
+      firstName: record.lead.firstName || '',
+      lastName: record.lead.lastName || '',
+      speciality: record.lead.speciality || '',
+      specialityID: record.lead.specialityID || '',
+      description: record.lead.description || '',
+      title: record.lead.title || record.lead.jobTitle || '',
+      companyName: record.lead.companyName || '',
+      email: record.lead.email || '',
+      emailAddress: record.lead.emailAddress || '',
+      website: record.lead.website || '',
+      phone: record.lead.phone || 'N/A',
+      phoneNumber: record.lead.phoneNumber || '',
+      faxNumber: record.lead.faxNumber || '',
+      address: record.lead.address || '',
+      city: record.lead.city || '',
+      state: record.lead.state || '',
+      country: record.lead.country || '',
+      zipCode: record.lead.zipCode || ''
+    }));
+  } else {
+    // Fall back to unlocked credentials list
+    const unlockedCreds = await prisma.unlockedCredential.findMany({ where: { invoiceId }, include: { credential: true } });
+    leads = unlockedCreds.map(r => ({
+      id: r.credential.id,
+      contactName: r.credential.email,
+      firstName: '',
+      lastName: '',
+      speciality: '',
+      specialityID: '',
+      description: 'Purchased Credentials',
+      title: '',
+      companyName: '',
+      email: r.credential.email,
+      password: r.credential.password,
+      username: r.credential.username || '',
+      website: r.credential.website || '',
+      phone: 'N/A',
+      phoneNumber: '',
+      faxNumber: '',
+      address: '',
+      city: '',
+      state: '',
+      country: '',
+      zipCode: ''
+    }));
+  }
 
   return CoreService.success(res, 200, 'Data loaded', { leads });
 }));
@@ -280,9 +342,12 @@ router.post('/search', requireAuth, CoreService.catchAsync(async (req: any, res:
     const searchTerm = jobTitle.trim();
     where.OR = [
       { jobTitle: { contains: searchTerm, mode: 'insensitive' } },
+      { title: { contains: searchTerm, mode: 'insensitive' } },
       { companyName: { contains: searchTerm, mode: 'insensitive' } },
+      { contactName: { contains: searchTerm, mode: 'insensitive' } },
       { firstName: { contains: searchTerm, mode: 'insensitive' } },
       { lastName: { contains: searchTerm, mode: 'insensitive' } },
+      { speciality: { contains: searchTerm, mode: 'insensitive' } },
     ];
   }
   if (industry && industry !== 'All') where.industry = { contains: industry, mode: 'insensitive' };
@@ -298,11 +363,33 @@ router.post('/search', requireAuth, CoreService.catchAsync(async (req: any, res:
 
   // 6. EXECUTE SECURE QUERY
   const selectFields: any = {
-    id: true, firstName: true, lastName: true, jobTitle: true,
-    companyName: true, industry: true, country: true,
+    id: true,
+    contactName: true,
+    firstName: true,
+    lastName: true,
+    speciality: true,
+    specialityID: true,
+    description: true,
+    title: true,
+    jobTitle: true,
+    companyName: true,
+    industry: true,
+    country: true,
+    website: true,
+    address: true,
+    city: true,
+    state: true,
+    zipCode: true,
+    faxNumber: true,
+    phoneNumber: true,
   };
-  if (canViewEmail) selectFields.email = true;
-  if (canViewPhone) selectFields.phone = true;
+  if (canViewEmail) {
+    selectFields.email = true;
+    selectFields.emailAddress = true;
+  }
+  if (canViewPhone) {
+    selectFields.phone = true;
+  }
 
   const prospects = await prisma.masterLead.findMany({
     where: where,

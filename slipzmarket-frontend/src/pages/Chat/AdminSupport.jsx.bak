@@ -301,21 +301,21 @@ export const AdminSupport = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#f9fafb] text-[#2a1b1b] font-sans overflow-hidden" style={{ zoom: '1.22' }}>
+    <div className="flex h-screen bg-[#f9fafb] text-[#2a1b1b] font-sans overflow-hidden">
       
       {/* 1. SIDEBAR */}
       <div className="w-80 bg-white border-r border-[#d8cdcd] flex flex-col shrink-0 z-10 shadow-[2px_0_10px_rgba(0,0,0,0.02)]">
-        <div className="p-6 border-b border-[#d8cdcd] shrink-0">
-          <h2 className="font-bold text-xs flex items-center justify-between text-[#800000]">
-            <span className="flex items-center gap-2"><MessageCircle size={16} /> Support Queue</span>
+        <div className="p-5 border-b border-[#d8cdcd] shrink-0">
+          <h2 className="font-bold text-[16px] flex items-center justify-between text-[#800000]">
+            <span className="flex items-center gap-2"><MessageCircle size={18} /> Support Queue</span>
             <span className="bg-[#f5f2f2] text-[#2a1b1b] px-2 py-0.5 rounded-full text-xs">{sessions.length}</span>
           </h2>
           <div className="mt-4 relative">
-            <Search size={16} className="absolute left-3 top-2.5 text-[#7a6b6b]" />
+            <Search size={14} className="absolute left-3 top-2.5 text-[#7a6b6b]" />
             <input 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-[#f5f2f2] border-transparent rounded-lg sm:text-xs md:text-xs lg:text-xs focus:outline-none focus:bg-white focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all" 
+              className="w-full pl-9 pr-3 py-2 bg-[#f5f2f2] border-transparent rounded-lg text-sm focus:outline-none focus:bg-white focus:border-[#800000] focus:ring-1 focus:ring-[#800000] transition-all" 
               placeholder="Search users..." 
             />
           </div>
@@ -325,7 +325,7 @@ export const AdminSupport = () => {
           {loading ? (
             <div className="flex justify-center mt-10"><Loader2 className="animate-spin text-[#800000]" /></div>
           ) : filteredSessions.length === 0 ? (
-            <div className="text-center text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs mt-10">No sessions found.</div>
+            <div className="text-center text-[#7a6b6b] text-sm mt-10">No sessions found.</div>
           ) : (
             filteredSessions.map(s => (
               <div 
@@ -335,23 +335,23 @@ export const AdminSupport = () => {
                   ${activeSession?.id === s.id ? 'bg-[#800000]/5 border-l-4 border-l-[#800000]' : 'hover:bg-[#f5f2f2] border-l-4 border-l-transparent'}`}
               >
                 <div className="overflow-hidden">
-                  <div className="font-bold sm:text-xs md:text-xs lg:text-xs truncate">{s.user?.firstName || 'Unknown User'}</div>
-                  <div className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] truncate mt-0.5">{s.user?.email}</div>
+                  <div className="font-bold text-[14px] truncate">{s.user?.firstName || 'Unknown User'}</div>
+                  <div className="text-[12px] text-[#7a6b6b] truncate mt-0.5">{s.user?.email}</div>
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">
                   <div className="flex items-center gap-2">
                     {s.unreadCount > 0 && (
-                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#800000] text-white uppercase">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#800000] text-white uppercase">
                         {s.unreadCount}
                       </span>
                     )}
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full uppercase ${
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
                       s.status === 'AGENT_HANDLING' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'
                     }`}>
                       {s.status.replace('_', ' ')}
                     </span>
                   </div>
-                  <ChevronRight size={16} className="text-[#d8cdcd]" />
+                  <ChevronRight size={14} className="text-[#d8cdcd]" />
                 </div>
               </div>
             ))
@@ -361,15 +361,15 @@ export const AdminSupport = () => {
 
       {/* 2. CHAT AREA */}
       <div className="flex-1 flex flex-col border-r border-[#d8cdcd] bg-white min-w-100">
-        <div className="h-18 border-b border-[#d8cdcd] flex items-center justify-between px-3 shrink-0 bg-white z-10">
+        <div className="h-16 border-b border-[#d8cdcd] flex items-center justify-between px-6 shrink-0 bg-white z-10">
           {activeSession ? (
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#800000] text-white flex items-center justify-center font-bold">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#800000] text-white flex items-center justify-center font-bold">
                 {activeSession.user?.firstName?.charAt(0) || 'U'}
               </div>
               <div>
-                <h3 className="font-bold sm:text-xs md:text-sm lg:text-sm">{activeSession.user?.firstName}</h3>
-                <p className={`text-xs flex items-center gap-1 ${isSessionActive(activeSession) ? 'text-green-600' : 'text-[#7a6b6b]'}`}>
+                <h3 className="font-bold text-[15px]">{activeSession.user?.firstName}</h3>
+                <p className={`text-[12px] flex items-center gap-1 ${isSessionActive(activeSession) ? 'text-green-600' : 'text-[#7a6b6b]'}`}>
                 <span className={`w-2 h-2 rounded-full ${isSessionActive(activeSession) ? 'bg-green-500' : 'bg-gray-400'}`} />
                 {isSessionActive(activeSession) ? 'Active Now' : 'Inactive'}
               </p>
@@ -381,8 +381,8 @@ export const AdminSupport = () => {
           
           {activeSession && (
             <div className="flex gap-2">
-              <button className="p-2 text-[#7a6b6b] hover:bg-[#f5f2f2] rounded-lg transition-colors"><Phone size={16} /></button>
-              <button className="p-2 text-[#7a6b6b] hover:bg-[#f5f2f2] rounded-lg transition-colors"><MoreVertical size={16} /></button>
+              <button className="p-2 text-[#7a6b6b] hover:bg-[#f5f2f2] rounded-lg transition-colors"><Phone size={18} /></button>
+              <button className="p-2 text-[#7a6b6b] hover:bg-[#f5f2f2] rounded-lg transition-colors"><MoreVertical size={18} /></button>
             </div>
           )}
         </div>
@@ -391,11 +391,11 @@ export const AdminSupport = () => {
         <div className="flex-1 overflow-y-auto p-6 bg-[#f9fafb]">
           {!activeSession ? (
             <div className="h-full flex flex-col items-center justify-center text-[#7a6b6b]">
-              <MessageCircle size={21} className="text-[#d8cdcd] mb-4" />
+              <MessageCircle size={28} className="text-[#d8cdcd] mb-4" />
               <p>Your workspace is ready.</p>
             </div>
           ) : messages.length === 0 ? (
-            <div className="text-center text-[#7a6b6b] sm:text-xs md:text-xs lg:text-xs mt-4 bg-white py-2 px-2 rounded-full inline-block mx-auto border border-[#d8cdcd] shadow-sm">
+            <div className="text-center text-[#7a6b6b] text-sm mt-4 bg-white py-2 px-4 rounded-full inline-block mx-auto border border-[#d8cdcd] shadow-sm">
               Beginning of chat history
             </div>
           ) : (
@@ -421,42 +421,42 @@ export const AdminSupport = () => {
                           className="p-1 text-[#7a6b6b] hover:text-[#800000] hover:bg-[#f5f2f2] rounded transition-colors"
                           title={m.isStarred ? 'Unstar message' : 'Star message'}
                         >
-                          <Star size={16} className={m.isStarred ? 'fill-[#800000] text-[#800000]' : ''} />
+                          <Star size={14} className={m.isStarred ? 'fill-[#800000] text-[#800000]' : ''} />
                         </button>
                         <button
                           onClick={() => handleCopyMessage(m.text)}
                           className="p-1 text-[#7a6b6b] hover:text-[#800000] hover:bg-[#f5f2f2] rounded transition-colors"
                           title="Copy message"
                         >
-                          <Copy size={16} />
+                          <Copy size={14} />
                         </button>
                         <button
                           onClick={() => handleQuoteMessage(m.text)}
                           className="p-1 text-[#7a6b6b] hover:text-[#800000] hover:bg-[#f5f2f2] rounded transition-colors"
                           title="Quote message"
                         >
-                          <CornerDownLeft size={16} />
+                          <CornerDownLeft size={14} />
                         </button>
                         <button
                           onClick={() => handleDeleteMessage(m.id)}
                           className="p-1 text-[#7a6b6b] hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                           title="Delete message"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
 
-                      <div className={`px-2 py-1.5 text-xs shadow-sm leading-relaxed whitespace-pre-wrap ${
+                      <div className={`px-4 py-2.5 text-[14px] shadow-sm leading-relaxed whitespace-pre-wrap ${
                         isAgent 
-                          ? 'bg-[#800000] text-white rounded-lg rounded-br-sm' 
+                          ? 'bg-[#800000] text-white rounded-2xl rounded-br-sm' 
                           : isBot
-                          ? 'bg-orange-50 border border-orange-200 text-orange-800 rounded-lg rounded-bl-sm text-center'
-                          : 'bg-white border border-[#d8cdcd] text-[#2a1b1b] rounded-lg rounded-bl-sm' 
+                          ? 'bg-orange-50 border border-orange-200 text-orange-800 rounded-2xl rounded-bl-sm text-center'
+                          : 'bg-white border border-[#d8cdcd] text-[#2a1b1b] rounded-2xl rounded-bl-sm' 
                       }`}>
                         {m.text}
                       </div>
                       
-                      <span className="text-xs text-[#7a6b6b] mt-1 mx-1">
+                      <span className="text-[10px] text-[#7a6b6b] mt-1 mx-1">
                         {formatTime(m.createdAt)}
                       </span>
                     </div>
@@ -478,9 +478,9 @@ export const AdminSupport = () => {
         {/* Input Area */}
         {activeSession && (
           <div className="p-4 bg-white border-t border-[#d8cdcd] shrink-0">
-            <div className="flex items-end gap-2 bg-[#f5f2f2] border border-[#d8cdcd] rounded-lg p-2 focus-within:border-[#800000] focus-within:ring-1 focus-within:ring-[#800000] transition-all">
+            <div className="flex items-end gap-3 bg-[#f5f2f2] border border-[#d8cdcd] rounded-xl p-2 focus-within:border-[#800000] focus-within:ring-1 focus-within:ring-[#800000] transition-all">
               <button className="p-2 text-[#7a6b6b] hover:text-[#2a1b1b] transition-colors shrink-0">
-                <Paperclip size={16} />
+                <Paperclip size={18} />
               </button>
               
               <textarea 
@@ -488,7 +488,7 @@ export const AdminSupport = () => {
                 onChange={(e) => setReply(e.target.value)}
                 onKeyDown={handleKeyDown}
                 rows={1}
-                className="flex-1 bg-transparent border-none focus:ring-0 sm:text-xs md:text-xs lg:text-xs resize-none max-h-32 py-2 outline-none custom-scrollbar" 
+                className="flex-1 bg-transparent border-none focus:ring-0 text-[14px] resize-none max-h-32 py-2 outline-none custom-scrollbar" 
                 placeholder="Type your reply... (Shift + Enter for new line)" 
                 style={{ minHeight: '40px' }}
               />
@@ -501,7 +501,7 @@ export const AdminSupport = () => {
                 <Send size={16} className="ml-0.5" />
               </button>
             </div>
-            <div className="text-xs text-center text-[#7a6b6b] mt-2">
+            <div className="text-[10px] text-center text-[#7a6b6b] mt-2">
               Press <span className="font-bold">Enter</span> to send, <span className="font-bold">Shift + Enter</span> for new line.
             </div>
           </div>
@@ -510,52 +510,52 @@ export const AdminSupport = () => {
 
       {/* 3. CONTEXT PANEL */}
       <div className="w-80 bg-white p-6 shrink-0 overflow-y-auto hidden lg:block">
-        <h3 className="font-bold sm:text-xs md:text-sm lg:text-sm flex items-center gap-2 mb-6 text-[#2a1b1b]">
-          <User size={16} className="text-[#800000]" /> Support Panel
+        <h3 className="font-bold text-[15px] flex items-center gap-2 mb-6 text-[#2a1b1b]">
+          <User size={18} className="text-[#800000]" /> Support Panel
         </h3>
         
         {activeSession ? (
           <div className="space-y-6">
-            <div className="bg-[#f9fafb] border border-[#d8cdcd] rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between gap-2">
+            <div className="bg-[#f9fafb] border border-[#d8cdcd] rounded-2xl p-4 space-y-4">
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] uppercase font-bold tracking-wider">Customer</p>
-                  <p className="sm:text-xs md:text-xs lg:text-xs font-semibold text-[#2a1b1b] truncate">{activeSession.user?.firstName || 'Unknown'}</p>
+                  <p className="text-[11px] text-[#7a6b6b] uppercase font-bold tracking-wider">Customer</p>
+                  <p className="text-[14px] font-semibold text-[#2a1b1b] truncate">{activeSession.user?.firstName || 'Unknown'}</p>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full font-semibold ${isSessionActive(activeSession) ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}`}>
+                <span className={`text-[11px] px-2 py-1 rounded-full font-semibold ${isSessionActive(activeSession) ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}`}>
                   {isSessionActive(activeSession) ? 'Active Now' : 'Inactive'}
                 </span>
               </div>
 
-              <div className="grid gap-2">
-                <div className="p-3 bg-white rounded-lg border border-[#d8cdcd]">
-                  <p className="text-xs uppercase tracking-wider text-[#7a6b6b]">Email</p>
-                  <p className="sm:text-xs md:text-xs lg:text-xs text-[#2a1b1b] truncate" title={activeSession.user?.email}>{activeSession.user?.email}</p>
+              <div className="grid gap-3">
+                <div className="p-3 bg-white rounded-2xl border border-[#d8cdcd]">
+                  <p className="text-[10px] uppercase tracking-wider text-[#7a6b6b]">Email</p>
+                  <p className="text-[13px] text-[#2a1b1b] truncate" title={activeSession.user?.email}>{activeSession.user?.email}</p>
                 </div>
-                <div className="p-3 bg-white rounded-lg border border-[#d8cdcd]">
-                  <p className="text-xs uppercase tracking-wider text-[#7a6b6b]">Session status</p>
-                  <p className="sm:text-xs md:text-xs lg:text-xs font-semibold text-[#2a1b1b]">{activeSession.status.replace('_', ' ')}</p>
+                <div className="p-3 bg-white rounded-2xl border border-[#d8cdcd]">
+                  <p className="text-[10px] uppercase tracking-wider text-[#7a6b6b]">Session status</p>
+                  <p className="text-[13px] font-semibold text-[#2a1b1b]">{activeSession.status.replace('_', ' ')}</p>
                 </div>
-                <div className="p-3 bg-white rounded-lg border border-[#d8cdcd]">
-                  <p className="text-xs uppercase tracking-wider text-[#7a6b6b]">Last activity</p>
-                  <p className="sm:text-xs md:text-xs lg:text-xs text-[#2a1b1b]">{formatTime(activeSession.updatedAt || activeSession.createdAt)}</p>
+                <div className="p-3 bg-white rounded-2xl border border-[#d8cdcd]">
+                  <p className="text-[10px] uppercase tracking-wider text-[#7a6b6b]">Last activity</p>
+                  <p className="text-[13px] text-[#2a1b1b]">{formatTime(activeSession.updatedAt || activeSession.createdAt)}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[#f9fafb] border border-[#d8cdcd] rounded-lg p-4 space-y-3">
-              <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] uppercase font-bold tracking-wider">Room checkers</p>
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white border border-[#d8cdcd]">
-                  <span className="sm:text-xs md:text-xs lg:text-xs text-[#2a1b1b]">Message count</span>
+            <div className="bg-[#f9fafb] border border-[#d8cdcd] rounded-2xl p-4 space-y-3">
+              <p className="text-[11px] text-[#7a6b6b] uppercase font-bold tracking-wider">Room checkers</p>
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between px-3 py-3 rounded-2xl bg-white border border-[#d8cdcd]">
+                  <span className="text-[13px] text-[#2a1b1b]">Message count</span>
                   <span className="font-bold text-[#800000]">{messages.length}</span>
                 </div>
-                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white border border-[#d8cdcd]">
-                  <span className="sm:text-xs md:text-xs lg:text-xs text-[#2a1b1b]">Unread alerts</span>
+                <div className="flex items-center justify-between px-3 py-3 rounded-2xl bg-white border border-[#d8cdcd]">
+                  <span className="text-[13px] text-[#2a1b1b]">Unread alerts</span>
                   <span className="font-bold text-[#800000]">{activeSession.unreadCount || 0}</span>
                 </div>
-                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white border border-[#d8cdcd]">
-                  <span className="sm:text-xs md:text-xs lg:text-xs text-[#2a1b1b]">Room active</span>
+                <div className="flex items-center justify-between px-3 py-3 rounded-2xl bg-white border border-[#d8cdcd]">
+                  <span className="text-[13px] text-[#2a1b1b]">Room active</span>
                   <span className={`font-bold ${isSessionActive(activeSession) ? 'text-emerald-700' : 'text-gray-600'}`}>{isSessionActive(activeSession) ? 'Yes' : 'No'}</span>
                 </div>
               </div>
@@ -563,25 +563,25 @@ export const AdminSupport = () => {
 
             <div className="space-y-5">
               <div>
-                <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] uppercase font-bold tracking-wider mb-2">Actions</p>
-                <button onClick={handleResolveSession} className="w-full flex items-center justify-center gap-2 bg-white border border-[#d8cdcd] text-[#2a1b1b] hover:bg-[#f5f2f2] py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold transition-colors mb-2">
+                <p className="text-[11px] text-[#7a6b6b] uppercase font-bold tracking-wider mb-2">Actions</p>
+                <button onClick={handleResolveSession} className="w-full flex items-center justify-center gap-2 bg-white border border-[#d8cdcd] text-[#2a1b1b] hover:bg-[#f5f2f2] py-3 rounded-2xl text-[13px] font-bold transition-colors mb-2">
                   <CheckCircle size={16} className="text-green-600" /> Mark as Resolved
                 </button>
-                <button onClick={handleEscalateSession} className="w-full flex items-center justify-center gap-2 bg-white border border-[#d8cdcd] text-[#800000] hover:bg-red-50 py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold transition-colors">
+                <button onClick={handleEscalateSession} className="w-full flex items-center justify-center gap-2 bg-white border border-[#d8cdcd] text-[#800000] hover:bg-red-50 py-3 rounded-2xl text-[13px] font-bold transition-colors">
                   <Shield size={16} /> Escalate Ticket
                 </button>
               </div>
 
               <div>
-                <p className="sm:text-xs md:text-xs lg:text-xs text-[#7a6b6b] uppercase font-bold tracking-wider mb-2">Internal Notes</p>
+                <p className="text-[11px] text-[#7a6b6b] uppercase font-bold tracking-wider mb-2">Internal Notes</p>
                 <textarea
                   value={internalNotes}
                   onChange={(e) => setInternalNotes(e.target.value)}
-                  className="w-full border border-[#d8cdcd] rounded-lg p-3 sm:text-xs md:text-xs lg:text-xs bg-[#f9fafb] focus:bg-white focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-[#d8cdcd] rounded-2xl p-3 text-[13px] bg-[#f9fafb] focus:bg-white focus:outline-none focus:border-[#800000]"
                   rows={5}
                   placeholder="Leave a note for other agents..."
                 />
-                <button onClick={handleSaveNotes} className="mt-2 w-full bg-[#800000] text-white hover:bg-[#660000] py-2 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold transition-colors">
+                <button onClick={handleSaveNotes} className="mt-2 w-full bg-[#800000] text-white hover:bg-[#660000] py-3 rounded-2xl text-[13px] font-bold transition-colors">
                   Save Note
                 </button>
               </div>
@@ -589,10 +589,10 @@ export const AdminSupport = () => {
           </div>
         ) : (
           <div className="text-center text-[#7a6b6b] mt-16 flex flex-col items-center">
-            <div className="w-18 h-18 bg-[#f5f2f2] rounded-full flex items-center justify-center mb-4">
-              <Shield size={16} className="text-[#d8cdcd]" />
+            <div className="w-16 h-16 bg-[#f5f2f2] rounded-full flex items-center justify-center mb-4">
+              <Shield size={24} className="text-[#d8cdcd]" />
             </div>
-            <p className="sm:text-xs md:text-xs lg:text-xs">Context panel will populate when a session is selected.</p>
+            <p className="text-sm">Context panel will populate when a session is selected.</p>
           </div>
         )}
       </div>

@@ -16,7 +16,9 @@ router.get('/', requireAuth, CoreService.catchAsync(async (req: any, res: Respon
 
 // ADD TO CART
 router.post('/add', requireAuth, CoreService.catchAsync(async (req: any, res: Response) => {
-  const { packageId, quantity = 1 } = req.body;
+  const rawPackageId = req.body.packageId ?? req.body.id;
+  const packageId = rawPackageId == null ? '' : String(rawPackageId);
+  const quantity = Number(req.body.quantity || 1);
   const userId = req.user.userId;
 
   if (!packageId) {

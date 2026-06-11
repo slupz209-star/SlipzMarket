@@ -99,41 +99,41 @@ const Sidebar = () => {
 
   // --- NAVIGATION ARRAY ---
   let navItems = isAuthenticated ? [
-    { name: 'Dashboard', path: '/dashboard', icon: <Home size={20} /> },
+    { name: 'Dashboard', path: '/dashboard', icon: <Home size={21} /> },
     { 
       name: 'Browse Leads', 
       id: 'browse',path: '/browse?category=Email Leads',
-      icon: <Users size={20} />, 
+      icon: <Users size={21} />, 
       subItems: [
         { name: 'Email Leads', path: '/browse?category=Email Leads' },
         { name: 'Direct Dial Phone', path: '/browse?category=Phone Leads' },
         { name: 'Custom ICP', path: '/browse?category=All Leads' }
       ]
     },
-    { name: 'Datasets', path: '/datasets', icon: <FileSpreadsheet size={20} /> },
-    { name: 'My Cart', path: '/cart', icon: <ShoppingCart size={20} />, badge: cartCount },
-    { name: 'Order History', path: '/history', icon: <History size={20} /> },
-    { name: 'Account Info', path: '/account', icon: <User size={20} /> },
+    { name: 'Datasets', path: '/datasets', icon: <FileSpreadsheet size={21} /> },
+    { name: 'My Cart', path: '/cart', icon: <ShoppingCart size={21} />, badge: cartCount },
+    { name: 'Order History', path: '/history', icon: <History size={21} /> },
+    { name: 'Account Info', path: '/account', icon: <User size={21} /> },
   ] : [
-    { name: 'Home', path: '/', icon: <Home size={20} /> },
+    { name: 'Home', path: '/', icon: <Home size={21} /> },
     { 
       name: 'Browse Leads', 
       id: 'browse',
       path: '/browse',
-      icon: <Users size={20} />, 
+      icon: <Users size={21} />, 
       subItems: [
         { name: 'Email Leads', path: '/browse' },
         { name: 'Direct Dial Phone', path: '/browse' },
       ]
     },
-    { name: 'My Cart', path: '/cart', icon: <ShoppingCart size={20} />, badge: cartCount },
+    { name: 'My Cart', path: '/cart', icon: <ShoppingCart size={21} />, badge: cartCount },
   ];
 
   if (isAuthenticated && isAdmin) {
     navItems.push({
       name: 'Admin Panel',
       id: 'admin',
-      icon: <ShieldAlert size={20} />,
+      icon: <ShieldAlert size={21} />,
       subItems: [
         { name: 'Overview', path: '/admin' },
         { name: 'Manage Packages', path: '/packages' },
@@ -162,14 +162,14 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className={`relative bg-app text-primary flex flex-col h-full py-6 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] border-r border-theme z-40 ${isCollapsed ? 'w-22' : 'w-64'}`}>
+    <aside className={`relative bg-app text-primary flex flex-col h-full py-7 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] border-r border-theme z-40 ${isCollapsed ? 'w-22' : 'w-64'}`}>
       
       {/* Toggle button */}
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3.5 top-8 bg-surface text-muted rounded-full p-1 shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-theme hover:bg-accent hover:text-surface transition-all duration-200 z-50 flex items-center justify-center hover:scale-110"
+        className="absolute -right-3.5 top-6 bg-surface text-muted rounded-full p-1 shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-theme hover:bg-accent hover:text-surface transition-all duration-200 z-50 flex items-center justify-center hover:scale-110"
       >
-        {isCollapsed ? <ChevronRight size={14} strokeWidth={3} /> : <ChevronLeft size={14} strokeWidth={3} />}
+        {isCollapsed ? <ChevronRight size={12} strokeWidth={3} /> : <ChevronLeft size={12} strokeWidth={3} />}
       </button>
 
       {/* Navigation */}
@@ -187,7 +187,7 @@ const Sidebar = () => {
             <div key={item.name} className="relative flex flex-col">
               <div 
                 onClick={() => handleMenuClick(item)}
-                className={`relative flex items-center gap-3 cursor-pointer rounded-xl transition-all duration-200 group ${
+                className={`relative flex items-center gap-6 cursor-pointer rounded-xl transition-all duration-200 group ${
                   isActive 
                     ? 'bg-surface shadow-sm border border-theme text-primary' 
                     : isAdminMenu 
@@ -216,7 +216,7 @@ const Sidebar = () => {
                   <div className={`absolute flex items-center justify-center bg-accent text-white font-black rounded-full border-2 border-app transition-all duration-300 shadow-sm ${
                     isCollapsed 
                       ? 'top-1.5 right-1.5 w-4.5 h-4.5 text-[9px]' 
-                      : 'right-3 top-1/2 -translate-y-1/2 h-5 min-w-5 px-1.5 text-[10px]'
+                      : 'right-3 top-1/2 -translate-y-1/2 h-5 min-w-5 px-1.5 text-[14px]'
                   }`}>
                     {item.badge > 99 ? '99+' : item.badge}
                   </div>
@@ -235,7 +235,7 @@ const Sidebar = () => {
                         <button
                           key={sub.name}
                           onClick={() => navigate(sub.path)}
-                          className={`text-left px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 hover:translate-x-1 ${
+                          className={`text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-all duration-200 hover:translate-x-1 ${
                             isSubActive 
                               ? 'text-primary font-bold bg-surface border border-theme shadow-sm' 
                               : 'text-muted hover:text-primary hover:bg-surface/50'
@@ -258,10 +258,10 @@ const Sidebar = () => {
       <div className="pt-4 border-t border-theme px-4 mt-auto flex flex-col gap-2">
         <div 
           onClick={handleAuthAction}
-          className={`flex items-center gap-3 cursor-pointer rounded-xl text-muted hover:bg-surface hover:text-red-600 hover:shadow-sm border border-transparent transition-all duration-200 group ${isCollapsed ? 'justify-center p-3.5' : 'px-4 py-3.5'}`}
+          className={`flex items-center gap-6 cursor-pointer rounded-xl text-muted hover:bg-surface hover:text-red-600 hover:shadow-sm border border-transparent transition-all duration-200 group ${isCollapsed ? 'justify-center p-3.5' : 'px-4 py-3.5'}`}
         >
           <div className="shrink-0 group-hover:scale-110 transition-transform duration-200">
-            {isAuthenticated ? <LogOut size={20} /> : <LogIn size={20} />}
+            {isAuthenticated ? <LogOut size={21} /> : <LogIn size={21} />}
           </div>
           {!isCollapsed && <span className="font-bold text-[14px]">{isAuthenticated ? 'Sign Out' : 'Log In'}</span>}
         </div>

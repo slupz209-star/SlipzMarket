@@ -330,53 +330,53 @@ const ManagePackages = () => {
   };
 
   const categoryCards = [
-    { key: 'All', label: 'All Packages', icon: <Layers size={16} className="text-[#8b6f5a]" />, count: categoryCounts.All },
-    { key: 'Email Leads', label: 'Email', icon: <Mail size={16} className="text-[#8b6f5a]" />, count: categoryCounts['Email Leads'] },
-    { key: 'Phone Leads', label: 'Phone', icon: <Phone size={16} className="text-[#8b6f5a]" />, count: categoryCounts['Phone Leads'] },
-    { key: 'Email & Password', label: 'Email+Pass', icon: <Lock size={16} className="text-[#8b6f5a]" />, count: categoryCounts['Email & Password'] },
-    { key: 'Full Profile', label: 'Profile', icon: <Database size={16} className="text-[#8b6f5a]" />, count: categoryCounts['Full Profile'] },
+    { key: 'All', label: 'All Packages', icon: <Layers size={18} className="text-[#8b6f5a]" />, count: categoryCounts.All },
+    { key: 'Email Leads', label: 'Email', icon: <Mail size={18} className="text-[#8b6f5a]" />, count: categoryCounts['Email Leads'] },
+    { key: 'Phone Leads', label: 'Phone', icon: <Phone size={18} className="text-[#8b6f5a]" />, count: categoryCounts['Phone Leads'] },
+    { key: 'Email & Password', label: 'Email+Pass', icon: <Lock size={18} className="text-[#8b6f5a]" />, count: categoryCounts['Email & Password'] },
+    { key: 'Full Profile', label: 'Profile', icon: <Database size={18} className="text-[#8b6f5a]" />, count: categoryCounts['Full Profile'] },
   ];
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-[#f5efe6] font-sans pb-12 selection:bg-[#8b6f5a] selection:text-white relative" style={{ zoom: '1.22' }}>
+    <div className="flex flex-col h-full min-h-screen bg-[#f5efe6] font-sans pb-12 selection:bg-[#8b6f5a] selection:text-white relative">
       
       {/* --- HEADER --- */}
-      <div className="overflow-x-auto bg-white border-b border-[#d6c9b8] px-0 lg:px-0 py-7 sticky top-0 z-30 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 w-full">
+      <div className="bg-white border-b border-[#d6c9b8] px-0 lg:px-0 py-5 sticky top-0 z-30 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
           <div>
-            <h1 className="truncate text-xs md:text-xs font-bold break-words text-[#3b2a23] tracking-tight flex flex-col sm:flex-row items-center gap-2" style={{ fontSize: '78%' }}>
-              <Database size={21} className="truncate text-[#8b6f5a]" /> {t('managePackagesTitle', 'Manage Packages')}
+            <h1 className="text-xl font-bold text-[#3b2a23] tracking-tight flex items-center gap-2">
+              <Database size={22} className="text-[#8b6f5a]" /> {t('managePackagesTitle', 'Manage Packages')}
             </h1>
-            <p className="truncate sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] font-medium mt-0.5">{t('managePackagesSubtitle', 'Control your dataset catalog')}</p>
+            <p className="text-[13px] text-[#8b6f5a] font-medium mt-0.5">{t('managePackagesSubtitle', 'Control your dataset catalog')}</p>
           </div>
-          <div className="truncate flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto flex-wrap">
+          <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
             <button 
               onClick={() => openDrawer()}
-              className="truncate flex items-center justify-center gap-2 bg-[#8b6f5a] hover:bg-[#6c5544] text-white px-3 md:px-6 py-1.5 rounded-lg shadow-sm sm:text-xs md:text-xs lg:text-xs font-bold transition-all w-full md:w-auto"
+              className="flex items-center justify-center gap-2 bg-[#8b6f5a] hover:bg-[#6c5544] text-white px-5 py-2.5 rounded-lg shadow-sm text-[13px] font-bold transition-all w-full md:w-auto"
             >
               <Plus size={16} /> {t('addNewPackage', 'Add Package')}
             </button>
             <button
               onClick={openImportModal}
-              className="truncate flex items-center justify-center gap-2 bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] break-words text-[#3b2a23] px-2 py-1.5 rounded-lg shadow-sm sm:text-xs md:text-xs lg:text-xs font-bold transition-all w-full md:w-auto"
+              className="flex items-center justify-center gap-2 bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] text-[#3b2a23] px-4 py-2.5 rounded-lg shadow-sm text-[13px] font-bold transition-all w-full md:w-auto"
             >
               <Upload size={16} /> {t('importFile', 'Import CSV/TXT')}
             </button>
             <button
               onClick={handleExportFiltered}
-              className="truncate flex items-center justify-center gap-2 bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] break-words text-[#3b2a23] px-2 py-1.5 rounded-lg shadow-sm sm:text-xs md:text-xs lg:text-xs font-bold transition-all w-full md:w-auto"
+              className="flex items-center justify-center gap-2 bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] text-[#3b2a23] px-4 py-2.5 rounded-lg shadow-sm text-[13px] font-bold transition-all w-full md:w-auto"
             >
               <Download size={16} /> {t('exportFiltered', 'Export Filtered')}
             </button>
             <button
               onClick={handleExportAll}
-              className="truncate flex items-center justify-center gap-2 bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] break-words text-[#3b2a23] px-2 py-1.5 rounded-lg shadow-sm sm:text-xs md:text-xs lg:text-xs font-bold transition-all w-full md:w-auto"
+              className="flex items-center justify-center gap-2 bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] text-[#3b2a23] px-4 py-2.5 rounded-lg shadow-sm text-[13px] font-bold transition-all w-full md:w-auto"
             >
               <Download size={16} /> {t('exportAll', 'Export All')}
             </button>
             {isLoading && (
-              <span className="truncate inline-flex flex-col sm:flex-row items-center gap-2 bg-[#faf6f0] border border-[#d6c9b8] text-[#8b6f5a] sm:text-xs md:text-xs lg:text-xs font-bold px-2 py-1.5 rounded-lg shadow-sm">
-                <Loader2 size={16} className="truncate animate-spin" /> Loading...
+              <span className="inline-flex items-center gap-2 bg-[#faf6f0] border border-[#d6c9b8] text-[#8b6f5a] text-[13px] font-bold px-4 py-2.5 rounded-lg shadow-sm">
+                <Loader2 size={16} className="animate-spin" /> Loading...
               </span>
             )}
           </div>
@@ -384,23 +384,23 @@ const ManagePackages = () => {
       </div>
 
       {/* --- MAIN CONTENT --- */}
-      <div className="truncate px-0 mt-6 w-full flex flex-col gap-3 md:gap-3 md:gap-6">
+      <div className="px-0 mt-6 w-full flex flex-col gap-5">
 
         {/* Filters & Search */}
-        <div className="truncate flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="truncate flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-            <div className="truncate relative flex-1 min-w-0 sm:w-72">
-              <Search size={16} className="truncate absolute left-3 top-1/2 -translate-y-1/2 text-[#8b6f5a] opacity-70" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-72">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b6f5a] opacity-70" />
               <input 
                 type="text" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by ID or brand name..." 
-                className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg pl-9 pr-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm"
+                className="w-full bg-white border border-[#d6c9b8] rounded-lg pl-9 pr-3 py-2.5 text-[13px] font-medium text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a] shadow-sm"
               />
             </div>
           </div>
-          <div className="truncate grid gap-2 sm:md:grid-cols-2 grid-cols-1 xl:grid-cols-5 mt-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5 mt-4">
             {categoryCards.map((card) => (
               <button
                 key={card.key}
@@ -408,93 +408,93 @@ const ManagePackages = () => {
                 onClick={() => setActiveCategoryTab(card.key)}
                 className={`group rounded-3xl border p-4 text-left transition-all shadow-sm ${activeCategoryTab === card.key ? 'border-[#8b6f5a] bg-[#f3efe6]' : 'border-[#e3dccf] bg-white hover:border-[#8b6f5a] hover:bg-[#faf6f0]'}`}
               >
-                <div className="truncate flex items-center justify-between gap-2">
-                  <span className="truncate inline-flex items-center justify-center w-6 h-6 rounded-lg bg-[#e9e2d9] text-[#8b6f5a]">{card.icon}</span>
-                  <span className={`text-xs font-bold tracking-[0.12em] uppercase ${activeCategoryTab === card.key ? 'break-words text-[#3b2a23]' : 'text-[#8b6f5a]'}`}>{card.key === 'All' ? 'All' : card.label}</span>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-[#e9e2d9] text-[#8b6f5a]">{card.icon}</span>
+                  <span className={`text-[12px] font-bold tracking-[0.12em] uppercase ${activeCategoryTab === card.key ? 'text-[#3b2a23]' : 'text-[#8b6f5a]'}`}>{card.key === 'All' ? 'All' : card.label}</span>
                 </div>
-                <p className="truncate mt-4 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23]">{card.count}</p>
-                <p className="truncate mt-1 sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a]">{card.key === 'All' ? 'Total packages' : `${card.label} packages`}</p>
+                <p className="mt-4 text-[15px] font-bold text-[#3b2a23]">{card.count}</p>
+                <p className="mt-1 text-[12px] text-[#8b6f5a]">{card.key === 'All' ? 'Total packages' : `${card.label} packages`}</p>
               </button>
             ))}
           </div>
         </div>
 
         {/* Bulk Action Bar */}
-        <div className={`bg-white border border-[#8b6f5a] rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm shadow-[#3b2a23]/5 transition-all duration-300 ${selectedPackages.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 hidden'}`}>
-          <div className="truncate flex flex-col sm:flex-row items-center gap-2 mb-3 sm:mb-0 px-2">
-            <span className="truncate bg-[#faf6f0] border border-[#d6c9b8] text-[#8b6f5a] sm:text-xs md:text-xs lg:text-xs font-bold px-3 py-1 rounded-full">
+        <div className={`bg-white border border-[#8b6f5a] rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between shadow-lg shadow-[#3b2a23]/5 transition-all duration-300 ${selectedPackages.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 hidden'}`}>
+          <div className="flex items-center gap-3 mb-3 sm:mb-0 px-2">
+            <span className="bg-[#faf6f0] border border-[#d6c9b8] text-[#8b6f5a] text-[12px] font-bold px-3 py-1 rounded-full">
               {selectedPackages.length} Selected
             </span>
-            <span className="truncate sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23] font-medium">Total Contacts: <span className="truncate font-bold ml-1">{bulkTotalContacts.toLocaleString()}</span></span>
+            <span className="text-[13px] text-[#3b2a23] font-medium">Total Contacts: <span className="font-bold ml-1">{bulkTotalContacts.toLocaleString()}</span></span>
           </div>
-          <div className="truncate flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-            <button onClick={handleBulkDelete} className="truncate flex-1 min-w-0 sm:flex-none sm:text-xs md:text-xs lg:text-xs font-bold text-red-600 hover:bg-red-50 px-2 py-2 border border-red-200 rounded-lg bg-white shadow-sm transition-colors flex items-center justify-center gap-1.5">
-              <Trash2 size={16} /> Delete
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button onClick={handleBulkDelete} className="flex-1 sm:flex-none text-[12px] font-bold text-red-600 hover:bg-red-50 px-4 py-2 border border-red-200 rounded-lg bg-white shadow-sm transition-colors flex items-center justify-center gap-1.5">
+              <Trash2 size={14} /> Delete
             </button>
-            <button onClick={handleBulkExport} className="truncate flex-1 min-w-0 sm:flex-none sm:text-xs md:text-xs lg:text-xs font-bold text-white bg-[#8b6f5a] hover:bg-[#6c5544] px-2 py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5">
-              <Download size={16} /> Export CSV
+            <button onClick={handleBulkExport} className="flex-1 sm:flex-none text-[12px] font-bold text-white bg-[#8b6f5a] hover:bg-[#6c5544] px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5">
+              <Download size={14} /> Export CSV
             </button>
           </div>
         </div>
 
         {/* Main Package Table */}
-        <div className="truncate overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg shadow-sm overflow-hidden mt-6">
+        <div className="bg-white border border-[#d6c9b8] rounded-xl shadow-sm overflow-hidden mt-6">
           {filteredPackages.length === 0 ? (
-            <div className="truncate p-8 text-center">
-              <Database size={16} className="truncate mx-auto text-[#d6c9b8] mb-3" />
-              <p className="truncate break-words text-[#3b2a23] font-bold sm:text-xs md:text-xs lg:text-xs">{t('noPackagesFound', 'No packages found')}</p>
-              <p className="truncate text-[#8b6f5a] sm:text-xs md:text-xs lg:text-xs mt-1">{t('adjustFilters', 'Try adjusting your search or filters')}</p>
+            <div className="p-10 text-center">
+              <Database size={24} className="mx-auto text-[#d6c9b8] mb-3" />
+              <p className="text-[#3b2a23] font-bold text-[14px]">{t('noPackagesFound', 'No packages found')}</p>
+              <p className="text-[#8b6f5a] text-[13px] mt-1">{t('adjustFilters', 'Try adjusting your search or filters')}</p>
             </div>
           ) : (
-            <div className="truncate overflow-x-auto">
-              <table className="truncate w-full text-left border-collapse min-w-195">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-195">
                 <thead>
-                  <tr className="truncate bg-[#faf6f0] border-b border-[#d6c9b8]">
-                    <th className="truncate w-16 md:w-18 px-3 md:px-6 py-1.5 text-center">
+                  <tr className="bg-[#faf6f0] border-b border-[#d6c9b8]">
+                    <th className="w-12 px-5 py-3.5 text-center">
                       <input
                         type="checkbox"
                         checked={selectedPackages.length === filteredPackages.length && filteredPackages.length > 0}
                         onChange={(e) => handleSelectAll(e, filteredPackages)}
-                        className="truncate w-4 h-4 rounded border-[#d6c9b8] text-[#8b6f5a] focus:ring-[#8b6f5a] cursor-pointer"
+                        className="w-4 h-4 rounded border-[#d6c9b8] text-[#8b6f5a] focus:ring-[#8b6f5a] cursor-pointer"
                       />
                     </th>
-                    <th className="truncate px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">{t('packageDetails', 'Package Details')}</th>
-                    <th className="truncate px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">{t('category', 'Category')}</th>
-                    <th className="truncate px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">{t('volume', 'Volume')}</th>
-                    <th className="truncate px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">{t('deliverability', 'Deliverability')}</th>
-                    <th className="truncate px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest text-right">{t('price', 'Price')}</th>
-                    <th className="truncate px-3 md:px-6 py-1.5 sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest text-right">{t('actions', 'Actions')}</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">{t('packageDetails', 'Package Details')}</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">{t('category', 'Category')}</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">{t('volume', 'Volume')}</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">{t('deliverability', 'Deliverability')}</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest text-right">{t('price', 'Price')}</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest text-right">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
-                <tbody className="truncate divide-y divide-[#d6c9b8]/50">
+                <tbody className="divide-y divide-[#d6c9b8]/50">
                   {filteredPackages.map((pkg) => {
                     const isSelected = selectedPackages.includes(pkg.id);
                     return (
                       <tr key={pkg.id} className={`transition-colors group ${isSelected ? 'bg-[#faf6f0]' : 'hover:bg-[#f5efe6]/50'}`}>
-                        <td className="truncate px-3 md:px-6 py-1.5 text-center">
+                        <td className="px-5 py-3.5 text-center">
                           <input
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => toggleSelectRow(pkg.id)}
-                            className="truncate w-4 h-4 rounded border-[#d6c9b8] text-[#8b6f5a] focus:ring-[#8b6f5a] cursor-pointer"
+                            className="w-4 h-4 rounded border-[#d6c9b8] text-[#8b6f5a] focus:ring-[#8b6f5a] cursor-pointer"
                           />
                         </td>
-                        <td className="truncate px-3 md:px-6 py-1.5">
-                          <div className="truncate flex flex-col sm:flex-row items-center gap-2">
-                            <div className="truncate w-6 h-6 overflow-x-auto bg-white border border-[#d6c9b8] rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-white border border-[#d6c9b8] rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                               {getCategoryIcon(pkg.category)}
                             </div>
                             <div>
-                              <p className="truncate sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23]">{pkg.brand}</p>
-                              <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-1 truncate"><span className="font-sans">{pkg.id}</span></p>
+                              <p className="text-[14px] font-bold text-[#3b2a23]">{pkg.brand}</p>
+                              <p className="text-[12px] text-[#8b6f5a] mt-1 truncate"><span className="font-mono">{pkg.id}</span></p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-3 md:px-6 py-1.5 break-words text-[#3b2a23]">{pkg.category}</td>
-                        <td className="px-3 md:px-6 py-1.5">{pkg.leadsCount.toLocaleString()}</td>
-                        <td className="px-3 md:px-6 py-1.5">{pkg.deliverability}</td>
-                        <td className="px-3 md:px-6 py-1.5 text-right font-sans font-bold break-words text-[#3b2a23]">£{pkg.price.toFixed(2)}</td>
-                        <td className="px-3 md:px-6 py-1.5 text-right">
+                        <td className="px-5 py-3.5 text-[#3b2a23]">{pkg.category}</td>
+                        <td className="px-5 py-3.5">{pkg.leadsCount.toLocaleString()}</td>
+                        <td className="px-5 py-3.5">{pkg.deliverability}</td>
+                        <td className="px-5 py-3.5 text-right font-mono font-bold text-[#3b2a23]">£{pkg.price.toFixed(2)}</td>
+                        <td className="px-5 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <button onClick={() => openUploadDataModal(pkg)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-md border border-transparent hover:border-blue-200">
                               <FileUp size={16} />
@@ -522,49 +522,49 @@ const ManagePackages = () => {
       {/* DRAWER: CREATE / EDIT PACKAGE METADATA      */}
       {/* ========================================= */}
       {isDrawerOpen && (
-        <div className="fixed inset-0 z-60 flex justify-end" style={{ transform: 'scale(0.9)' }}>
+        <div className="fixed inset-0 z-60 flex justify-end">
           <div className="absolute inset-0 bg-[#3b2a23]/40 backdrop-blur-sm transition-opacity animate-fade-in" onClick={closeDrawer} />
           
-          <div className="relative w-full max-w-full md:max-w-112.5 bg-[#f5efe6] h-full shadow-2xl shadow-[#3b2a23]/20 flex flex-col animate-fade-in-right border-l border-[#d6c9b8]">
-            <div className="px-3 py-7 border-b border-[#d6c9b8] overflow-x-auto bg-white flex items-center justify-between shrink-0">
-              <h3 className="truncate text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2">
-                <Edit2 size={16} className="truncate text-[#8b6f5a]"/> {editingPackage ? 'Edit Package Metadata' : 'Create Package'}
+          <div className="relative w-full max-w-112.5 bg-[#f5efe6] h-full shadow-2xl shadow-[#3b2a23]/20 flex flex-col animate-fade-in-right border-l border-[#d6c9b8]">
+            <div className="px-6 py-5 border-b border-[#d6c9b8] bg-white flex items-center justify-between shrink-0">
+              <h3 className="text-[16px] font-bold text-[#3b2a23] flex items-center gap-2">
+                <Edit2 size={18} className="text-[#8b6f5a]"/> {editingPackage ? 'Edit Package Metadata' : 'Create Package'}
               </h3>
-              <button onClick={closeDrawer} className="truncate p-1.5 text-[#8b6f5a] hover:break-words text-[#3b2a23] hover:bg-[#f5efe6] rounded-lg transition-colors">
-                <X size={16} />
+              <button onClick={closeDrawer} className="p-1.5 text-[#8b6f5a] hover:text-[#3b2a23] hover:bg-[#f5efe6] rounded-lg transition-colors">
+                <X size={18} />
               </button>
             </div>
             
-            <form id="package-form" onSubmit={handleSavePackage} className="truncate p-6 flex-1 min-w-0 overflow-y-auto flex flex-col gap-3 md:gap-3 md:gap-6">
+            <form id="package-form" onSubmit={handleSavePackage} className="p-6 flex-1 overflow-y-auto flex flex-col gap-5">
               
-              <div className="truncate flex flex-col gap-1.5">
-                <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Package ID</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Package ID</label>
                 <input 
                   type="text" required 
                   value={formData.id} 
                   onChange={(e) => setFormData({...formData, id: e.target.value})} 
-                  className="truncate w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   disabled={!!editingPackage} 
                 />
               </div>
 
-              <div className="truncate flex flex-col gap-1.5">
-                <label className="truncate sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Brand / Display Name</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Brand / Display Name</label>
                 <input 
                   type="text" required 
                   value={formData.brand} 
                   onChange={(e) => setFormData({...formData, brand: e.target.value})} 
                   placeholder="e.g., 10,000 SaaS Founders"
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-medium break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-medium text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Category</label>
+                <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Category</label>
                 <select 
                   value={formData.category} 
                   onChange={(e) => setFormData({...formData, category: e.target.value})} 
-                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                  className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-bold text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                 >
                   <option value="Email Leads">Email Leads</option>
                   <option value="Phone Leads">Phone Leads</option>
@@ -573,55 +573,55 @@ const ManagePackages = () => {
                 </select>
               </div>
 
-              <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Lead Volume</label>
+                  <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Lead Volume</label>
                   <input 
                     type="number" required min="1"
                     value={formData.leadsCount} 
                     onChange={(e) => setFormData({...formData, leadsCount: e.target.value})} 
-                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Price (£)</label>
+                  <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Price (£)</label>
                   <input 
                     type="number" step="0.01" required min="0"
                     value={formData.price} 
                     onChange={(e) => setFormData({...formData, price: e.target.value})} 
-                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Deliverability %</label>
+                  <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Deliverability %</label>
                   <input 
                     type="text" required placeholder="e.g. 98.5%"
                     value={formData.deliverability} 
                     onChange={(e) => setFormData({...formData, deliverability: e.target.value})} 
-                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="sm:text-xs md:text-sm lg:text-sm font-bold text-[#8b6f5a] uppercase tracking-widest">Last Updated</label>
+                  <label className="text-[11px] font-bold text-[#8b6f5a] uppercase tracking-widest">Last Updated</label>
                   <input 
                     type="date" required 
                     value={formData.lastUpdated} 
                     onChange={(e) => setFormData({...formData, lastUpdated: e.target.value})} 
-                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-1.5 sm:text-xs md:text-xs lg:text-xs font-sans break-words text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
+                    className="w-full bg-white border border-[#d6c9b8] rounded-lg px-3 py-2.5 text-[13px] font-mono text-[#3b2a23] outline-none focus:border-[#8b6f5a] focus:ring-1 focus:ring-[#8b6f5a]"
                   />
                 </div>
               </div>
 
             </form>
 
-            <div className="p-6 border-t border-[#d6c9b8] overflow-x-auto bg-white flex flex-col md:flex-row gap-2 shrink-0">
-              <button type="button" onClick={closeDrawer} className="flex-1 min-w-0 py-1.5 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
+            <div className="p-5 border-t border-[#d6c9b8] bg-white flex gap-3 shrink-0">
+              <button type="button" onClick={closeDrawer} className="flex-1 py-2.5 text-[13px] font-bold text-[#3b2a23] bg-white border border-[#d6c9b8] hover:bg-[#faf6f0] transition-colors rounded-lg shadow-sm">
                 Cancel
               </button>
-              <button type="submit" form="package-form" className="flex-2 bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-1.5 rounded-lg sm:text-xs md:text-xs lg:text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+              <button type="submit" form="package-form" className="flex-2 bg-[#8b6f5a] hover:bg-[#6c5544] text-white py-2.5 rounded-lg text-[13px] font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
                 <Save size={16} /> {editingPackage ? 'Update Metadata' : 'Create Package'}
               </button>
             </div>
@@ -633,37 +633,37 @@ const ManagePackages = () => {
       {/* PACKAGE METADATA IMPORT MODAL             */}
       {/* ========================================= */}
       {isImportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[#3b2a23]/60 backdrop-blur-sm animate-fade-in" onClick={closeImportModal} />
           <div className="relative w-full max-w-lg rounded-3xl bg-[#f5efe6] border border-[#d6c9b8] shadow-2xl shadow-[#3b2a23]/10 overflow-hidden animate-fade-in-right">
-            <div className="flex items-center justify-between px-3 py-7 border-b border-[#d6c9b8] overflow-x-auto bg-white">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[#d6c9b8] bg-white">
               <div>
-                <h3 className="truncate text-xs md:text-xs font-bold break-words text-[#3b2a23]" style={{ fontSize: '78%' }}>Import Package Catalog</h3>
-                <p className="truncate sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-1">Upload a CSV file to add or update package metadata.</p>
+                <h3 className="text-lg font-bold text-[#3b2a23]">Import Package Catalog</h3>
+                <p className="text-[13px] text-[#8b6f5a] mt-1">Upload a CSV file to add or update package metadata.</p>
               </div>
-              <button onClick={closeImportModal} className="truncate text-[#8b6f5a] hover:break-words text-[#3b2a23] p-2 rounded-full transition-colors">
-                <X size={16} />
+              <button onClick={closeImportModal} className="text-[#8b6f5a] hover:text-[#3b2a23] p-2 rounded-full transition-colors">
+                <X size={20} />
               </button>
             </div>
-            <div className="truncate p-6">
-              <div className="truncate space-y-4">
-                <div className="truncate rounded-3xl overflow-x-auto bg-white border border-[#d6c9b8] p-6">
-                  <p className="truncate sm:text-xs md:text-xs lg:text-xs font-semibold break-words text-[#3b2a23]">CSV / TXT Format</p>
-                  <p className="truncate sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-2">Required columns: <span className="truncate font-sans">id, brand, category, leadsCount, price, deliverability, lastUpdated</span>.</p>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div className="rounded-3xl bg-white border border-[#d6c9b8] p-5">
+                  <p className="text-sm font-semibold text-[#3b2a23]">CSV / TXT Format</p>
+                  <p className="text-[13px] text-[#8b6f5a] mt-2">Required columns: <span className="font-mono">id, brand, category, leadsCount, price, deliverability, lastUpdated</span>.</p>
                 </div>
 
-                <label className="truncate block rounded-3xl bg-white border border-dashed border-[#8b6f5a]/40 p-6 text-center cursor-pointer hover:border-[#8b6f5a] transition-colors">
-                  <Upload size={16} className="truncate mx-auto text-[#8b6f5a]" />
-                  <p className="truncate mt-3 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23]">Select CSV or TXT File</p>
-                  <p className="truncate sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-1">Only .csv or .txt files are accepted.</p>
-                  <input type="file" accept=".csv,.txt" onChange={handleFileUpload} className="truncate hidden" />
+                <label className="block rounded-3xl bg-white border border-dashed border-[#8b6f5a]/40 p-6 text-center cursor-pointer hover:border-[#8b6f5a] transition-colors">
+                  <Upload size={24} className="mx-auto text-[#8b6f5a]" />
+                  <p className="mt-3 text-[13px] font-bold text-[#3b2a23]">Select CSV or TXT File</p>
+                  <p className="text-[12px] text-[#8b6f5a] mt-1">Only .csv or .txt files are accepted.</p>
+                  <input type="file" accept=".csv,.txt" onChange={handleFileUpload} className="hidden" />
                 </label>
 
-                <div className="truncate grid gap-2 sm:md:grid-cols-2 grid-cols-1">
-                  <button type="button" onClick={closeImportModal} className="truncate py-2 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] bg-white border border-[#d6c9b8] rounded-lg hover:bg-[#faf6f0] transition-colors">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <button type="button" onClick={closeImportModal} className="py-3 text-[14px] font-bold text-[#3b2a23] bg-white border border-[#d6c9b8] rounded-2xl hover:bg-[#faf6f0] transition-colors">
                     Cancel
                   </button>
-                  <button type="button" onClick={closeImportModal} className="truncate py-2 sm:text-xs md:text-xs lg:text-xs font-bold text-white bg-[#8b6f5a] rounded-lg hover:bg-[#6c5544] transition-colors">
+                  <button type="button" onClick={closeImportModal} className="py-3 text-[14px] font-bold text-white bg-[#8b6f5a] rounded-2xl hover:bg-[#6c5544] transition-colors">
                     Done
                   </button>
                 </div>
@@ -677,50 +677,50 @@ const ManagePackages = () => {
       {/* 👉 NEW: DATASET (LEADS) UPLOAD MODAL      */}
       {/* ========================================= */}
       {isUploadDataModalOpen && uploadTargetPkg && (
-        <div className="truncate fixed inset-0 z-50 flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
-          <div className="truncate absolute inset-0 bg-[#3b2a23]/60 backdrop-blur-sm animate-fade-in" onClick={closeUploadDataModal} />
-          <div className="truncate relative w-full max-w-lg rounded-3xl bg-[#f5efe6] border border-[#d6c9b8] shadow-2xl shadow-[#3b2a23]/10 overflow-hidden animate-fade-in-right">
-            <div className="truncate flex items-center justify-between px-3 py-7 border-b border-[#d6c9b8] overflow-x-auto bg-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#3b2a23]/60 backdrop-blur-sm animate-fade-in" onClick={closeUploadDataModal} />
+          <div className="relative w-full max-w-lg rounded-3xl bg-[#f5efe6] border border-[#d6c9b8] shadow-2xl shadow-[#3b2a23]/10 overflow-hidden animate-fade-in-right">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[#d6c9b8] bg-white">
               <div>
-                <h3 className="truncate text-xs md:text-xs font-bold break-words text-[#3b2a23]" style={{ fontSize: '78%' }}>Upload Dataset Leads</h3>
-                <p className="truncate sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-1">Import actual contact data for <span className="truncate font-bold">{uploadTargetPkg.brand}</span>.</p>
+                <h3 className="text-lg font-bold text-[#3b2a23]">Upload Dataset Leads</h3>
+                <p className="text-[13px] text-[#8b6f5a] mt-1">Import actual contact data for <span className="font-bold">{uploadTargetPkg.brand}</span>.</p>
               </div>
-              <button onClick={closeUploadDataModal} className="text-[#8b6f5a] hover:break-words text-[#3b2a23] p-2 rounded-full transition-colors disabled:opacity-50" disabled={isUploadingLeads}>
-                <X size={16} />
+              <button onClick={closeUploadDataModal} className="text-[#8b6f5a] hover:text-[#3b2a23] p-2 rounded-full transition-colors disabled:opacity-50" disabled={isUploadingLeads}>
+                <X size={20} />
               </button>
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                <div className="rounded-3xl overflow-x-auto bg-white border border-[#d6c9b8] p-6">
-                  <p className="sm:text-xs md:text-xs lg:text-xs font-semibold break-words text-[#3b2a23]">Leads File Format</p>
+                <div className="rounded-3xl bg-white border border-[#d6c9b8] p-5">
+                  <p className="text-sm font-semibold text-[#3b2a23]">Leads File Format</p>
                   {uploadTargetPkg.category === 'Email & Password' ? (
-                    <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-2">Accepts <span className="font-sans bg-gray-100 px-1 rounded">.txt</span> files with <span className="font-sans">email:password</span> per line, or <span className="font-sans bg-gray-100 px-1 rounded">.csv</span> with <span className="font-sans">email,password</span>.</p>
+                    <p className="text-[13px] text-[#8b6f5a] mt-2">Accepts <span className="font-mono bg-gray-100 px-1 rounded">.txt</span> files with <span className="font-mono">email:password</span> per line, or <span className="font-mono bg-gray-100 px-1 rounded">.csv</span> with <span className="font-mono">email,password</span>.</p>
                   ) : (
-                    <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-2">Required columns: <span className="font-sans bg-gray-100 px-1 rounded">firstName, lastName, email, phone, jobTitle, companyName, industry, country</span>.</p>
+                    <p className="text-[13px] text-[#8b6f5a] mt-2">Required columns: <span className="font-mono bg-gray-100 px-1 rounded">firstName, lastName, email, phone, jobTitle, companyName, industry, country</span>.</p>
                   )}
                 </div>
 
                 <label className={`block rounded-3xl bg-white border border-dashed border-[#8b6f5a]/40 p-6 text-center transition-colors ${isUploadingLeads ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-[#8b6f5a]'}`}>
                   {isUploadingLeads ? (
-                    <Loader2 size={16} className="mx-auto text-blue-500 animate-spin" />
+                    <Loader2 size={24} className="mx-auto text-blue-500 animate-spin" />
                   ) : (
-                    <FileUp size={16} className="mx-auto text-blue-500" />
+                    <FileUp size={24} className="mx-auto text-blue-500" />
                   )}
-                  <p className="mt-3 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23]">
+                  <p className="mt-3 text-[13px] font-bold text-[#3b2a23]">
                     {isUploadingLeads ? 'Uploading datasets...' : `Upload up to 10 ${uploadTargetPkg.category} Files`}
                   </p>
-                  <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-1">Select multiple .csv/.txt files and they will import one-by-one automatically.</p>
+                  <p className="text-[12px] text-[#8b6f5a] mt-1">Select multiple .csv/.txt files and they will import one-by-one automatically.</p>
                   <input type="file" accept=".csv,.txt" onChange={handleLeadsFileUpload} disabled={isUploadingLeads} className="hidden" multiple />
                 </label>
 
                 {uploadTasks.length > 0 && (
-                  <div className="rounded-3xl overflow-x-auto bg-white border border-[#d6c9b8] p-4 space-y-4">
-                    <div className="flex items-center justify-between gap-2">
+                  <div className="rounded-3xl bg-white border border-[#d6c9b8] p-4 space-y-4">
+                    <div className="flex items-center justify-between gap-3">
                       <div>
-                        <p className="sm:text-xs md:text-xs lg:text-xs font-semibold break-words text-[#3b2a23]">Batch Upload Progress</p>
-                        <p className="sm:text-xs md:text-xs lg:text-xs text-[#8b6f5a] mt-1">{uploadTasks.filter((task) => task.status !== 'pending').length}/{uploadTasks.length} files processed</p>
+                        <p className="text-sm font-semibold text-[#3b2a23]">Batch Upload Progress</p>
+                        <p className="text-[12px] text-[#8b6f5a] mt-1">{uploadTasks.filter((task) => task.status !== 'pending').length}/{uploadTasks.length} files processed</p>
                       </div>
-                      <span className="sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23]">
+                      <span className="text-[12px] font-bold text-[#3b2a23]">
                         {Math.round(uploadTasks.reduce((sum, task) => sum + task.progress, 0) / uploadTasks.length || 0)}%
                       </span>
                     </div>
@@ -730,17 +730,17 @@ const ManagePackages = () => {
 
                     <div className="space-y-3 max-h-56 overflow-y-auto">
                       {uploadTasks.map((task) => (
-                        <div key={task.id} className="rounded-lg border border-[#e3dccf] p-3 bg-[#faf6f0]">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="sm:text-xs md:text-xs lg:text-xs font-semibold break-words text-[#3b2a23] truncate">{task.file.name}</p>
-                            <span className={`text-xs font-semibold ${task.status === 'success' ? 'text-emerald-600' : task.status === 'error' ? 'text-red-600' : 'text-[#8b6f5a]'}`}>
+                        <div key={task.id} className="rounded-2xl border border-[#e3dccf] p-3 bg-[#faf6f0]">
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-[13px] font-semibold text-[#3b2a23] truncate">{task.file.name}</p>
+                            <span className={`text-[12px] font-semibold ${task.status === 'success' ? 'text-emerald-600' : task.status === 'error' ? 'text-red-600' : 'text-[#8b6f5a]'}`}>
                               {task.status === 'uploading' ? `${task.progress}%` : task.status === 'success' ? 'Imported' : task.status === 'error' ? 'Failed' : 'Queued'}
                             </span>
                           </div>
                           <div className="h-2 rounded-full bg-[#e3dccf] overflow-hidden mt-2">
                             <div className="h-full rounded-full bg-[#8b6f5a]" style={{ width: `${task.progress}%` }} />
                           </div>
-                          {task.message && <p className="mt-2 sm:text-xs md:text-xs lg:text-xs text-red-600">{task.message}</p>}
+                          {task.message && <p className="mt-2 text-[12px] text-red-600">{task.message}</p>}
                         </div>
                       ))}
                     </div>
@@ -748,7 +748,7 @@ const ManagePackages = () => {
                 )}
 
                 <div className="w-full">
-                  <button type="button" onClick={closeUploadDataModal} disabled={isUploadingLeads} className="w-full py-2 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] bg-white border border-[#d6c9b8] rounded-lg hover:bg-[#faf6f0] transition-colors disabled:opacity-50">
+                  <button type="button" onClick={closeUploadDataModal} disabled={isUploadingLeads} className="w-full py-3 text-[14px] font-bold text-[#3b2a23] bg-white border border-[#d6c9b8] rounded-2xl hover:bg-[#faf6f0] transition-colors disabled:opacity-50">
                     Close
                   </button>
                 </div>
@@ -760,22 +760,22 @@ const ManagePackages = () => {
 
       {/* DELETE CONFIRM MODAL */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ transform: 'scale(0.9)' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[#3b2a23]/60 backdrop-blur-sm animate-fade-in" onClick={closeDeleteModal} />
           <div className="relative w-full max-w-md rounded-3xl bg-[#f5efe6] border border-[#d6c9b8] shadow-2xl shadow-[#3b2a23]/10 overflow-hidden animate-fade-in-right">
-            <div className="flex items-center justify-between px-3 py-7 border-b border-[#d6c9b8] overflow-x-auto bg-white">
-              <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23]" style={{ fontSize: '78%' }}>Confirm Deletion</h3>
-              <button onClick={closeDeleteModal} className="text-[#8b6f5a] hover:break-words text-[#3b2a23] p-2 rounded-full transition-colors">
-                <X size={16} />
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[#d6c9b8] bg-white">
+              <h3 className="text-lg font-bold text-[#3b2a23]">Confirm Deletion</h3>
+              <button onClick={closeDeleteModal} className="text-[#8b6f5a] hover:text-[#3b2a23] p-2 rounded-full transition-colors">
+                <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <p className="sm:text-xs md:text-xs lg:text-xs break-words text-[#3b2a23]">Are you sure you want to delete this package? This action cannot be undone.</p>
-              <div className="flex flex-col md:flex-row gap-2">
-                <button type="button" onClick={closeDeleteModal} className="flex-1 min-w-0 py-2 sm:text-xs md:text-xs lg:text-xs font-bold break-words text-[#3b2a23] bg-white border border-[#d6c9b8] rounded-lg hover:bg-[#faf6f0] transition-colors">
+              <p className="text-[14px] text-[#3b2a23]">Are you sure you want to delete this package? This action cannot be undone.</p>
+              <div className="flex gap-3">
+                <button type="button" onClick={closeDeleteModal} className="flex-1 py-3 text-[14px] font-bold text-[#3b2a23] bg-white border border-[#d6c9b8] rounded-2xl hover:bg-[#faf6f0] transition-colors">
                   Cancel
                 </button>
-                <button type="button" onClick={handleConfirmDelete} className="flex-1 min-w-0 py-2 sm:text-xs md:text-xs lg:text-xs font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                <button type="button" onClick={handleConfirmDelete} className="flex-1 py-3 text-[14px] font-bold text-white bg-red-600 rounded-2xl hover:bg-red-700 transition-colors">
                   Delete Package
                 </button>
               </div>
@@ -786,13 +786,13 @@ const ManagePackages = () => {
 
       {/* TOAST NOTIFICATIONS */}
       {toast && (
-        <div className="fixed bottom-8 right-8 z-80 bg-[#3b2a23] text-white px-3 md:px-6 py-1.5 rounded-lg shadow-2xl flex flex-col sm:flex-row items-center gap-2 animate-fade-in-up border border-[#8b6f5a]" style={{ transform: 'scale(0.9)' }}>
+        <div className="fixed bottom-8 right-8 z-80 bg-[#3b2a23] text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 animate-fade-in-up border border-[#8b6f5a]">
           {toast.type === 'error' ? (
-            <AlertCircle size={16} className="text-red-400" />
+            <AlertCircle size={18} className="text-red-400" />
           ) : (
-            <CheckCircle2 size={16} className="text-emerald-400" />
+            <CheckCircle2 size={18} className="text-emerald-400" />
           )}
-          <p className="sm:text-xs md:text-xs lg:text-xs font-bold">{toast.msg}</p>
+          <p className="text-[13px] font-bold">{toast.msg}</p>
         </div>
       )}
 

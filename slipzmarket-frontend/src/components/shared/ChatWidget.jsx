@@ -178,19 +178,19 @@ const handleSendMessage = async (e) => {
           {/* Chat Header */}
           <div className="bg-[#800000] text-white p-4 flex items-center justify-between shadow-md z-10">
             <div>
-              <h3 className="font-bold text-[15px]">SlipZMarket Support</h3>
-              <p className="text-[12px] text-white/80">Typically replies instantly</p>
+              <h3 className="font-bold text-[18px]">SlipZMarket Support</h3>
+              <p className="text-[14px] text-white/80">Typically replies instantly</p>
             </div>
             <button 
               onClick={() => setIsChatOpen(false)}
               className="text-white/80 hover:text-white hover:bg-white/20 p-1.5 rounded-md transition-colors"
             >
-              <X size={18} />
+              <X size={21} />
             </button>
           </div>
 
           {/* Chat Messages Area */}
-          <div className="flex-1 bg-[#f9fafb] p-4 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
+          <div className="flex-1 bg-[#f9fafb] p-4 overflow-y-auto flex flex-col gap-6 custom-scrollbar">
             
             {messages.map((msg) => (
               <div 
@@ -206,7 +206,7 @@ const handleSendMessage = async (e) => {
 
                 {/* Formatted Text Bubble */}
                 <div 
-                  className={`text-[13px] p-3 shadow-sm max-w-[85%] whitespace-pre-wrap leading-relaxed ${
+                  className={`text-[14px] p-3 shadow-sm max-w-[85%] whitespace-pre-wrap leading-relaxed ${
                     msg.senderRole === 'USER' 
                       ? 'bg-[#800000] text-white rounded-2xl rounded-tr-none' 
                       : msg.senderRole === 'SYSTEM'
@@ -251,7 +251,7 @@ const handleSendMessage = async (e) => {
                 disabled={!message.trim() || isTyping}
                 className="absolute right-2 w-8 h-8 bg-[#800000] hover:bg-[#660000] text-white rounded-full flex items-center justify-center disabled:opacity-50 transition-colors"
               >
-                <Send size={14} className="ml-0.5" />
+                <Send size={12} className="ml-0.5" />
               </button>
             </form>
           </div>
@@ -262,9 +262,9 @@ const handleSendMessage = async (e) => {
       {/* The Floating Toggle Button */}
       <button
         onClick={() => setIsChatOpen(!isChatOpen)}
-        className="w-14 h-14 bg-[#800000] hover:bg-[#660000] text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-200 active:scale-95"
+        className="w-18 h-18 bg-[#800000] hover:bg-[#660000] text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-200 active:scale-95"
       >
-        {isChatOpen ? <X size={24} /> : <MessageCircle size={24} />}
+        {isChatOpen ? <X size={21} /> : <MessageCircle size={21} />}
       </button>
 
     </div>
