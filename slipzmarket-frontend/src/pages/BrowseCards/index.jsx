@@ -416,7 +416,7 @@ const BrowseLeads = () => {
  <div className="relative w-full max-w-sm bg-[#f5efe6] h-full shadow-2xl shadow-[#3b2a23]/20 flex flex-col animate-fade-in-right border-l border-[#d6c9b8]">
  <div className="px-3 py-4 border-b border-[#d6c9b8] overflow-x-auto bg-white flex items-center justify-between">
  <h3 className="text-xs md:text-xs font-bold break-words text-[#3b2a23] flex flex-col sm:flex-row items-center gap-2"><SlidersHorizontal size={16} className="text-[#8b6f5a]"/> Advanced Filters</h3>
- <button onClick={() => setIsFilterModalOpen(false)} className="p-2 text-[#8b6f5a] hover:break-words text-[#3b2a23] hover:bg-[#f5efe6] rounded-lg transition-colors">
+ <button onClick={() => setIsFilterModalOpen(false)} className="p-2 text-muted hover:text-primary hover:bg-surface rounded-lg transition-colors">
  <X size={16} />
  </button>
  </div>
@@ -477,7 +477,7 @@ const BrowseLeads = () => {
  </span>
  </div>
  </div>
- <button onClick={() => setSelectedPackage(null)} className="p-2 text-[#8b6f5a] hover:break-words text-[#3b2a23] hover:bg-[#f5efe6] rounded-lg transition-colors">
+ <button onClick={() => setSelectedPackage(null)} className="p-2 text-muted hover:text-primary hover:bg-surface rounded-lg transition-colors">
  <X size={16} />
  </button>
  </div>
@@ -486,13 +486,13 @@ const BrowseLeads = () => {
  <div className="flex border-b border-[#d6c9b8] px-6 overflow-x-auto bg-white gap-3 md:gap-6">
  <button 
  onClick={() => setDetailsTab('overview')}
- className={`py-2 text-xs font-bold border-b-2 transition-colors ${detailsTab === 'overview' ? 'border-[#8b6f5a] text-[#8b6f5a]' : 'border-transparent text-[#8b6f5a] opacity-70 hover:opacity-100 hover:break-words text-[#3b2a23]'}`}
+ className={`py-2 text-xs font-bold border-b-2 transition-colors ${detailsTab === 'overview' ? 'border-accent text-accent' : 'border-transparent text-muted opacity-70 hover:text-primary hover:break-words'}`}
  >
  Overview
  </button>
  <button 
  onClick={() => setDetailsTab('preview')}
- className={`py-2 text-xs font-bold border-b-2 transition-colors ${detailsTab === 'preview' ? 'border-[#8b6f5a] text-[#8b6f5a]' : 'border-transparent text-[#8b6f5a] opacity-70 hover:opacity-100 hover:break-words text-[#3b2a23]'}`}
+ className={`py-2 text-xs font-bold border-b-2 transition-colors ${detailsTab === 'preview' ? 'border-accent text-accent' : 'border-transparent text-muted opacity-70 hover:text-primary hover:break-words'}`}
  >
  Data Sample
  </button>
